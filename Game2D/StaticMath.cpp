@@ -1,33 +1,18 @@
 #include "StaticMath.h"
 
+#include "Object.h"
+
 void StaticMath::logSDLError(std::ostream &os, const std::string &msg) {
 	os << msg << " error: " << SDL_GetError() << std::endl;
 }
 
-SDL_Texture* StaticMath::loadTexture(const std::string &file, SDL_Renderer *ren) {
-	SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
-	if (texture == nullptr) {
-		logSDLError(std::cout, "LoadTexture");
+bool StaticMath::collison(const Object  *obj1, const Object *obj2)
+{
+	float r = sqrt(pow(obj2->pos.x - obj1->pos.x, 2) + pow(obj2->pos.y - obj1->pos.y, 2));
+	float sum = obj2->radius + obj1->radius;
+	if (r < sum) {
+		return true;
 	}
-	return texture;
+	return false;
+
 }
-
-void StaticMath::renderTexture(SDL_Texture *tex, SDL_Renderer *ren, SDL_Rect dst, SDL_Rect *clip) {
-	SDL_RenderCopy(ren, tex, clip, &dst);
-}
-
-void StaticMath::renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, SDL_Rect *clip) {
-	SDL_Rect dst;
-	dst.x = x;
-	dst.y = y;
-	if (clip != nullptr) {
-		dst.w = clip->w;
-		dst.h = clip->h;
-	}
-	else {
-		SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-	}
-	renderTexture(tex, ren, dst, clip);
-}
-
-

@@ -16,6 +16,8 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+class Object;
+
 class StaticMath
 {
 public:
@@ -27,13 +29,24 @@ public:
 	*/
 	static void logSDLError(std::ostream &os, const std::string &msg);
 
+	static bool collison(const Object *obj1,const Object *obj2);
+};
+
+namespace Texture {
 	/*
 	* Loads an image into a texture on the rendering device
 	* @param file The image file to load
 	* @param ren The renderer to load the texture onto
 	* @return the loaded texture, or nullptr if something went wrong.
 	*/
-	static SDL_Texture* loadTexture(const std::string &file, SDL_Renderer *ren);
+	static SDL_Texture* load(const std::string &file, SDL_Renderer *ren)
+	{
+		SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
+		if (texture == nullptr) {
+			StaticMath::logSDLError(std::cout, "LoadTexture");
+		}
+		return texture;
+	}
 
 	/*
 	* Draw an SDL_Texture to an SDL_Renderer at some destination rect
@@ -44,9 +57,12 @@ public:
 	* @param clip The sub-section of the texture to draw (clipping rect)
 	*		default of nullptr draws the entire texture
 	*/
-	static void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, SDL_Rect dst, SDL_Rect *clip = nullptr);
+	static void render(SDL_Texture *tex, SDL_Renderer *ren, SDL_Rect dst, SDL_Rect *clip = nullptr)
+	{
+		SDL_RenderCopy(ren, tex, clip, &dst);
+	}
 
-	/*
+	/**
 	* Draw an SDL_Texture to an SDL_Renderer at position x, y, preserving
 	* the texture's width and height and taking a clip of the texture if desired
 	* If a clip is passed, the clip's width and height will be used instead of the texture's
@@ -57,6 +73,18 @@ public:
 	* @param clip The sub-section of the texture to draw (clipping rect)
 	*		default of nullptr draws the entire texture
 	*/
-	static void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, SDL_Rect *clip = nullptr);
+	static void render(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, SDL_Rect *clip = nullptr)
+	{
+		SDL_Rect dst;
+		dst.x = x;
+		dst.y = y;
+		if (clip != nullptr) {
+			dst.w = clip->w;
+			dst.h = clip->h;
+		}
+		else {
+			SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
+		}
+		render(tex, ren, dst, clip);
+	}
 };
-

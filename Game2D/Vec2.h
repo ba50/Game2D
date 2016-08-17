@@ -16,10 +16,30 @@ public:
 		:
 		_Vec2(vect.x, vect.y)
 	{}
+////////////////////////////////////////////////////////////////////////
 	template <typename T2>
 	inline			operator _Vec2< T2 >() const
 	{
-		return{ (T2)x,(T2)y };
+		return{ static_cast<T2>(x),static_cast<T2>(T2)y };
+	}
+	inline T		LenSq() const
+	{
+		return *this * *this;
+	}
+	inline T		Len() const
+	{
+		return sqrt(LenSq());
+	}
+	inline _Vec2&	Swap(_Vec2& vect)
+	{
+		const _Vec2 temp = vect;
+		vect = *this;
+		*this = temp;
+		return *this;
+	}
+	inline T		operator*(const _Vec2 &rhs) const
+	{
+		return this->x * rhs.x + this->y * rhs.y;
 	}
 
 public:

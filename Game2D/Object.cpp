@@ -4,11 +4,15 @@ Object::Object(const float x, const float y, const std::string &file, SDL_Render
 	useClip(0),
 	imageH(100),
 	imageW(100),
+	radius(49.f),
 	mass(100)
 {
 	pos.x = x;
 	pos.y = y;
-	sprite = StaticMath::loadTexture(file, ren);
+	sprite = Texture::load(file, ren);
+
+	if (sprite == nullptr)
+		throw std::exception( "shit!" );
 
 	momentum = { 0.f, 0.f };
 
@@ -25,10 +29,26 @@ Object::Object(const float x, const float y, const std::string &file, SDL_Render
 
 }
 
-
 Object::~Object()
 {
 	cleanup(sprite);
+}
+
+Object::Object(const Object & obj) :
+	useClip(obj.useClip),
+	imageH(obj.imageH),
+	imageW(obj.imageW),
+	radius(obj.radius),
+	mass(obj.mass)
+{
+	pos = obj.pos;
+	sprite = obj.sprite;
+
+	if (sprite == nullptr)
+		throw std::exception("shit!");
+
+	momentum = obj.momentum;
+	clips = obj.clips;
 }
 
 void Object::Update(const float DeltaTime)
@@ -49,7 +69,13 @@ void Object::Update(const float DeltaTime)
 	if (pos.y >= SCREEN_HEIGHT - imageH) {
 		momentum.y *= -1;
 	}
-	Print();
+}
+
+void Object::Collision(Vecf2 &v1, Vecf2 &v2)
+{
+	Vecf2 temp{ v1 };
+	v1 = v2;
+	v2 = temp;
 }
 
 void Object::Print()

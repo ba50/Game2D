@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cleanup.h" />
+    <ClInclude Include="Inputs.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="StaticMath.h" />
     <ClInclude Include="Vec2.h" />
