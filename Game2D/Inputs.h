@@ -1,18 +1,22 @@
 #pragma once
 
 #include <queue>
+#include <map>
 
 #include <SDL.h>
 
-#include "Object.h"
+enum class KeyDown {Up, Down, Right, Left, Jump};
+enum class KeyUp { Up, Down, Right, Left, Jump };
 
 class Inputs 
 {
 public:
-	static std::vector<int> events;
+	static std::queue<int> events;
+	static std::map<int, KeyUp> keyup;
+	static std::map<int, KeyDown> keydown;
 
 public:
-	static bool Update(Object *obj)
+	static bool Update()
 	{
 		SDL_Event e;
 		//Event Polling
@@ -22,29 +26,49 @@ public:
 			}
 			//Use number input to select which clip should be drawn
 			if (e.type == SDL_KEYDOWN) {
+
 				switch (e.key.keysym.sym) {
 				case SDLK_UP:
-//					events.push_back(SDLK_UP);
-					obj->useClip = 0;
-					obj->momentum.y -= 1;
+					events.push(SDLK_UP);
 					break;
 				case SDLK_DOWN:
-//					events.push(SDLK_DOWN);
-					obj->useClip = 1;
-					obj->momentum.y += 1;
+					events.push(SDLK_DOWN);
 					break;
 				case SDLK_RIGHT:
-//					events.push(SDLK_RIGHT);
-					obj->useClip = 2;
-					obj->momentum.x += 1;
+					events.push(SDLK_RIGHT);
 					break;
 				case SDLK_LEFT:
-//					events.push(SDLK_LEFT);
-					obj->useClip = 3;
-					obj->momentum.x -= 1;
+					events.push(SDLK_LEFT);
+					break;
+				case SDLK_SPACE:
+					events.push(SDLK_SPACE);
 					break;
 				case SDLK_ESCAPE:
-//					events.push(SDLK_ESCAPE);
+					return true;
+					break;
+				default:
+					break;
+				}
+			}
+			if (e.type == SDL_KEYUP) {
+
+				switch (e.key.keysym.sym) {
+				case SDLK_UP:
+					events.push(SDLK_UP);
+					break;
+				case SDLK_DOWN:
+					events.push(SDLK_DOWN);
+					break;
+				case SDLK_RIGHT:
+					events.push(SDLK_RIGHT);
+					break;
+				case SDLK_LEFT:
+					events.push(SDLK_LEFT);
+					break;
+				case SDLK_SPACE:
+					events.push(SDLK_SPACE);
+					break;
+				case SDLK_ESCAPE:
 					return true;
 					break;
 				default:

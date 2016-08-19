@@ -2,34 +2,31 @@
 
 #include <iostream>
 #include <string>
-#include <math.h>
-#include <vector>
 
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "cleanup.h"
+#include "Camera.h"
 
-#define PI 3.1416
+#define PI 3.1416f
+#define g 9.81f 
 
 //Screen attributes
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
-class Object;
-
-class StaticMath
+namespace Error
 {
-public:
-
 	/*
 	* Log an SDL error with some error message to the output stream of our choice
 	* @param os The output stream to write the message too
 	* @param msg The error message to write, format will be msg error: SDL_GetError()
 	*/
-	static void logSDLError(std::ostream &os, const std::string &msg);
-
-	static bool collison(const Object *obj1,const Object *obj2);
+	static void logSDL(std::ostream &os, const std::string &msg)
+	{
+		os << msg << " error: " << SDL_GetError() << std::endl;
+		throw std::exception("shit!");
+	}
 };
 
 namespace Texture {
@@ -43,7 +40,7 @@ namespace Texture {
 	{
 		SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
 		if (texture == nullptr) {
-			StaticMath::logSDLError(std::cout, "LoadTexture");
+			Error::logSDL(std::cout, "LoadTexture");
 		}
 		return texture;
 	}
@@ -73,18 +70,22 @@ namespace Texture {
 	* @param clip The sub-section of the texture to draw (clipping rect)
 	*		default of nullptr draws the entire texture
 	*/
-	static void render(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, SDL_Rect *clip = nullptr)
+	static void render(SDL_Texture *tex, SDL_Renderer *ren, std::shared_ptr<Object> obj, std::shared_ptr<Camera> cam)
 	{
 		SDL_Rect dst;
-		dst.x = x;
-		dst.y = y;
-		if (clip != nullptr) {
-			dst.w = clip->w;
-			dst.h = clip->h;
+		dst.x = static_cast<int>(obj->position.x - cam->position.x);
+		dst.y = static_cast<int>(obj->position.y);
+
+		if (&obj->clips[obj->useClip] != nullptr) {
+			dst.w = static_cast<int>(obj->width);
+			dst.h = static_cast<int>(obj->height);
 		}
 		else {
 			SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
 		}
-		render(tex, ren, dst, clip);
+
+		render(tex, ren, dst, &obj->clips[obj->useClip]);
+
 	}
+
 };

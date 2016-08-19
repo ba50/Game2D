@@ -1,6 +1,9 @@
 #pragma once
+#include <memory>
 
-#include "StaticMath.h"
+#include "Inputs.h"
+#include "cleanup.h"
+
 #include "Vec2.h"
 
 class Object
@@ -8,24 +11,23 @@ class Object
 public:
 
 	int useClip;
-	int imageH;
-	int imageW;
-	float radius;
+	float height;
+	float width;
 
-	Vecf2 pos;
+	Vecf2 position;
 	SDL_Texture *sprite;
 	std::vector<SDL_Rect> clips;
 
-	float mass;
-	Vecf2 momentum; 
+	Vecf2 velocity;
 
 public:
-	Object(const float x, const float y, const std::string &file, SDL_Renderer *ren);
+	Object();
 	virtual ~Object();
 	Object(const Object &obj);
 
-	void Update(const float DeltaTime);
-	static void Collision(Vecf2 &v1, Vecf2 &v);
-	void Print();
+	virtual void Update(const float DeltaTime) = 0;
+	virtual void Print();
+
+	static bool Collison(std::shared_ptr<Object> obj1, std::shared_ptr<Object> obj2);
 };
 

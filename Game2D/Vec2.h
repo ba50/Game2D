@@ -20,7 +20,7 @@ public:
 	template <typename T2>
 	inline			operator _Vec2< T2 >() const
 	{
-		return{ static_cast<T2>(x),static_cast<T2>(T2)y };
+		return{ static_cast<T2>(x),static_cast<T2>(y) };
 	}
 	inline T		LenSq() const
 	{
@@ -36,6 +36,30 @@ public:
 		vect = *this;
 		*this = temp;
 		return *this;
+	}
+	inline _Vec2	operator-() const
+	{
+		return _Vec2(-x, -y);
+	}
+	inline _Vec2&	operator+=(const _Vec2 &rhs)
+	{
+		this->x += rhs.x;
+		this->y += rhs.y;
+		return *this;
+	}
+	inline _Vec2&	operator-=(const _Vec2 &rhs)
+	{
+		this->x -= rhs.x;
+		this->y -= rhs.y;
+		return *this;
+	}
+	inline _Vec2	operator+(const _Vec2 &rhs) const
+	{
+		return _Vec2(*this) += rhs;
+	}
+	inline _Vec2	operator-(const _Vec2 &rhs) const
+	{
+		return _Vec2(*this) -= rhs;
 	}
 	inline T		operator*(const _Vec2 &rhs) const
 	{

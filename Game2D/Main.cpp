@@ -1,7 +1,11 @@
 #include <memory>
 
-#include "Object.h"
-#include "Inputs.h"
+#include "Character.h"
+#include "Static.h"
+#include "Vec2.h"
+#include "Define.h"
+#include "Camera.h"
+
 #include "cleanup.h"
 
 void cleanUp(SDL_Renderer *renderer, SDL_Window *window);
@@ -13,76 +17,77 @@ int main(int, char**) {
 	try {
 		//Start up SDL and make sure it went ok
 		if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-			StaticMath::logSDLError(std::cout, "SDL_Init");
-			return 1;
+			Error::logSDL(std::cout, "SDL_Init");
 		}
 
 		//Setup our window and renderer
-		window = SDL_CreateWindow("Lesson 5", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow("Game 2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (window == nullptr) {
-			StaticMath::logSDLError(std::cout, "CreateWindow");
-			SDL_Quit();
-			return 1;
+			Error::logSDL(std::cout, "CreateWindow");
 		}
 
 		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		if (renderer == nullptr) {
-			StaticMath::logSDLError(std::cout, "CreateRenderer");
-			cleanup(window);
-			SDL_Quit();
-			return 1;
+			Error::logSDL(std::cout, "CreateRenderer");
 		}
 
-		float x = SCREEN_WIDTH / 2;
-		float y = SCREEN_HEIGHT / 2;
+		//Init camera
+		auto camera = std::make_shared<Camera>(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT));
 
-		std::vector<std::shared_ptr<Object>> objVec;
-		objVec.push_back(std::make_shared<Object>(x + 100, y - 50, "image.png", renderer));
-		objVec.push_back(std::make_shared<Object>(x - 150, y - 50, "image.png", renderer));
+		// Init player
+		float x = SCREEN_WIDTH / 2;
+		float y = SCREEN_HEIGHT /2;
+		auto player = std::make_shared<Character>(x, y, "NpcDark.png", renderer);
+
+		x = 0;
+		y = SCREEN_HEIGHT - 64;
+
+		std::vector<std::shared_ptr<Static>> floorVect;
+		for (int i = 0; i < 15; i++) {
+			floorVect.push_back(std::make_shared<Static>(x+64*i, y, "bkMaze.png", renderer));
+		}
 
 		// std::tuple< bool, Renderer&, Window* >
 		// std::tie( success, renderer, window ) = init();
 
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+
+		//Set background color
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+		//Set time counter
 		float lastTime = 0.f;
 		float DeltaTime;
 		float nowTime;
+
+		//Main loop
 		bool quit = false;
 		while (!quit) {
-
 			nowTime = static_cast<float>(SDL_GetTicks());
 			
-			quit = Inputs::Update(objVec[0].get());
+			quit = Inputs::Update();
 
-//			for (size_t i = 0; i < Inputs::events.size();i++) {
-//				Inputs::events.pop_back();
-//			}
-
-			DeltaTime = (nowTime - lastTime);
-			for (auto& obj : objVec) {
-				obj.get()->Update(DeltaTime);
-			}
-			lastTime = nowTime;
+			camera->MoveTo(player->position);
 
 			//Rendering
 			SDL_RenderClear(renderer);
 
-			//Draw the image
-			for (auto& obj : objVec) {
-				Texture::render(obj.get()->sprite, renderer, static_cast<int>(obj.get()->pos.x), static_cast<int>(obj.get()->pos.y), &obj.get()->clips[obj.get()->useClip]);
+			//Collisios
+			for (auto floor : floorVect) {
+				Object::Collison(player, floor);
 			}
 
-			for (size_t i = 0; i < objVec.size(); i++) {
-				for (size_t j = i; j < objVec.size(); j++) {
-					if (i != j) {
-						if (StaticMath::collison(objVec[i].get(), objVec[j].get())) {
+			//Update player
+			DeltaTime = (nowTime - lastTime) / 1000;
+			lastTime = nowTime;
 
-							Object::Collision(objVec[i].get()->momentum, objVec[j].get()->momentum);
+			player.get()->Update(DeltaTime);
 
-						}
-					}
-				}
+			//Draw the player
+			Texture::render(player.get()->sprite, renderer, player, camera);
+
+			for (auto& floor : floorVect) {
+				Texture::render(floor.get()->sprite, renderer, floor, camera);
 			}
 
 			//Update the screen
