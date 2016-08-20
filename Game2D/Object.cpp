@@ -1,9 +1,7 @@
 #include "Object.h"
 #include "Character.h"
 
-std::queue<int> Inputs::events;
-std::map<int, KeyUp> Inputs::keyup;
-std::map<int, KeyDown> Inputs::keydown;
+std::map<Key, Action> Inputs::key;
 
 Object::Object() :
 	useClip(0),

@@ -5,15 +5,14 @@
 
 #include <SDL.h>
 
-enum class KeyDown {Up, Down, Right, Left, Jump};
-enum class KeyUp { Up, Down, Right, Left, Jump };
+enum class Key { Up, Down, Right, Left, Space };
+enum class Action { Press, Release, Unknown };
 
-class Inputs 
+class Inputs
 {
 public:
-	static std::queue<int> events;
-	static std::map<int, KeyUp> keyup;
-	static std::map<int, KeyDown> keydown;
+	static std::map<Key, Action> key;
+	static std::vector<bool> slope;
 
 public:
 	static bool Update()
@@ -29,24 +28,22 @@ public:
 
 				switch (e.key.keysym.sym) {
 				case SDLK_UP:
-					events.push(SDLK_UP);
+					slope[0] = true;
 					break;
 				case SDLK_DOWN:
-					events.push(SDLK_DOWN);
+					slope[0] = true;
 					break;
 				case SDLK_RIGHT:
-					events.push(SDLK_RIGHT);
+					slope[0] = true;
 					break;
 				case SDLK_LEFT:
-					events.push(SDLK_LEFT);
+					slope[0] = true;
 					break;
 				case SDLK_SPACE:
-					events.push(SDLK_SPACE);
+					slope[0] = true;
 					break;
 				case SDLK_ESCAPE:
 					return true;
-					break;
-				default:
 					break;
 				}
 			}
@@ -54,29 +51,76 @@ public:
 
 				switch (e.key.keysym.sym) {
 				case SDLK_UP:
-					events.push(SDLK_UP);
+					slope[0] = false;
+					slope[1] = true;
 					break;
 				case SDLK_DOWN:
-					events.push(SDLK_DOWN);
+					slope[0] = false;
+					slope[1] = true;
 					break;
 				case SDLK_RIGHT:
-					events.push(SDLK_RIGHT);
+					slope[0] = false;
+					slope[1] = true;
 					break;
 				case SDLK_LEFT:
-					events.push(SDLK_LEFT);
+					slope[0] = false;
+					slope[1] = true;
 					break;
 				case SDLK_SPACE:
-					events.push(SDLK_SPACE);
-					break;
-				case SDLK_ESCAPE:
-					return true;
-					break;
-				default:
+					slope[0] = false;
+					slope[1] = true;
 					break;
 				}
 			}
-		}
 
+			switch (e.key.keysym.sym) {
+			case SDLK_UP:
+				if (slope[0] && !slope[1]) {
+					key[Key::Up] = Action::Press;
+				}
+				if (!slope[0] && slope[1]) {
+					key[Key::Up] = Action::Release;
+				}
+				break;
+			case SDLK_DOWN:
+				if (slope[0] && !slope[1]) {
+					key[Key::Down] = Action::Press;
+				}
+				if (!slope[0] && slope[1]) {
+					key[Key::Down] = Action::Release;
+				}
+				break;
+			case SDLK_RIGHT:
+				if (slope[0] && !slope[1]) {
+					key[Key::Right] = Action::Press;
+				}
+				if (!slope[0] && slope[1]) {
+					key[Key::Right] = Action::Release;
+				}
+				break;
+			case SDLK_LEFT:
+				if (slope[0] && !slope[1]) {
+					key[Key::Left] = Action::Press;
+				}
+				if (!slope[0] && slope[1]) {
+					key[Key::Left] = Action::Release;
+				}
+				break;
+			case SDLK_SPACE:
+				if (slope[0] && !slope[1]) {
+					key[Key::Space] = Action::Press;
+				}
+				if (!slope[0] && slope[1]) {
+					key[Key::Space] = Action::Release;
+				}
+				break;
+			case SDLK_ESCAPE:
+				return true;
+				break;
+			}
+		}
+		slope[0] = false;
+		slope[1] = false;
 		return false;
 	}
 };

@@ -74,10 +74,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Bartek\Documents\Visual Studio 2015\Projects\C++\Game2D\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\barja\Documents\Visual Studio 2015\Projects\C++\Game2D\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\Bartek\Documents\Visual Studio 2015\Projects\C++\Game2D\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\barja\Documents\Visual Studio 2015\Projects\C++\Game2D\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib; SDL2main.lib; SDL2_image.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>

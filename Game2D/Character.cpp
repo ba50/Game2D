@@ -4,6 +4,7 @@
 #include "Camera.h"
 
 std::vector<States> Character::states;
+std::vector<bool> Inputs::slope;
 
 Character::Character(const float x, const float y, const std::string &file, SDL_Renderer *ren) :
 	mass(100)
@@ -29,13 +30,9 @@ Character::Character(const float x, const float y, const std::string &file, SDL_
 		}
 	}
 
-	Inputs::keydown[SDLK_UP] = KeyDown::Up;
-	Inputs::keydown[SDLK_DOWN] = KeyDown::Down;
-	Inputs::keydown[SDLK_RIGHT] = KeyDown::Right;
-	Inputs::keydown[SDLK_LEFT] = KeyDown::Left;
-	Inputs::keydown[SDLK_SPACE] = KeyDown::Jump;
-
 	Character::states.reserve(500);
+	Inputs::slope.push_back(false);
+	Inputs::slope.push_back(false);
 }
 
 Character::~Character()
@@ -72,23 +69,75 @@ void Character::Update(const float DeltaTime)
 		}
 	}
 
-	Character::states.clear();
 
 	//Inputs
-	for (size_t i = 0; i < Inputs::events.size(); i++) {
-		switch (Inputs::keydown[Inputs::events.back()]) {
-		case KeyDown::Right:
-			velocity.x = 100;
+	for (auto it = Inputs::key.begin(); it != Inputs::key.end(); ++it) {
+		switch (it->first) {
+		case Key::Up:
+			switch (it->second)
+			{
+			case Action::Press:
+				break;
+			case Action::Release:
+				it->second = Action::Unknown;
+				break;
+			}
 			break;
-		case KeyDown::Left:
-			velocity.x = -100;
+		case Key::Down:
+			switch (it->second)
+			{
+			case Action::Press:
+				break;
+			case Action::Release:
+				it->second = Action::Unknown;
+				break;
+			}
 			break;
-		case KeyDown::Jump:
-			useClip = 4;
+		case Key::Right:
+			switch (it->second)
+			{
+			case Action::Press:
+				velocity.x += 25;
+				break;
+			case Action::Release:
+				velocity.x = 0.1;
+				it->second = Action::Unknown;
+				break;
+			}
+			break;
+		case Key::Left:
+			switch (it->second)
+			{
+			case Action::Press:
+				velocity.x -= 25;
+				break;
+			case Action::Release:
+				velocity.x = -0.1;
+				it->second = Action::Unknown;
+				break;
+			}
+			break;
+		case Key::Space:
+				switch (it->second)
+				{
+				case Action::Press:
+					if (velocity.x >= 0) {
+						useClip = 5;
+					}
+					else {
+						useClip = 4;
+					}
+					break;
+				case Action::Release:
+					velocity.y = -100;
+					it->second = Action::Unknown;
+					break;
+				}
 			break;
 		}
-		Inputs::events.pop();
 	}
+
+	Character::states.clear();
 
 	position.x += velocity.x*DeltaTime;
 	position.y += velocity.y*DeltaTime;
