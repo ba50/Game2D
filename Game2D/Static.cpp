@@ -21,6 +21,9 @@ Static::Static(const float x, const float y, const std::string & file, SDL_Rende
 	clipTemp.h = static_cast<int>(height);
 
 	clips.push_back(clipTemp);
+
+	collisionBox.x = width/2;
+	collisionBox.y = height/2;
 }
 
 Static::~Static()

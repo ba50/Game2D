@@ -19,6 +19,7 @@ public:
 	std::vector<SDL_Rect> clips;
 
 	Vecf2 velocity;
+	Vecf2 collisionBoxX, collisionBoxY, collisionBox;
 
 public:
 	Object();

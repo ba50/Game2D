@@ -6,14 +6,10 @@
 Camera::Camera(float width, float height) :
 	position({ width,height }),
 	toCenter({ width / 2.f, height / 2.f })
-{
-
-}
+{}
 
 Camera::~Camera() 
-{
-
-}
+{}
 
 Camera::Camera(const Camera &cam)
 {

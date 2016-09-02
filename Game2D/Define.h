@@ -2,17 +2,20 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include <SDL.h>
 #include <SDL_image.h>
 
 #include "Camera.h"
+#include "Character.h"
+#include "Static.h"
 
 #define PI 3.1416f
 #define g 9.81f 
 
 //Screen attributes
-#define SCREEN_WIDTH 800
+#define SCREEN_WIDTH 1270 
 #define SCREEN_HEIGHT 600
 
 namespace Error
@@ -27,7 +30,7 @@ namespace Error
 		os << msg << " error: " << SDL_GetError() << std::endl;
 		throw std::exception("shit!");
 	}
-};
+}
 
 namespace Texture {
 	/*
@@ -74,7 +77,7 @@ namespace Texture {
 	{
 		SDL_Rect dst;
 		dst.x = static_cast<int>(obj->position.x - cam->position.x);
-		dst.y = static_cast<int>(obj->position.y);
+		dst.y = static_cast<int>(obj->position.y - cam->position.y);
 
 		if (&obj->clips[obj->useClip] != nullptr) {
 			dst.w = static_cast<int>(obj->width);
@@ -86,6 +89,43 @@ namespace Texture {
 
 		render(tex, ren, dst, &obj->clips[obj->useClip]);
 
+		//SDL_SetRenderDrawColor(ren, 255, 0, 0, 5);
+		//SDL_Rect test;
+		//test.x = dst.x;
+		//test.y = dst.y;
+		//test.h = obj->collisionBox.y*2;
+		//test.w = obj->collisionBox.x*2;
+		//SDL_RenderFillRect(ren, &test);
+		//SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 	}
 
-};
+}
+
+namespace Map {
+	static void load(const std::string &file, std::shared_ptr<Character> &player, std::vector<std::shared_ptr<Static>> &floorVect, SDL_Renderer *ren){
+		std::ifstream in;
+		in.open(file);
+		std::string buffer;
+		float x=0, y=0;
+		while (!in.eof()) {
+			in >> buffer;
+			for (auto& c : buffer) {
+				if (c != ';') {
+					if (c == '_' || c=='#') {
+						floorVect.push_back(std::make_shared<Static>(x, y, "bkMaze.png", ren));
+					}
+					if (c == '@') {
+						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
+					}
+					x += 64;
+				}
+			}
+			y += 64;
+			x = 0;
+		}
+	}
+}
+
+template <typename T> int sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}

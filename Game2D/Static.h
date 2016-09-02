@@ -6,6 +6,7 @@ class Static :
 	public Object
 {
 public:
+public:
 	Static(const float x, const float y, const std::string &file, SDL_Renderer *ren);
 	virtual ~Static();
 

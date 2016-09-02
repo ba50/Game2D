@@ -36,7 +36,6 @@ bool Object::Collison(std::shared_ptr<Object> obj1, std::shared_ptr<Object> obj2
 
 	if (r.x < sum.x && r.y < sum.y)
 	{
-		Character::states.push_back(States::OnFloor);
 
 		return true;
 	}
