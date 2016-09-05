@@ -55,8 +55,8 @@ void Renderer::RenderPresent()
 void Renderer::render(std::shared_ptr<Object> obj, std::shared_ptr<Camera> cam)
 {
 	SDL_Rect dst;
-	dst.x = static_cast<int>(obj->position.x - cam->position.x);
-	dst.y = static_cast<int>(obj->position.y - cam->position.y);
+	dst.x = static_cast<int>((obj->position.x - obj->width / 2.f) - cam->position.x);
+	dst.y = static_cast<int>((obj->position.y - obj->height / 2.f) - cam->position.y);
 
 	if (&obj->clips[obj->useClip] != nullptr) {
 		dst.w = static_cast<int>(obj->width);

@@ -7,7 +7,7 @@ Swarm::Swarm(const float x, const float y, const std::string & file, std::shared
 {
 	position.x = x;
 	position.y = y;
-	for (int i = 0; i < 20; ++i) {
+	for (int i = 0; i < 150; ++i) {
 		swarm.push_back(std::make_shared<Enemy>(x, y, file, ren));
 	}
 }
@@ -25,14 +25,14 @@ void Swarm::Update(const float deltaTime)
 		r.y = enemy->position.y - position.y;
 		sum.x += enemy->position.x;
 		sum.y += enemy->position.y;
-		if (sqrt(r.x*r.x + r.y * r.y) > 25.f) {
+		if (sqrt(r.x*r.x + r.y * r.y) > 50.f) {
 			enemy->velocity.x = -r.x / 2.f;
 			enemy->velocity.y = -r.y / 2.f;
 		}
 		enemy->Update(deltaTime);
 	}
-	position.x = sum.x / Enemy::counter;
-	position.y = sum.y / Enemy::counter;
+	position.x = sum.x / swarm.size();
+	position.y = sum.y / swarm.size();
 }
 
 void Swarm::Detect(std::shared_ptr<Character> cha)

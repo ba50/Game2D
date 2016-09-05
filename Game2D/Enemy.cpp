@@ -5,12 +5,10 @@
 #include "Define.h"
 #include "Texture.h"
 
-unsigned int Enemy::counter = 0;
-
 Enemy::Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren)
 {
-	width = 16;
-	height = 16;
+	width = 4;
+	height = 4;
 	position.x = x;
 	position.y = y;
 	sprite = std::make_shared<Texture>(file, ren);
@@ -21,8 +19,6 @@ Enemy::Enemy(const float x, const float y, const std::string & file, std::shared
 	collisionBox.y = height / 2;
 
 	velocity = Vecf2{ 0.f, 0.f };
-
-	counter++;
 }
 
 Enemy::~Enemy()
@@ -45,8 +41,8 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 	if (abs(sqrt(r.x*r.x + r.y*r.y)) < 150.f) {
 		currentStates[States::Detect] = true;
 
-		velocity.x = (cha->position.x - position.x)*5.f;
-		velocity.y = (cha->position.y - position.y)*5.f;
+		velocity.x = (cha->position.x - position.x);
+		velocity.y = (cha->position.y - position.y);
 	}
 	else
 	{
@@ -69,37 +65,9 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 
 void Enemy::Collision(std::shared_ptr<Object> obj)
 {
-	if ((position.x - collisionBox.x) < (obj->position.x + obj->collisionBox.x) &&
-		(position.x + collisionBox.x) > (obj->position.x - obj->collisionBox.x) &&
-		((position.y - collisionBox.y)  ) < ((obj->position.y + obj->collisionBox.y)) &&
-		((position.y - collisionBox.y) ) > ((obj->position.y + obj->collisionBox.y) )) {
-//		currentStates[States::CanJumpe] = false;
-		velocity.y *= -1;
+	Vecf2 r{ obj->position.x - position.x, obj->position.y - position.y };
+	if (sqrt(r.x*r.x + r.y*r.y) < (obj->collisionBox.x + collisionBox.x)) {
+		velocity.x = -r.x;
+		velocity.y = -r.y;
 	}
-
-	if ((position.x - collisionBox.x) < (obj->position.x + obj->collisionBox.x) &&
-		(position.x + collisionBox.x) > (obj->position.x - obj->collisionBox.x) &&
-		((position.y + collisionBox.y) ) < ((obj->position.y - obj->collisionBox.y) ) &&
-		((position.y + collisionBox.y) ) > ((obj->position.y - obj->collisionBox.y) )) {
-//		currentStates[States::CanFall] = false;
-//		currentStates[States::OnFloor] = true;
-		velocity.y *= 1;
-	}
-
-	if (((position.x - collisionBox.x)) < ((obj->position.x + obj->collisionBox.x)) &&
-		((position.x - collisionBox.x) ) > ((obj->position.x + obj->collisionBox.x)) &&
-		(position.y - collisionBox.y) < (obj->position.y + obj->collisionBox.y) &&
-		(position.y + collisionBox.y) > (obj->position.y - obj->collisionBox.y)) {
-//		currentStates[States::CanLeft] = false;
-		velocity.x *= -1;
-	}
-
-	if (((position.x + collisionBox.x)) < ((obj->position.x - obj->collisionBox.x) ) &&
-		((position.x + collisionBox.x)) > ((obj->position.x - obj->collisionBox.x) ) &&
-		(position.y - collisionBox.y) < (obj->position.y + obj->collisionBox.y) &&
-		(position.y + collisionBox.y) > (obj->position.y - obj->collisionBox.y)) {
-//		currentStates[States::CanRight] = false;
-		velocity.x *= -1;
-	}
-
 }

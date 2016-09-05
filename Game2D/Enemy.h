@@ -11,7 +11,7 @@ class Enemy :
 public:
 	enum class States {Detect};
 	std::map<States, bool> currentStates;
-	static unsigned int counter;
+	unsigned int counter;
 
 public:
 	Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren);

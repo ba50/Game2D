@@ -37,11 +37,9 @@ namespace Error
 }
 
 namespace Map {
-	static void load(const std::string &file, std::shared_ptr<Character> &player, std::shared_ptr<Swarm> &swarm, std::vector<std::shared_ptr<Static>> &floorVect,
+	static void load(const std::string &file, std::shared_ptr<Character> &player, std::vector<std::shared_ptr<Swarm>> &swarmVect, std::vector<std::shared_ptr<Static>> &floorVect,
 					std::shared_ptr<Static> &backgroung, std::shared_ptr<Renderer> ren) {
 		
-		backgroung = std::make_shared<Static>(SDL_Rect{ 500, 640, 7680, 640}, "BG.png", ren);
-
 		std::ifstream in;
 		in.open(file);
 		std::string buffer;
@@ -58,9 +56,10 @@ namespace Map {
 					}
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
+						backgroung = std::make_shared<Static>(SDL_Rect{ (int)x, (int)y, 7680, 640 }, "BG.png", ren);
 					}
 					if (c == '!') {
-						swarm = std::make_shared<Swarm>(x, y, "bkMaze.png", ren);
+						swarmVect.push_back(std::make_shared<Swarm>(x, y, "bkMaze.png", ren));
 					}
 					x += BLOCK_SIZE;
 				}
