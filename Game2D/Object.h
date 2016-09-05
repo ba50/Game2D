@@ -1,10 +1,14 @@
 #pragma once
+
+#include <vector>
 #include <memory>
 
-#include "Inputs.h"
-#include "cleanup.h"
+#include "SDL.h"
 
 #include "Vec2.h"
+
+class Texture;
+class Renderer;
 
 class Object
 {
@@ -14,10 +18,10 @@ public:
 	float height;
 	float width;
 
-	Vecf2 position;
-	SDL_Texture *sprite;
+	std::shared_ptr<Texture> sprite;
 	std::vector<SDL_Rect> clips;
 
+	Vecf2 position;
 	Vecf2 velocity;
 	Vecf2 collisionBoxX, collisionBoxY, collisionBox;
 
@@ -26,9 +30,7 @@ public:
 	virtual ~Object();
 	Object(const Object &obj);
 
-	virtual void Update(const float DeltaTime) = 0;
+	virtual void Update(const float deltaTime) = 0;
 	virtual void Print();
-
-	static bool Collison(std::shared_ptr<Object> obj1, std::shared_ptr<Object> obj2);
 };
 

@@ -3,10 +3,11 @@
 #include "Camera.h"
 #include "Define.h"
 
-Camera::Camera(float width, float height) :
-	position({ width,height }),
+Camera::Camera(Vecf2 position, float width, float height) :
 	toCenter({ width / 2.f, height / 2.f })
-{}
+{
+	Camera::position.y = (position.y - toCenter.y) + BLOCK_SIZE;
+}
 
 Camera::~Camera() 
 {}
@@ -19,5 +20,11 @@ Camera::Camera(const Camera &cam)
 
 void Camera::MoveTo(Vecf2 newPosition)
 {
-	position = newPosition - toCenter;
+	position.x = newPosition.x - toCenter.x;
+//	if ((newPosition.y-position.y) < 0) {
+//		position.y = newPosition.y - toCenter.y;
+//	}
+//	if ((newPosition.y-position.y) > SCREEN_HEIGHT) {
+//		position.y = newPosition.y - toCenter.y;
+//	}
 }

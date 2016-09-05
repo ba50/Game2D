@@ -10,8 +10,8 @@ public:
 	Vecf2 toCenter;
 
 public:
-	Camera(float width, float height);
-	virtual ~Camera();
+	Camera(Vecf2 position, float width, float height);
+	~Camera();
 	Camera(const Camera &cam);
 
 	void MoveTo(Vecf2 newPosition);
