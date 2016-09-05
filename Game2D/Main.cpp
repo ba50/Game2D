@@ -55,9 +55,14 @@ int main(int, char**) {
 
 			player->Inputs();
 
+			swarm->Detect(player);
+
 			//Collisios
 			for (auto floor : floorVect) {
 				player->Collison(floor);
+	//			for (auto& enemy : swarm->swarm) {
+	//				enemy->Collision(floor);
+	//			}
 			}
 
 			player->Update(deltaTime);

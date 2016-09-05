@@ -11,6 +11,7 @@ class Enemy :
 public:
 	enum class States {Detect};
 	std::map<States, bool> currentStates;
+	static unsigned int counter;
 
 public:
 	Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren);
@@ -19,5 +20,6 @@ public:
 	void Update(const float deltaTime) override;
 	void Detect(std::shared_ptr<Character> cha);
 
+	void Collision(std::shared_ptr<Object> obj);
 };
 

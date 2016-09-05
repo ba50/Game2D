@@ -19,5 +19,6 @@ public:
 	~Swarm();
 
 	void Update(const float deltaTime) override;
+	void Detect(std::shared_ptr<Character> cha);
 };
 
