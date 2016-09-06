@@ -1,11 +1,10 @@
 #pragma once
 
-#include <queue>
 #include <map>
 
 #include <SDL.h>
 
-enum class Key { Up, Down, Right, Left, Space };
+enum class Key { Up, Down, Right, Left, Space, LShift };
 enum class Action { Press, Release, Unknown };
 
 class Inputs
@@ -42,6 +41,9 @@ public:
 				case SDLK_SPACE:
 					slope[0] = true;
 					break;
+				case SDLK_LSHIFT:
+					slope[0] = true;
+					break;
 				case SDLK_ESCAPE:
 					return true;
 					break;
@@ -67,6 +69,10 @@ public:
 					slope[1] = true;
 					break;
 				case SDLK_SPACE:
+					slope[0] = false;
+					slope[1] = true;
+					break;
+				case SDLK_LSHIFT:
 					slope[0] = false;
 					slope[1] = true;
 					break;
@@ -112,6 +118,14 @@ public:
 				}
 				if (!slope[0] && slope[1]) {
 					key[Key::Space] = Action::Release;
+				}
+				break;
+			case SDLK_LSHIFT:
+				if (slope[0] && !slope[1]) {
+					key[Key::LShift] = Action::Press;
+				}
+				if (!slope[0] && slope[1]) {
+					key[Key::LShift] = Action::Release;
 				}
 				break;
 			case SDLK_ESCAPE:

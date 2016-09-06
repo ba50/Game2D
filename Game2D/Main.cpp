@@ -11,18 +11,17 @@
 #include "Inputs.h"
 
 void cleanUp();
+inline bool InSight(const Vecf2 & a, const Vecf2& b);
 
 int main(int, char**) {
 
 	try {
 		
-		auto renderer = std::make_shared<Renderer>();
+		static auto renderer = std::make_shared<Renderer>();
 
 		// Init player
 		std::shared_ptr<Character> player;
-
 		std::vector<std::shared_ptr<Swarm>> swarmVect;
-
 		std::vector<std::shared_ptr<Static>> floorVect;
 		std::shared_ptr<Static> background;
 
@@ -56,18 +55,17 @@ int main(int, char**) {
 			player->Inputs();
 
 			for (auto& swarm : swarmVect) {
-				Vecf2 r{ swarm->position.x - (camera->position.x + SCREEN_WIDTH / 2), swarm->position.y - camera->position.y };
-				if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT) {
+				if (InSight(swarm->position, camera->position)) {
 					swarm->Detect(player);
 				}
 			}
 
 			//Collisios
 			for (auto& floor : floorVect) {
-				Vecf2 r{ floor->position.x - (camera->position.x + SCREEN_WIDTH / 2), floor->position.y - camera->position.y };
-				if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT) {
+				if (InSight(floor->position, camera->position)) {
 						player->Collison(floor);
 						for (auto& swarm : swarmVect) {
+							if(InSight(swarm->position, camera->position))
 							for (auto& enemy : swarm->swarm) {
 								enemy->Collision(floor);
 							}
@@ -78,8 +76,7 @@ int main(int, char**) {
 			player->Update(deltaTime);
 
 			for (auto& swarm : swarmVect) {
-				Vecf2 r{ swarm->position.x - (camera->position.x + SCREEN_WIDTH / 2), swarm->position.y - camera->position.y };
-				if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT) {
+				if (InSight(swarm->position, camera->position)) {
 					swarm->Update(deltaTime);
 				}
 			}
@@ -94,9 +91,8 @@ int main(int, char**) {
 
 			//Draw the Enemy
 			for (auto& swarm : swarmVect) {
-				Vecf2 r{ swarm->position.x - (camera->position.x + SCREEN_WIDTH / 2), swarm->position.y - camera->position.y };
-				if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT) {
-					for (auto& enemy : swarm->swarm) {
+				for (auto& enemy : swarm->swarm) {
+					if (InSight(enemy->position, camera->position)) {
 						renderer->render(enemy, camera);
 					}
 				}
@@ -104,8 +100,7 @@ int main(int, char**) {
 
 			for (auto& floor : floorVect) {
 
-				Vecf2 r{ floor->position.x - (camera->position.x+SCREEN_WIDTH/2), floor->position.y - camera->position.y };
-				if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT) {
+				if (InSight(floor->position, camera->position)) {
 					renderer->render(floor, camera);
 				}
 
@@ -129,4 +124,10 @@ int main(int, char**) {
 void cleanUp() {
 	IMG_Quit();
 	SDL_Quit();
+}
+
+inline bool InSight(const Vecf2 & a, const Vecf2& b) {
+	Vecf2 r{ a.x - (b.x + SCREEN_WIDTH / 2), a.y - b.y };
+	return sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT;
+
 }

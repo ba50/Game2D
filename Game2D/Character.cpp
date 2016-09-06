@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "Inputs.h"
+#include "Bullet.h"
 
 std::vector<bool> Inputs::slope;
 
@@ -124,6 +125,10 @@ void Character::Update(const float deltaTime)
 		velocity.y = -400;
 	}
 
+	if (currentInput[Input::Shot]) {
+		bullet = std::make_shared<Bullet>(position.x, position.y, "bkMaze.png");
+	}
+
 	if (currentStates[States::UpRight]) {
 		currentAnimation = upRightAnimation;
 	}
@@ -224,6 +229,18 @@ void Character::Inputs()
 				break;
 			case Action::Release:
 				currentInput[Input::Jumpe] = false;
+				it->second = Action::Unknown;
+				break;
+			}
+			break;
+		case Key::LShift:
+			switch (it->second)
+			{
+			case Action::Press:
+				currentInput[Input::Shot] = true;
+				break;
+			case Action::Release:
+				currentInput[Input::Shot] = false;
 				it->second = Action::Unknown;
 				break;
 			}
