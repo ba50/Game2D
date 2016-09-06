@@ -6,9 +6,12 @@
 #include "Inputs.h"
 #include "Bullet.h"
 
+#include "Renderer.h"
+
 std::vector<bool> Inputs::slope;
 
-Character::Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> ren)
+Character::Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren) :
+	ren(ren)
 {
 	width = BLOCK_SIZE;
 	height = BLOCK_SIZE;
@@ -33,7 +36,8 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	collisionBoxY.x = (width - 25) / 2;
 	collisionBoxY.y = (height-20) / 2;
 
-	timerAnimation = 0;
+	animationTimer = 0;
+	bulletTimer = 0;
 
 	leftAnimation.push_back(0);
 	leftAnimation.push_back(2);
@@ -53,7 +57,7 @@ Character::Character(const float x, const float y, const std::string &file, std:
 
 	currentAnimation = rightAnimation;
 	itAnimation = currentAnimation.begin();
-
+	currentStates[States::Right] = true;
 }
 
 Character::~Character()
@@ -124,9 +128,17 @@ void Character::Update(const float deltaTime)
 	if (currentStates[States::CanJumpe] && currentInput[Input::Jumpe] && currentStates[States::OnFloor]) {
 		velocity.y = -400;
 	}
+	
+	int i = 0;
+	for (auto& bullet : bulletList) {
+		bullet->Update(deltaTime);
+		if (!bullet->life) {
+			++i;
+		}
+	}
 
-	if (currentInput[Input::Shot]) {
-		bullet = std::make_shared<Bullet>(position.x, position.y, "bkMaze.png");
+	for (; i > 0; --i) {
+		bulletList.pop_front();
 	}
 
 	if (currentStates[States::UpRight]) {
@@ -142,8 +154,8 @@ void Character::Update(const float deltaTime)
 		currentAnimation = leftAnimation;
 	}
 
-	if (timerAnimation >= 0.1f && velocity.x !=0 && currentStates[States::OnFloor]) {
-		timerAnimation = 0.f;
+	if (animationTimer >= 0.1f && velocity.x !=0 && currentStates[States::OnFloor]) {
+		animationTimer = 0.f;
 		++itAnimation;
 	}
 
@@ -154,7 +166,8 @@ void Character::Update(const float deltaTime)
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
 
-	timerAnimation += deltaTime;
+	animationTimer += deltaTime;
+	bulletTimer += deltaTime;
 	useClip = *itAnimation;
 
 
@@ -240,6 +253,7 @@ void Character::Inputs()
 				currentInput[Input::Shot] = true;
 				break;
 			case Action::Release:
+				bulletList.push_back(std::make_shared<Bullet>(position, currentStates[States::Right], "bkMaze.png", ren));
 				currentInput[Input::Shot] = false;
 				it->second = Action::Unknown;
 				break;

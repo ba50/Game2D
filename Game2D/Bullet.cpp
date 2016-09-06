@@ -2,12 +2,12 @@
 #include "Define.h"
 #include "Texture.h"
 
-Bullet::Bullet(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> ren)
+Bullet::Bullet(const Vecf2 position, bool Right, const std::string &file, std::shared_ptr<Renderer> ren):
+	life(true)
 {
 	width = BLOCK_SIZE;
 	height = BLOCK_SIZE;
-	position.x = x;
-	position.y = y;
+	Object::position = position;
 	sprite = std::make_shared<Texture>(file, ren);
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
@@ -15,17 +15,27 @@ Bullet::Bullet(const float x, const float y, const std::string &file, std::share
 	collisionBox.x = width / 2;
 	collisionBox.y = height / 2;
 
-	timer = 10;
+	timer = 75;
+	if (Right) {
+		velocity = Vecf2{ 600.f,0.f };
+	}
+	else
+	{
+		velocity = Vecf2{ -600.f,0.f };
+	}
 }
 
 Bullet::~Bullet()
 {
-
 }
 
 void Bullet::Update(const float deltaTime) {
 	timer--;
+
 	if (timer <= 0) {
-		delete this;
+		life = false;
 	}
+
+	position.x += velocity.x*deltaTime;
+	position.y += velocity.y*deltaTime;
 }

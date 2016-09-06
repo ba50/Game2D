@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "Swarm.h"
 #include "Static.h"
+#include "Bullet.h"
 
 #include "Vec2.h"
 
@@ -17,7 +18,7 @@ int main(int, char**) {
 
 	try {
 		
-		static auto renderer = std::make_shared<Renderer>();
+		auto renderer = std::make_shared<Renderer>();
 
 		// Init player
 		std::shared_ptr<Character> player;
@@ -65,9 +66,16 @@ int main(int, char**) {
 				if (InSight(floor->position, camera->position)) {
 						player->Collison(floor);
 						for (auto& swarm : swarmVect) {
-							if(InSight(swarm->position, camera->position))
-							for (auto& enemy : swarm->swarm) {
-								enemy->Collision(floor);
+							if (InSight(swarm->position, camera->position)) {
+								for (auto& enemy : swarm->swarm) {
+									enemy->Collision(floor);
+									for (auto& bullet : player->bulletList) {
+										if (InSight(bullet->position, camera->position)) {
+											enemy->Collision(bullet);
+										}
+									}
+								}
+								
 							}
 						}
 					}
@@ -88,6 +96,9 @@ int main(int, char**) {
 
 			//Draw the player
 			renderer->render(player, camera);
+			for (auto& bullet : player->bulletList) {
+				renderer->render(bullet, camera);
+			}
 
 			//Draw the Enemy
 			for (auto& swarm : swarmVect) {
@@ -98,6 +109,7 @@ int main(int, char**) {
 				}
 			}
 
+			//Draw floor
 			for (auto& floor : floorVect) {
 
 				if (InSight(floor->position, camera->position)) {

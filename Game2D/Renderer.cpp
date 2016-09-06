@@ -54,18 +54,20 @@ void Renderer::RenderPresent()
 */
 void Renderer::render(std::shared_ptr<Object> obj, std::shared_ptr<Camera> cam)
 {
-	SDL_Rect dst;
-	dst.x = static_cast<int>((obj->position.x - obj->width / 2.f) - cam->position.x);
-	dst.y = static_cast<int>((obj->position.y - obj->height / 2.f) - cam->position.y);
+	if (obj != nullptr) {
+		SDL_Rect dst;
+		dst.x = static_cast<int>((obj->position.x - obj->width / 2.f) - cam->position.x);
+		dst.y = static_cast<int>((obj->position.y - obj->height / 2.f) - cam->position.y);
 
-	if (&obj->clips[obj->useClip] != nullptr) {
-		dst.w = static_cast<int>(obj->width);
-		dst.h = static_cast<int>(obj->height);
-	}
-	else {
-		SDL_QueryTexture(obj->sprite->texture, NULL, NULL, &dst.w, &dst.h);
-	}
+		if (&obj->clips[obj->useClip] != nullptr) {
+			dst.w = static_cast<int>(obj->width);
+			dst.h = static_cast<int>(obj->height);
+		}
+		else {
+			SDL_QueryTexture(obj->sprite->texture, NULL, NULL, &dst.w, &dst.h);
+		}
 
-	SDL_SetTextureBlendMode(obj->sprite->texture,  SDL_BLENDMODE_BLEND);
-	SDL_RenderCopy(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst);
+		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
+		SDL_RenderCopy(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst);
+	}
 }

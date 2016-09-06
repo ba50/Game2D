@@ -4,14 +4,15 @@
 #include <map>
 
 class Character;
+class Bullet;
+class Static;
 
 class Enemy :
 	public Object
 {
 public:
-	enum class States {Detect};
-	std::map<States, bool> currentStates;
 	unsigned int counter;
+	bool life;
 
 public:
 	Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren);
@@ -20,6 +21,8 @@ public:
 	void Update(const float deltaTime) override;
 	void Detect(std::shared_ptr<Character> cha);
 
-	void Collision(std::shared_ptr<Object> obj);
+	void Enemy::Collision(std::shared_ptr<Static> stat);
+	void Enemy::Collision(std::shared_ptr<Bullet> bull);
+
 };
 

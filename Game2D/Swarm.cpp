@@ -7,7 +7,7 @@ Swarm::Swarm(const float x, const float y, const std::string & file, std::shared
 {
 	position.x = x;
 	position.y = y;
-	for (int i = 0; i < 150; ++i) {
+	for (int i = 0; i < 50; ++i) {
 		swarm.push_back(std::make_shared<Enemy>(x, y, file, ren));
 	}
 }
@@ -33,6 +33,17 @@ void Swarm::Update(const float deltaTime)
 	}
 	position.x = sum.x / swarm.size();
 	position.y = sum.y / swarm.size();
+
+	int i = 0;
+	for (auto& enemy : swarm) {
+		if (!enemy->life) {
+			++i;
+		}
+	}
+
+	for (; i > 0; --i) {
+		swarm.pop_front();
+	}
 }
 
 void Swarm::Detect(std::shared_ptr<Character> cha)

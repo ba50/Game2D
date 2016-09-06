@@ -4,8 +4,11 @@
 
 #include "Define.h"
 #include "Texture.h"
+#include "Bullet.h"
+#include "Static.h"
 
-Enemy::Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren)
+Enemy::Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren) :
+	life(true)
 {
 	width = 4;
 	height = 4;
@@ -27,10 +30,6 @@ Enemy::~Enemy()
 
 void Enemy::Update(float deltaTime)
 {
-	if (currentStates[States::Detect]) {
-
-	}
-
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
 }
@@ -39,8 +38,6 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 {
 	Vecf2 r{ cha->position - position };
 	if (abs(sqrt(r.x*r.x + r.y*r.y)) < 150.f) {
-		currentStates[States::Detect] = true;
-
 		velocity.x = (cha->position.x - position.x);
 		velocity.y = (cha->position.y - position.y);
 	}
@@ -63,11 +60,20 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 	}
 }
 
-void Enemy::Collision(std::shared_ptr<Object> obj)
+void Enemy::Collision(std::shared_ptr<Static> stat)
 {
-	Vecf2 r{ obj->position.x - position.x, obj->position.y - position.y };
-	if (sqrt(r.x*r.x + r.y*r.y) < (obj->collisionBox.x + collisionBox.x)) {
+	Vecf2 r{ stat->position.x - position.x, stat->position.y - position.y };
+	if (sqrt(r.x*r.x + r.y*r.y) < (stat->collisionBox.x + collisionBox.x)) {
 		velocity.x = -r.x;
 		velocity.y = -r.y;
 	}
 }
+
+void Enemy::Collision(std::shared_ptr<Bullet> bull)
+{
+	Vecf2 r{ bull->position.x - position.x, bull->position.y - position.y };
+	if (sqrt(r.x*r.x + r.y*r.y) < (bull->collisionBox.x + collisionBox.x)) {
+		life = false;
+	}
+}
+

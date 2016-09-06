@@ -6,6 +6,8 @@
 #include "Object.h"
 
 class Bullet;
+class Renderer;
+
 
 class Character :
 	public Object
@@ -20,12 +22,14 @@ public:
 
 	std::list<int> leftAnimation, rightAnimation, upLeftAnimation, upRightAnimation, currentAnimation;
 	std::list<int>::iterator itAnimation;
-	float timerAnimation;
+	float animationTimer, bulletTimer;
 
-	std::shared_ptr<Bullet> bullet;
+	std::list<std::shared_ptr<Bullet>> bulletList;
+
+	std::shared_ptr<Renderer> ren;
 
 public:
-	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> ren);
+	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
 	~Character();
 
 	void Update(const float deltaTime) override;
