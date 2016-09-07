@@ -34,15 +34,21 @@ void Swarm::Update(const float deltaTime)
 	position.x = sum.x / swarm.size();
 	position.y = sum.y / swarm.size();
 
-	int i = 0;
-	for (auto& enemy : swarm) {
-		if (!enemy->life) {
-			++i;
+
+	for (auto it = swarm.begin(); it != swarm.end(); ++it)
+	{
+		if (!it->get()->life) {
+			toDelete.push_back(it);
 		}
 	}
 
-	for (; i > 0; --i) {
-		swarm.pop_front();
+	for (auto& it : toDelete)
+	{
+		swarm.erase(it);
+	}
+
+	if (!toDelete.empty()) {
+		toDelete.clear();
 	}
 }
 

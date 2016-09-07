@@ -64,21 +64,23 @@ int main(int, char**) {
 			//Collisios
 			for (auto& floor : floorVect) {
 				if (InSight(floor->position, camera->position)) {
-						player->Collison(floor);
-						for (auto& swarm : swarmVect) {
-							if (InSight(swarm->position, camera->position)) {
-								for (auto& enemy : swarm->swarm) {
-									enemy->Collision(floor);
-									for (auto& bullet : player->bulletList) {
-										if (InSight(bullet->position, camera->position)) {
-											enemy->Collision(bullet);
-										}
-									}
-								}
-								
-							}
+					player->Collison(floor);
+					for (auto& swarm : swarmVect) {
+						for (auto& enemy : swarm->swarm) {
+							enemy->Collision(floor);
 						}
 					}
+				}
+			}
+
+			for (auto& swarm : swarmVect) {
+				if (InSight(swarm->position, camera->position)) {
+					for (auto& enemy : swarm->swarm) {
+						for (auto& bullet : player->bulletList) {
+							enemy->Collision(bullet);
+						}
+					}
+				}
 			}
 
 			player->Update(deltaTime);
