@@ -18,8 +18,8 @@
 #define g 9.81f 
 
 //Screen attributes
-#define SCREEN_WIDTH 1260 
-#define SCREEN_HEIGHT 640
+#define SCREEN_WIDTH 1068
+#define SCREEN_HEIGHT 600
 #define BLOCK_SIZE 64;
 
 namespace Error

@@ -17,6 +17,7 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	height = BLOCK_SIZE;
 	position.x = x;
 	position.y = y;
+	velocityMax = Vecf2{ 400.f,350.f };
 	sprite = std::make_shared<Texture>(file, ren);
 
 	for (int i = 0; i < 11; ++i) {
@@ -92,12 +93,16 @@ void Character::Update(const float deltaTime)
 	}
 
 	if (currentStates[States::CanRight] && currentInput[Input::Right]) {
-		velocity.x = 400;
+		if (abs(velocity.x) < velocityMax.x) {
+			velocity.x += 50;
+		}
 		currentStates[States::Right] = true;
 		currentStates[States::Left] = false;
 	}
 	else if (currentStates[States::CanLeft] && currentInput[Input::Left]) {
-		velocity.x = -400;
+		if (abs(velocity.x) < velocityMax.x) {
+			velocity.x -= 50;
+		}
 		currentStates[States::Right] = false;
 		currentStates[States::Left] = true;
 	}
@@ -125,8 +130,18 @@ void Character::Update(const float deltaTime)
 
 	}
 
-	if (currentStates[States::CanJumpe] && currentInput[Input::Jumpe] && currentStates[States::OnFloor]) {
-		velocity.y = -400;
+	if ((currentStates[States::CanJumpe] && currentInput[Input::Jumpe] 
+		&& !currentStates[States::CanFall] && currentStates[States::OnFloor]) 
+		|| (tempe_AccelY && currentInput[Input::Jumpe])) {
+		if (abs(velocity.y) < velocityMax.y)
+		{
+			velocity.y -= 50;
+			currentStates[States::OnFloor] = false;
+			tempe_AccelY = true;
+		}
+		else {
+			tempe_AccelY = false;
+		}
 	}
 	
 	int i = 0;
@@ -154,7 +169,7 @@ void Character::Update(const float deltaTime)
 		currentAnimation = leftAnimation;
 	}
 
-	if (animationTimer >= 0.1f && velocity.x !=0 && currentStates[States::OnFloor]) {
+	if (animationTimer >= 0.1f && velocity.x !=0 && !currentStates[States::CanFall]) {
 		animationTimer = 0.f;
 		++itAnimation;
 	}
@@ -175,7 +190,6 @@ void Character::Update(const float deltaTime)
 	currentStates[States::CanJumpe] = true;
 	currentStates[States::CanRight] = true;
 	currentStates[States::CanLeft] = true;
-	currentStates[States::OnFloor] = false;
 }
 
 void Character::Inputs()
@@ -234,7 +248,7 @@ void Character::Inputs()
 				break;
 			}
 			break;
-		case Key::Space:
+		case Key::Z:
 			switch (it->second)
 			{
 			case Action::Press:
@@ -242,18 +256,19 @@ void Character::Inputs()
 				break;
 			case Action::Release:
 				currentInput[Input::Jumpe] = false;
+				currentStates[States::OnFloor] = true;
 				it->second = Action::Unknown;
 				break;
 			}
 			break;
-		case Key::LShift:
+		case Key::X:
 			switch (it->second)
 			{
 			case Action::Press:
 				currentInput[Input::Shot] = true;
 				break;
 			case Action::Release:
-				bulletList.push_back(std::make_shared<Bullet>(position, currentStates[States::Right], "bkMaze.png", ren));
+				bulletList.push_back(std::make_shared<Bullet>(position, currentStates[States::Right], "Bullet.png", ren));
 				currentInput[Input::Shot] = false;
 				it->second = Action::Unknown;
 				break;
@@ -277,7 +292,6 @@ void Character::Collison(std::shared_ptr<Object> obj)
 		((position.y + collisionBoxY.y) - 4.f) < ((obj->position.y - obj->collisionBox.y) + 4.f) &&
 		((position.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 4.f)) {
 		currentStates[States::CanFall] = false;
-		currentStates[States::OnFloor] = true;
 	}
 
 	if (((position.x - collisionBoxX.x) - 4.f) < ((obj->position.x + obj->collisionBox.x) + 4.f) &&

@@ -4,7 +4,7 @@
 
 #include <SDL.h>
 
-enum class Key { Up, Down, Right, Left, Space, LShift };
+enum class Key { Up, Down, Right, Left, Z, X };
 enum class Action { Press, Release, Unknown };
 
 class Inputs
@@ -38,10 +38,10 @@ public:
 				case SDLK_LEFT:
 					slope[0] = true;
 					break;
-				case SDLK_SPACE:
+				case SDLK_z:
 					slope[0] = true;
 					break;
-				case SDLK_LSHIFT:
+				case SDLK_x:
 					slope[0] = true;
 					break;
 				case SDLK_ESCAPE:
@@ -68,11 +68,11 @@ public:
 					slope[0] = false;
 					slope[1] = true;
 					break;
-				case SDLK_SPACE:
+				case SDLK_z:
 					slope[0] = false;
 					slope[1] = true;
 					break;
-				case SDLK_LSHIFT:
+				case SDLK_x:
 					slope[0] = false;
 					slope[1] = true;
 					break;
@@ -112,20 +112,20 @@ public:
 					key[Key::Left] = Action::Release;
 				}
 				break;
-			case SDLK_SPACE:
+			case SDLK_z:
 				if (slope[0] && !slope[1]) {
-					key[Key::Space] = Action::Press;
+					key[Key::Z] = Action::Press;
 				}
 				if (!slope[0] && slope[1]) {
-					key[Key::Space] = Action::Release;
+					key[Key::Z] = Action::Release;
 				}
 				break;
-			case SDLK_LSHIFT:
+			case SDLK_x:
 				if (slope[0] && !slope[1]) {
-					key[Key::LShift] = Action::Press;
+					key[Key::X] = Action::Press;
 				}
 				if (!slope[0] && slope[1]) {
-					key[Key::LShift] = Action::Release;
+					key[Key::X] = Action::Release;
 				}
 				break;
 			case SDLK_ESCAPE:

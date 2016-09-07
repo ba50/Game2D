@@ -5,8 +5,8 @@
 Bullet::Bullet(const Vecf2 position, bool Right, const std::string &file, std::shared_ptr<Renderer> ren):
 	life(true)
 {
-	width = BLOCK_SIZE;
-	height = BLOCK_SIZE;
+	width = 16;
+	height = 16;
 	Object::position = position;
 	sprite = std::make_shared<Texture>(file, ren);
 
@@ -15,7 +15,7 @@ Bullet::Bullet(const Vecf2 position, bool Right, const std::string &file, std::s
 	collisionBox.x = width / 2;
 	collisionBox.y = height / 2;
 
-	timer = 75;
+	timer = 45;
 	if (Right) {
 		velocity = Vecf2{ 600.f,0.f };
 	}

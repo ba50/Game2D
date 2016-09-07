@@ -13,12 +13,14 @@ class Character :
 	public Object
 {
 public:
+	Vecf2 velocityMax;
 
 	enum class States { OnFloor, CanFall, CanJumpe, CanLeft, CanRight, Left, Right, Down, UpLeft, UpRight };
 	enum class Input { Shot, Jumpe, Left, Right, Down, Up };
 
 	std::map<States, bool> currentStates;
 	std::map<Input, bool> currentInput;
+	bool tempe_AccelY;
 
 	std::list<int> leftAnimation, rightAnimation, upLeftAnimation, upRightAnimation, currentAnimation;
 	std::list<int>::iterator itAnimation;
