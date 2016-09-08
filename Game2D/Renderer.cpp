@@ -23,6 +23,8 @@ Renderer::Renderer()
 	if (ren == nullptr) {
 		Error::logSDL(std::cout, "CreateRenderer");
 	}
+
+	camera = std::make_shared<Camera>(Vecf2{ 0.f,0.f }, static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT));
 }
 
 Renderer::~Renderer()
@@ -52,12 +54,13 @@ void Renderer::RenderPresent()
 * @param clip The sub-section of the texture to draw (clipping rect)
 *		default of nullptr draws the entire texture
 */
-void Renderer::render(std::shared_ptr<Object> obj, std::shared_ptr<Camera> cam)
+
+void Renderer::render(Object * obj, Vecf2 scale)
 {
 	if (obj != nullptr) {
 		SDL_Rect dst;
-		dst.x = static_cast<int>((obj->position.x - obj->width / 2.f) - cam->position.x);
-		dst.y = static_cast<int>((obj->position.y - obj->height / 2.f) - cam->position.y);
+		dst.x = static_cast<int>(((obj->position.x - obj->width / 2.f) - camera->position.x)/scale.x);
+		dst.y = static_cast<int>(((obj->position.y - obj->height / 2.f) - camera->position.y)/scale.y);
 
 		if (&obj->clips[obj->useClip] != nullptr) {
 			dst.w = static_cast<int>(obj->width);
@@ -67,6 +70,7 @@ void Renderer::render(std::shared_ptr<Object> obj, std::shared_ptr<Camera> cam)
 			SDL_QueryTexture(obj->sprite->texture, NULL, NULL, &dst.w, &dst.h);
 		}
 
+		SDL_RenderSetScale(ren, scale.x, scale.y);
 		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
 		SDL_RenderCopy(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst);
 	}

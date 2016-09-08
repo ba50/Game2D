@@ -9,6 +9,7 @@
 
 class Texture;
 class Renderer;
+class Camera;
 
 class Object
 {
@@ -18,19 +19,22 @@ public:
 	float height;
 	float width;
 
+	std::shared_ptr<Renderer> ren;
 	std::shared_ptr<Texture> sprite;
 	std::vector<SDL_Rect> clips;
 
 	Vecf2 position;
 	Vecf2 velocity;
 	Vecf2 collisionBoxX, collisionBoxY, collisionBox;
+	
+	bool collidable;
 
 public:
-	Object();
+	Object(const std::shared_ptr<Renderer> &ren);
 	virtual ~Object();
 	Object(const Object &obj);
 
 	virtual void Update(const float deltaTime) = 0;
+	virtual void Draw() = 0;
 	virtual void Print();
 };
-

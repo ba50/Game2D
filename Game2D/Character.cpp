@@ -1,24 +1,22 @@
 #include "Character.h"
 
-#include "Define.h"
-#include "Camera.h"
-#include "Texture.h"
 #include "Inputs.h"
-#include "Bullet.h"
+#include "Define.h"
+#include "Texture.h"
 
-#include "Renderer.h"
+#include "Bullet.h"
 
 std::vector<bool> Inputs::slope;
 
 Character::Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	ren(ren)
+	Object(ren)
 {
 	width = BLOCK_SIZE;
 	height = BLOCK_SIZE;
 	position.x = x;
 	position.y = y;
-	velocityMax = Vecf2{ 400.f,350.f };
-	sprite = std::make_shared<Texture>(file, ren);
+	velocityMax = Vecf2{ 400.f,400.f };
+	sprite = std::make_shared<Texture>(file, Object::ren);
 
 	for (int i = 0; i < 11; ++i) {
 		for (int j = 0; j < 2; ++j) {
@@ -31,11 +29,11 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
-	collisionBoxX.x = (width-18) / 2;
+	collisionBoxX.x = (width - 18) / 2;
 	collisionBoxX.y = (height - 25) / 2;
 
 	collisionBoxY.x = (width - 25) / 2;
-	collisionBoxY.y = (height-20) / 2;
+	collisionBoxY.y = (height - 20) / 2;
 
 	animationTimer = 0;
 	bulletTimer = 0;
@@ -59,6 +57,8 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	currentAnimation = rightAnimation;
 	itAnimation = currentAnimation.begin();
 	currentStates[States::Right] = true;
+	currentStates[States::OnFloor] = true;
+
 }
 
 Character::~Character()
@@ -92,25 +92,33 @@ void Character::Update(const float deltaTime)
 		currentStates[States::UpLeft] = false;
 	}
 
-	if (currentStates[States::CanRight] && currentInput[Input::Right]) {
+	if (currentInput[Input::Right]) {
+		if (velocity.x < 0) {
+			velocity.x = 0;
+		}
+
 		if (abs(velocity.x) < velocityMax.x) {
 			velocity.x += 50;
 		}
 		currentStates[States::Right] = true;
 		currentStates[States::Left] = false;
 	}
-	else if (currentStates[States::CanLeft] && currentInput[Input::Left]) {
+	else if (currentInput[Input::Left]) {
+		if (velocity.x > 0) {
+			velocity.x = 0;
+		}
+
 		if (abs(velocity.x) < velocityMax.x) {
 			velocity.x -= 50;
 		}
 		currentStates[States::Right] = false;
 		currentStates[States::Left] = true;
 	}
-	else if(currentStates[States::OnFloor]){
+	else if (!currentStates[States::CanFall]) {
 		if (velocity.x > 10 && currentStates[States::CanRight]) {
 			velocity.x -= 25;
 		}
-		else if (velocity.x < -10 && currentStates[States::CanLeft]) {
+		else if (velocity.x < -10) {
 			velocity.x += 25;
 		}
 		else {
@@ -118,7 +126,7 @@ void Character::Update(const float deltaTime)
 		}
 	}
 	else {
-		if (velocity.x > 10 && currentStates[States::CanRight]) {
+		if (velocity.x > 10){
 			velocity.x -= 8;
 		}
 		else if (velocity.x < -10 && currentStates[States::CanLeft]) {
@@ -127,23 +135,17 @@ void Character::Update(const float deltaTime)
 		else {
 			velocity.x = 0;
 		}
-
 	}
 
-	if ((currentStates[States::CanJumpe] && currentInput[Input::Jumpe] 
-		&& !currentStates[States::CanFall] && currentStates[States::OnFloor]) 
-		|| (tempe_AccelY && currentInput[Input::Jumpe])) {
+	if (currentStates[States::CanJumpe] && currentInput[Input::Jumpe] && !currentStates[States::CanFall] && currentStates[States::OnFloor]){
 		if (abs(velocity.y) < velocityMax.y)
 		{
-			velocity.y -= 50;
+			velocity.y = -400;
 			currentStates[States::OnFloor] = false;
-			tempe_AccelY = true;
-		}
-		else {
-			tempe_AccelY = false;
+			currentStates[States::InAir] = true;
 		}
 	}
-	
+
 	int i = 0;
 	for (auto& bullet : bulletList) {
 		bullet->Update(deltaTime);
@@ -169,7 +171,7 @@ void Character::Update(const float deltaTime)
 		currentAnimation = leftAnimation;
 	}
 
-	if (animationTimer >= 0.1f && velocity.x !=0 && !currentStates[States::CanFall]) {
+	if (animationTimer >= 0.1f && velocity.x != 0 && !currentStates[States::CanFall]) {
 		animationTimer = 0.f;
 		++itAnimation;
 	}
@@ -177,9 +179,22 @@ void Character::Update(const float deltaTime)
 	if (itAnimation == currentAnimation.end()) {
 		itAnimation = currentAnimation.begin();
 	}
+	
+	if (velocity.x > 0 && currentStates[States::CanRight]) {
+		position.x += velocity.x*deltaTime;
+	}
+	
+	if (velocity.x < 0 && currentStates[States::CanLeft]) {
+		position.x += velocity.x*deltaTime;
+	}
 
-	position.x += velocity.x*deltaTime;
-	position.y += velocity.y*deltaTime;
+	if (velocity.y > 0 && currentStates[States::CanFall]) {
+		position.y += velocity.y*deltaTime;
+	}
+
+	if (velocity.y < 0 && currentStates[States::CanJumpe]) {
+		position.y += velocity.y*deltaTime;
+	}
 
 	animationTimer += deltaTime;
 	bulletTimer += deltaTime;
@@ -190,6 +205,14 @@ void Character::Update(const float deltaTime)
 	currentStates[States::CanJumpe] = true;
 	currentStates[States::CanRight] = true;
 	currentStates[States::CanLeft] = true;
+}
+
+void Character::Draw()
+{
+	ren->render(this);
+	for (auto& bullet : bulletList) {
+		bullet->Draw();
+	}
 }
 
 void Character::Inputs()
@@ -280,32 +303,35 @@ void Character::Inputs()
 
 void Character::Collison(std::shared_ptr<Object> obj)
 {
-	if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
-		(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
-		((position.y - collisionBoxY.y) - 4.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
-		((position.y - collisionBoxY.y) + 4.f) > ((obj->position.y + obj->collisionBox.y) - 4.f)) {
-		currentStates[States::CanJumpe] = false;
-	}
+	if (obj->collidable)
+	{
+		if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
+			(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
+			((position.y - collisionBoxY.y) - 6.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
+			((position.y - collisionBoxY.y) + 4.f) > ((obj->position.y + obj->collisionBox.y) - 6.f)) {
+			currentStates[States::CanJumpe] = false;
+		}
 
-	if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
-		(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
-		((position.y + collisionBoxY.y) - 4.f) < ((obj->position.y - obj->collisionBox.y) + 4.f) &&
-		((position.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 4.f)) {
-		currentStates[States::CanFall] = false;
-	}
+		if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
+			(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
+			((position.y + collisionBoxY.y) - 6.f) < ((obj->position.y - obj->collisionBox.y) + 4.f) &&
+			((position.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 6.f)) {
+			currentStates[States::CanFall] = false;
+			currentStates[States::InAir]=false;
+		}
 
-	if (((position.x - collisionBoxX.x) - 4.f) < ((obj->position.x + obj->collisionBox.x) + 4.f) &&
-		((position.x - collisionBoxX.x) + 4.f) > ((obj->position.x + obj->collisionBox.x) - 4.f) &&
-		(position.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
-		(position.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
-		currentStates[States::CanLeft] = false;
-	}
+		if (((position.x - collisionBoxX.x) - 4.f) < ((obj->position.x + obj->collisionBox.x) + 6.f) &&
+			((position.x - collisionBoxX.x) + 4.f) > ((obj->position.x + obj->collisionBox.x) - 4.f) &&
+			(position.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
+			(position.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
+			currentStates[States::CanLeft] = false;
+		}
 
-	if (((position.x + collisionBoxX.x) - 4.f) < ((obj->position.x - obj->collisionBox.x) + 4.f) &&
-		((position.x + collisionBoxX.x) + 4.f) > ((obj->position.x - obj->collisionBox.x) - 4.f) &&
-		(position.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
-		(position.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
-		currentStates[States::CanRight] = false;
+		if (((position.x + collisionBoxX.x) - 4.f) < ((obj->position.x - obj->collisionBox.x) + 4.f) &&
+			((position.x + collisionBoxX.x) + 4.f) > ((obj->position.x - obj->collisionBox.x) - 5.f) &&
+			(position.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
+			(position.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
+			currentStates[States::CanRight] = false;
+		}
 	}
-
 }

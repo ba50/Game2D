@@ -13,6 +13,8 @@ public:
 	SDL_Window *win;
 	SDL_Renderer *ren;
 
+	std::shared_ptr<Camera> camera;
+
 public:
 	Renderer();
 	~Renderer();
@@ -20,6 +22,6 @@ public:
 	void Clear();
 	void RenderPresent();
 
-	void render(std::shared_ptr<Object> obj, std::shared_ptr<Camera> cam);
+	void render(Object * obj, Vecf2 scale = Vecf2{ 1.f,1.f });
 
 };

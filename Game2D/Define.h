@@ -48,18 +48,22 @@ namespace Map {
 			in >> buffer;
 			for (auto& c : buffer) {
 				if (c != ';') {
-					if (c == '_' || c=='#') {
-						floorVect.push_back(std::make_shared<Static>(x, y, "bkBlue.png", ren));
+					if (c == '_' || c=='|') {
+						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren, true));
+					}
+					if (c=='#') {
+						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren));
 					}
 					if (c == 'W') {
-						floorVect.push_back(std::make_shared<Static>(x, y, "bkWater.png", ren));
+						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkWater.png", ren));
 					}
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
 						backgroung = std::make_shared<Static>(SDL_Rect{ (int)x, (int)y, 7680, 640 }, "BG.png", ren);
+						ren->camera->position = Vecf2{ x,y };
 					}
 					if (c == '!') {
-						swarmVect.push_back(std::make_shared<Swarm>(x, y, "bkMaze.png", ren));
+						swarmVect.push_back(std::make_shared<Swarm>(Vecf2{ x,y }, "bkMaze.png", ren));
 					}
 					x += BLOCK_SIZE;
 				}
@@ -68,6 +72,7 @@ namespace Map {
 			x = 0;
 		}
 	}
+
 }
 
 template <typename T> int sgn(T val) {

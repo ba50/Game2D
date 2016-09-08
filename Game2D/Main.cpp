@@ -1,23 +1,20 @@
+#include "Vec2.h"
 #include "Renderer.h"
+#include "Define.h"
+#include "Inputs.h"
 
 #include "Character.h"
-#include "Swarm.h"
 #include "Static.h"
-#include "Bullet.h"
-
-#include "Vec2.h"
-
-#include "Define.h"
-#include "Camera.h"
-#include "Inputs.h"
+#include "Swarm.h"
 
 void cleanUp();
 inline bool InSight(const Vecf2 & a, const Vecf2& b);
+inline float rand(float start, float stop);
 
 int main(int, char**) {
 
 	try {
-		
+
 		auto renderer = std::make_shared<Renderer>();
 
 		// Init player
@@ -29,9 +26,6 @@ int main(int, char**) {
 		//Load Map
 		Map::load("level1.csv", player, swarmVect, floorVect, background, renderer);
 
-		//Init camera
-		auto camera = std::make_shared<Camera>(player->position, static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT));
-
 		//Set time counter
 		float lastTime = 0.f;
 		float deltaTime;
@@ -41,10 +35,8 @@ int main(int, char**) {
 		bool quit = false;
 		while (!quit) {
 			nowTime = static_cast<float>(SDL_GetTicks());
-			
-			quit = Inputs::Update();
 
-			camera->MoveTo(player->position);
+			quit = Inputs::Update();
 
 			//Rendering
 			renderer->Clear();
@@ -56,26 +48,28 @@ int main(int, char**) {
 			player->Inputs();
 
 			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, camera->position)) {
+				if (InSight(swarm->position, renderer->camera->position)) {
 					swarm->Detect(player);
 				}
 			}
 
 			//Collisios
 			for (auto& floor : floorVect) {
-				if (InSight(floor->position, camera->position)) {
+				if (InSight(floor->position, renderer->camera->position)) {
 					player->Collison(floor);
 					for (auto& swarm : swarmVect) {
-						for (auto& enemy : swarm->swarm) {
-							enemy->Collision(floor);
+						if (InSight(swarm->position, renderer->camera->position)) {
+							for (auto& enemy : swarm->enemyList) {
+								enemy->Collision(floor);
+							}
 						}
 					}
 				}
 			}
 
 			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, camera->position)) {
-					for (auto& enemy : swarm->swarm) {
+				if (InSight(swarm->position, renderer->camera->position)) {
+					for (auto& enemy : swarm->enemyList) {
 						for (auto& bullet : player->bulletList) {
 							enemy->Collision(bullet);
 						}
@@ -83,10 +77,12 @@ int main(int, char**) {
 				}
 			}
 
+			renderer->camera->MoveTo(player, deltaTime);
+
 			player->Update(deltaTime);
 
 			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, camera->position)) {
+				if (InSight(swarm->position, renderer->camera->position)) {
 					swarm->Update(deltaTime);
 				}
 			}
@@ -94,36 +90,31 @@ int main(int, char**) {
 			background->position.x = player->position.x * 0.3f;
 
 			//Draw backgrounde
-			renderer->render(background, camera);
+			background->Draw();
 
 			//Draw the player
-			renderer->render(player, camera);
-			for (auto& bullet : player->bulletList) {
-				renderer->render(bullet, camera);
-			}
+			player->Draw();
+
 
 			//Draw the Enemy
 			for (auto& swarm : swarmVect) {
-				for (auto& enemy : swarm->swarm) {
-					if (InSight(enemy->position, camera->position)) {
-						renderer->render(enemy, camera);
-					}
+				if (InSight(swarm->position, renderer->camera->position)) {
+					swarm->Draw();
 				}
 			}
 
 			//Draw floor
 			for (auto& floor : floorVect) {
-
-				if (InSight(floor->position, camera->position)) {
-					renderer->render(floor, camera);
+				if (InSight(floor->position, renderer->camera->position)) {
+					floor->Draw();
 				}
-
 			}
 
 			//Update the screen
 			renderer->RenderPresent();
 		}
-	} catch (...) {
+	}
+	catch (...) {
 		cleanUp();
 		system("pause");
 		return 1;
@@ -142,6 +133,10 @@ void cleanUp() {
 
 inline bool InSight(const Vecf2 & a, const Vecf2& b) {
 	Vecf2 r{ a.x - (b.x + SCREEN_WIDTH / 2), a.y - b.y };
-	return sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT;
+	return sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT + 75;
 
+}
+
+inline float rand(float start, float stop) {
+	return start+static_cast<float>(((stop - start)*rand()) / (RAND_MAX + 1.0));
 }

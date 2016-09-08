@@ -3,12 +3,12 @@
 #include "Character.h"
 
 
-Swarm::Swarm(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren)
+Swarm::Swarm(Vecf2 position, const std::string & file, const std::shared_ptr<Renderer> ren) :
+	Object(ren)
 {
-	position.x = x;
-	position.y = y;
+	Object::position = position;
 	for (int i = 0; i < 50; ++i) {
-		swarm.push_back(std::make_shared<Enemy>(x, y, file, ren));
+		enemyList.push_back(std::make_shared<Enemy>(position, file, Object::ren));
 	}
 }
 
@@ -20,22 +20,22 @@ Swarm::~Swarm()
 void Swarm::Update(const float deltaTime)
 {
 	Vecf2 r, sum{ 0.f,0.f };
-	for (auto& enemy : swarm) {
+	for (auto& enemy : enemyList) {
 		r.x = enemy->position.x - position.x;
 		r.y = enemy->position.y - position.y;
 		sum.x += enemy->position.x;
 		sum.y += enemy->position.y;
-		if (sqrt(r.x*r.x + r.y * r.y) > 50.f) {
-			enemy->velocity.x = -r.x / 2.f;
-			enemy->velocity.y = -r.y / 2.f;
+		if (sqrt(r.x*r.x + r.y * r.y) > 25.f) {
+			enemy->velocity.x = -r.x;
+			enemy->velocity.y = -r.y;
 		}
 		enemy->Update(deltaTime);
 	}
-	position.x = sum.x / swarm.size();
-	position.y = sum.y / swarm.size();
+	position.x = sum.x / enemyList.size();
+	position.y = sum.y / enemyList.size();
 
 
-	for (auto it = swarm.begin(); it != swarm.end(); ++it)
+	for (auto it = enemyList.begin(); it != enemyList.end(); ++it)
 	{
 		if (!it->get()->life) {
 			toDelete.push_back(it);
@@ -44,7 +44,7 @@ void Swarm::Update(const float deltaTime)
 
 	for (auto& it : toDelete)
 	{
-		swarm.erase(it);
+		enemyList.erase(it);
 	}
 
 	if (!toDelete.empty()) {
@@ -52,9 +52,16 @@ void Swarm::Update(const float deltaTime)
 	}
 }
 
+void Swarm::Draw()
+{
+	for (auto& enemy : enemyList) {
+		enemy->Draw();
+	}
+}
+
 void Swarm::Detect(std::shared_ptr<Character> cha)
 {
-	for (auto& enemy : swarm) {
+	for (auto& enemy : enemyList) {
 		enemy->Detect(cha);
 	}
 }

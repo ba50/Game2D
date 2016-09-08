@@ -7,13 +7,14 @@
 #include "Bullet.h"
 #include "Static.h"
 
-Enemy::Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren) :
-	life(true)
+Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
+	Object(ren),
+	life(true),
+	scale(Vecd2{1.f,1.f})
 {
 	width = 4;
 	height = 4;
-	position.x = x;
-	position.y = y;
+	Object::position = position;
 	sprite = std::make_shared<Texture>(file, ren);
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
@@ -34,6 +35,11 @@ void Enemy::Update(float deltaTime)
 	position.y += velocity.y*deltaTime;
 }
 
+void Enemy::Draw()
+{
+	ren->render(this);
+}
+
 void Enemy::Detect(std::shared_ptr<Character> cha)
 {
 	Vecf2 r{ cha->position - position };
@@ -44,17 +50,17 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 	else
 	{
 		if (((float)rand() / RAND_MAX) <= 0.5f) {
-			velocity.x += ((float)rand() / RAND_MAX);
+			velocity.x += ((float)rand() / RAND_MAX)*5.f;
 		}
 		else {
-			velocity.x -= ((float)rand() / RAND_MAX);
+			velocity.x -= ((float)rand() / RAND_MAX)*5.f;
 		}
 
 		if (((float)rand() / RAND_MAX) <= 0.5f) {
-			velocity.y += ((float)rand() / RAND_MAX);
+			velocity.y += ((float)rand() / RAND_MAX)*5.f;
 		}
 		else {
-			velocity.y -= ((float)rand() / RAND_MAX);
+			velocity.y -= ((float)rand() / RAND_MAX)*5.f;
 		}
 
 	}
@@ -62,10 +68,13 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 
 void Enemy::Collision(std::shared_ptr<Static> stat)
 {
-	Vecf2 r{ stat->position.x - position.x, stat->position.y - position.y };
-	if (sqrt(r.x*r.x + r.y*r.y) < (stat->collisionBox.x + collisionBox.x)) {
-		velocity.x = -r.x;
-		velocity.y = -r.y;
+	if (stat->collidable)
+	{
+		Vecf2 r{ stat->position.x - position.x, stat->position.y - position.y };
+		if (sqrt(r.x*r.x + r.y*r.y) < (stat->collisionBox.x + collisionBox.x)) {
+			velocity.x = -r.x;
+			velocity.y = -r.y;
+		}
 	}
 }
 

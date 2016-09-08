@@ -12,14 +12,16 @@ class Swarm :
 	public Object
 {
 public:
-	std::list<std::shared_ptr<Enemy>> swarm;
+	std::list<std::shared_ptr<Enemy>> enemyList;
 	std::list<std::list<std::shared_ptr<Enemy>>::iterator> toDelete;
 
 public:
-	Swarm(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren);
+	Swarm(Vecf2 position, const std::string & file, const std::shared_ptr<Renderer> ren);
 	~Swarm();
 
 	void Update(const float deltaTime) override;
+	void Draw() override;
+
 	void Detect(std::shared_ptr<Character> cha);
 };
 

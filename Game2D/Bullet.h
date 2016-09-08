@@ -13,5 +13,6 @@ public:
 	~Bullet();
 
 	void Update(const float deltaTime) override;
+	void Draw() override;
 };
 

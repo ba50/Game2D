@@ -6,8 +6,6 @@
 #include "Object.h"
 
 class Bullet;
-class Renderer;
-
 
 class Character :
 	public Object
@@ -15,7 +13,7 @@ class Character :
 public:
 	Vecf2 velocityMax;
 
-	enum class States { OnFloor, CanFall, CanJumpe, CanLeft, CanRight, Left, Right, Down, UpLeft, UpRight };
+	enum class States { InAir, OnFloor, CanFall, CanJumpe, CanLeft, CanRight, Left, Right, Down, UpLeft, UpRight };
 	enum class Input { Shot, Jumpe, Left, Right, Down, Up };
 
 	std::map<States, bool> currentStates;
@@ -28,14 +26,12 @@ public:
 
 	std::list<std::shared_ptr<Bullet>> bulletList;
 
-	std::shared_ptr<Renderer> ren;
-
 public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
 	~Character();
 
 	void Update(const float deltaTime) override;
+	void Draw() override;
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);
 };
-

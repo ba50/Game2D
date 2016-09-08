@@ -2,11 +2,14 @@
 
 #include "Camera.h"
 #include "Define.h"
+#include "Character.h"
 
 Camera::Camera(Vecf2 position, float width, float height) :
+	position(position),
 	toCenter({ width / 2.f, height / 2.f })
 {
 	Camera::position.y = (position.y - toCenter.y) + BLOCK_SIZE;
+	
 }
 
 Camera::~Camera() 
@@ -18,13 +21,12 @@ Camera::Camera(const Camera &cam)
 	toCenter = cam.toCenter;
 }
 
-void Camera::MoveTo(Vecf2 newPosition)
+void Camera::MoveTo(std::shared_ptr<Character> cha, float deltaTime)
 {
-	position.x = newPosition.x - toCenter.x;
-//	if ((newPosition.y-position.y) < 0) {
-//		position.y = newPosition.y - toCenter.y;
-//	}
-//	if ((newPosition.y-position.y) > SCREEN_HEIGHT) {
-//		position.y = newPosition.y - toCenter.y;
-//	}
+	velocity.x = (cha->position.x - (position.x + toCenter.x))*2.f;
+	if (!cha->currentStates[Character::States::InAir]) {
+		velocity.y = cha->position.y - (position.y+toCenter.y);
+	}
+	position.x += velocity.x*deltaTime;
+	position.y += velocity.y*deltaTime;
 }

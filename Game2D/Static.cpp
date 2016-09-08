@@ -2,13 +2,14 @@
 #include "Define.h"
 #include "Texture.h"
 
-Static::Static(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren)
+Static::Static(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren, bool collidable) :
+	Object(ren)
 {
 	width = BLOCK_SIZE;
 	height = BLOCK_SIZE;
-	position.x = x;
-	position.y = y;
+	Object::position = position;
 	sprite = std::make_shared<Texture>(file, ren);
+	Object::collidable = collidable;
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 
@@ -16,7 +17,8 @@ Static::Static(const float x, const float y, const std::string & file, std::shar
 	collisionBox.y = height / 2;
 }
 
-Static::Static(SDL_Rect rect, const std::string & file, std::shared_ptr<Renderer> ren)
+Static::Static(SDL_Rect rect, const std::string & file, std::shared_ptr<Renderer> ren) :
+	Object(ren)
 {
 	position.x = static_cast<float>(rect.x);
 	position.y = static_cast<float>(rect.y);
@@ -38,4 +40,9 @@ Static::~Static()
 
 void Static::Update(const float deltaTime)
 {
+}
+
+void Static::Draw()
+{
+	ren->render(this);
 }

@@ -3,6 +3,7 @@
 #include "Texture.h"
 
 Bullet::Bullet(const Vecf2 position, bool Right, const std::string &file, std::shared_ptr<Renderer> ren):
+	Object(ren),
 	life(true)
 {
 	width = 16;
@@ -38,4 +39,9 @@ void Bullet::Update(const float deltaTime) {
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
+}
+
+void Bullet::Draw()
+{
+	ren->render(this);
 }

@@ -13,12 +13,15 @@ class Enemy :
 public:
 	unsigned int counter;
 	bool life;
+	Vecf2 scale;
 
 public:
-	Enemy(const float x, const float y, const std::string & file, std::shared_ptr<Renderer> ren);
+	Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);
 	~Enemy();
 
 	void Update(const float deltaTime) override;
+	void Draw() override;
+
 	void Detect(std::shared_ptr<Character> cha);
 
 	void Enemy::Collision(std::shared_ptr<Static> stat);
