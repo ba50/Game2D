@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <random>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -29,7 +30,7 @@ namespace Error
 	* @param os The output stream to write the message too
 	* @param msg The error message to write, format will be msg error: SDL_GetError()
 	*/
-	static void logSDL(std::ostream &os, const std::string &msg)
+	static void LogSDL(std::ostream &os, const std::string &msg)
 	{
 		os << msg << " error: " << SDL_GetError() << std::endl;
 		throw std::exception("shit!");
@@ -37,21 +38,22 @@ namespace Error
 }
 
 namespace Map {
-	static void load(const std::string &file, std::shared_ptr<Character> &player, std::vector<std::shared_ptr<Swarm>> &swarmVect, std::vector<std::shared_ptr<Static>> &floorVect,
-					std::shared_ptr<Static> &backgroung, std::shared_ptr<Renderer> ren) {
-		
+	static void Load(const std::string &file, std::shared_ptr<Character> &player, std::vector<std::shared_ptr<Swarm>> &swarmVect, std::vector<std::shared_ptr<Static>> &floorVect,
+		std::vector<std::shared_ptr<Static>> &collisionFloorVector,	std::shared_ptr<Static> &backgroung, std::shared_ptr<Renderer> ren) {
+
 		std::ifstream in;
 		in.open(file);
 		std::string buffer;
-		float x=0, y=0;
+		float x = 0, y = 0;
 		while (!in.eof()) {
 			in >> buffer;
 			for (auto& c : buffer) {
 				if (c != ';') {
-					if (c == '_' || c=='|') {
-						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren, true));
+					if (c == '_' || c == '|') {
+						collisionFloorVector.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren, true));
+						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren));
 					}
-					if (c=='#') {
+					if (c == '#') {
 						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren));
 					}
 					if (c == 'W') {
@@ -59,11 +61,11 @@ namespace Map {
 					}
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
-						backgroung = std::make_shared<Static>(SDL_Rect{ (int)x, (int)y, 7680, 640 }, "BG.png", ren);
+						backgroung = std::make_shared<Static>(SDL_Rect{ (int)x, (int)y - 150, 7680, 1020 }, "BG.png", ren);
 						ren->camera->position = Vecf2{ x,y };
 					}
 					if (c == '!') {
-						swarmVect.push_back(std::make_shared<Swarm>(Vecf2{ x,y }, "bkMaze.png", ren));
+						swarmVect.push_back(std::make_shared<Swarm>(Vecf2{ x,y }, "Enemy.png", ren));
 					}
 					x += BLOCK_SIZE;
 				}
@@ -75,6 +77,12 @@ namespace Map {
 
 }
 
-template <typename T> int sgn(T val) {
-	return (T(0) < val) - (val < T(0));
+namespace Math {
+	template <typename T> int Sgn(T val) {
+		return (T(0) < val) - (val < T(0));
+	}
+
+	inline float Rand(float start, float stop) {
+		return start + static_cast<float>(((stop - start)*rand()) / (RAND_MAX + 1.0));
+	}
 }

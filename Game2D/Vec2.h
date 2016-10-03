@@ -71,6 +71,4 @@ public:
 	T y;
 };
 
-typedef _Vec2< int > Veci2;
 typedef _Vec2< float > Vecf2;
-typedef _Vec2< double > Vecd2;

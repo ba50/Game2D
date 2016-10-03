@@ -13,7 +13,8 @@ class Enemy :
 public:
 	unsigned int counter;
 	bool life;
-	Vecf2 scale;
+	Vecf2 scale, scaleMax;
+	bool max;
 
 public:
 	Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);

@@ -13,7 +13,7 @@ Texture::Texture(const std::string & file, std::shared_ptr<Renderer> ren)
 {
 	texture = IMG_LoadTexture(ren->ren, file.c_str());
 	if (texture == nullptr) {
-		Error::logSDL(std::cout, "LoadTexture");
+		Error::LogSDL(std::cout, "LoadTexture");
 	}
 }
 

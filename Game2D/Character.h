@@ -18,13 +18,14 @@ public:
 
 	std::map<States, bool> currentStates;
 	std::map<Input, bool> currentInput;
-	bool tempe_AccelY;
 
 	std::list<int> leftAnimation, rightAnimation, upLeftAnimation, upRightAnimation, currentAnimation;
 	std::list<int>::iterator itAnimation;
 	float animationTimer, bulletTimer;
 
 	std::list<std::shared_ptr<Bullet>> bulletList;
+
+	bool life;
 
 public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);

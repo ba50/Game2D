@@ -7,11 +7,10 @@ Swarm::Swarm(Vecf2 position, const std::string & file, const std::shared_ptr<Ren
 	Object(ren)
 {
 	Object::position = position;
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 150; ++i) {
 		enemyList.push_back(std::make_shared<Enemy>(position, file, Object::ren));
 	}
 }
-
 
 Swarm::~Swarm()
 {
@@ -25,7 +24,7 @@ void Swarm::Update(const float deltaTime)
 		r.y = enemy->position.y - position.y;
 		sum.x += enemy->position.x;
 		sum.y += enemy->position.y;
-		if (sqrt(r.x*r.x + r.y * r.y) > 25.f) {
+		if (sqrt(r.x*r.x + r.y * r.y) > 75.f) {
 			enemy->velocity.x = -r.x;
 			enemy->velocity.y = -r.y;
 		}

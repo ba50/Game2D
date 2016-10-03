@@ -17,14 +17,17 @@ int main(int, char**) {
 
 		auto renderer = std::make_shared<Renderer>();
 
+		//SDL_SetWindowFullscreen(renderer->win, SDL_WINDOW_FULLSCREEN);
+
 		// Init player
 		std::shared_ptr<Character> player;
 		std::vector<std::shared_ptr<Swarm>> swarmVect;
 		std::vector<std::shared_ptr<Static>> floorVect;
+		std::vector < std::shared_ptr<Static>> collisionFloorVector;
 		std::shared_ptr<Static> background;
 
 		//Load Map
-		Map::load("level1.csv", player, swarmVect, floorVect, background, renderer);
+		Map::Load("level1.csv", player, swarmVect, floorVect, collisionFloorVector, background, renderer);
 
 		//Set time counter
 		float lastTime = 0.f;
@@ -54,7 +57,7 @@ int main(int, char**) {
 			}
 
 			//Collisios
-			for (auto& floor : floorVect) {
+			for (auto& floor : collisionFloorVector) {
 				if (InSight(floor->position, renderer->camera->position)) {
 					player->Collison(floor);
 					for (auto& swarm : swarmVect) {
@@ -87,7 +90,12 @@ int main(int, char**) {
 				}
 			}
 
-			background->position.x = player->position.x * 0.3f;
+			background->position.x = (player->position.x + 6000.f) * 0.3f;
+
+
+			if (!player->life) {
+				throw std::exception("Shit!");
+			}
 
 			//Draw backgrounde
 			background->Draw();
@@ -98,8 +106,10 @@ int main(int, char**) {
 
 			//Draw the Enemy
 			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, renderer->camera->position)) {
-					swarm->Draw();
+				for (auto& enemy : swarm->enemyList) {
+					if (InSight(enemy->position, renderer->camera->position)) {
+						enemy->Draw();
+					}
 				}
 			}
 
@@ -116,6 +126,7 @@ int main(int, char**) {
 	}
 	catch (...) {
 		cleanUp();
+		printf("Shit!\n");
 		system("pause");
 		return 1;
 	}

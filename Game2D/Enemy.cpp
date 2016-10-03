@@ -10,10 +10,11 @@
 Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
 	Object(ren),
 	life(true),
-	scale(Vecd2{1.f,1.f})
+	scale(Vecf2{ 1.f,1.f }),
+	max(false)
 {
-	width = 4;
-	height = 4;
+	width = 1;
+	height = 1;
 	Object::position = position;
 	sprite = std::make_shared<Texture>(file, ren);
 
@@ -23,6 +24,7 @@ Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Ren
 	collisionBox.y = height / 2;
 
 	velocity = Vecf2{ 0.f, 0.f };
+	scaleMax = Vecf2{ Math::Rand(1.f,7.f), Math::Rand(1.f,7.f) };
 }
 
 Enemy::~Enemy()
@@ -33,19 +35,41 @@ void Enemy::Update(float deltaTime)
 {
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
+	if (scale.x < scaleMax.x && !max)
+	{
+		scale.x += 0.05f;
+		scale.y += 0.05f;
+	}
+	else {
+		max = true;
+	}
+
+	if (scale.x >= 1.f && max)
+	{
+		scale.x -= 0.05f;
+		scale.y -= 0.05f;
+	}
+	else {
+		max = false;
+	}
 }
 
 void Enemy::Draw()
 {
-	ren->render(this);
+	ren->render(this, scale);
 }
 
 void Enemy::Detect(std::shared_ptr<Character> cha)
 {
 	Vecf2 r{ cha->position - position };
-	if (abs(sqrt(r.x*r.x + r.y*r.y)) < 150.f) {
-		velocity.x = (cha->position.x - position.x);
-		velocity.y = (cha->position.y - position.y);
+	if (sqrt(r.x*r.x + r.y*r.y) < 250.f) {
+		velocity.x = (cha->position.x - position.x)*1.2f;
+		velocity.y = (cha->position.y - position.y)*1.2f;
+
+		if (sqrt(r.x*r.x + r.y*r.y) < 4.f) {
+			cha->life = false;
+		}
+
 	}
 	else
 	{
@@ -68,13 +92,10 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 
 void Enemy::Collision(std::shared_ptr<Static> stat)
 {
-	if (stat->collidable)
-	{
-		Vecf2 r{ stat->position.x - position.x, stat->position.y - position.y };
-		if (sqrt(r.x*r.x + r.y*r.y) < (stat->collisionBox.x + collisionBox.x)) {
-			velocity.x = -r.x;
-			velocity.y = -r.y;
-		}
+	Vecf2 r{ stat->position.x - position.x, stat->position.y - position.y };
+	if (sqrt(r.x*r.x + r.y*r.y) < (stat->collisionBox.x + collisionBox.x)) {
+		velocity.x = -r.x;
+		velocity.y = -r.y;
 	}
 }
 

@@ -10,18 +10,18 @@ Renderer::Renderer()
 {
 //	Start up SDL and make sure it went ok
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		Error::logSDL(std::cout, "SDL_Init");
+		Error::LogSDL(std::cout, "SDL_Init");
 	}
 
 //	Setup our window and renderer
 	win = SDL_CreateWindow("Game 2D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (win == nullptr) {
-		Error::logSDL(std::cout, "CreateWindow");
+		Error::LogSDL(std::cout, "CreateWindow");
 	}
 
 	ren= SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (ren == nullptr) {
-		Error::logSDL(std::cout, "CreateRenderer");
+		Error::LogSDL(std::cout, "CreateRenderer");
 	}
 
 	camera = std::make_shared<Camera>(Vecf2{ 0.f,0.f }, static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT));

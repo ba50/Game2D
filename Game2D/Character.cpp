@@ -9,7 +9,8 @@
 std::vector<bool> Inputs::slope;
 
 Character::Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(ren)
+	Object(ren),
+	life(true)
 {
 	width = BLOCK_SIZE;
 	height = BLOCK_SIZE;
@@ -68,7 +69,7 @@ Character::~Character()
 
 void Character::Update(const float deltaTime)
 {
-	velocity.y += 10;
+	velocity.y += 100;
 
 	if (!currentStates[States::CanJumpe]) {
 		velocity.y = 0;
@@ -140,7 +141,7 @@ void Character::Update(const float deltaTime)
 	if (currentStates[States::CanJumpe] && currentInput[Input::Jumpe] && !currentStates[States::CanFall] && currentStates[States::OnFloor]){
 		if (abs(velocity.y) < velocityMax.y)
 		{
-			velocity.y = -400;
+			velocity.y = -2000;
 			currentStates[States::OnFloor] = false;
 			currentStates[States::InAir] = true;
 		}
@@ -307,15 +308,15 @@ void Character::Collison(std::shared_ptr<Object> obj)
 	{
 		if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
 			(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
-			((position.y - collisionBoxY.y) - 6.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
-			((position.y - collisionBoxY.y) + 4.f) > ((obj->position.y + obj->collisionBox.y) - 6.f)) {
+			((position.y - collisionBoxY.y) - 10.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
+			((position.y - collisionBoxY.y) + 4.f) > ((obj->position.y + obj->collisionBox.y) - 10.f)) {
 			currentStates[States::CanJumpe] = false;
 		}
 
 		if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
 			(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
-			((position.y + collisionBoxY.y) - 6.f) < ((obj->position.y - obj->collisionBox.y) + 4.f) &&
-			((position.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 6.f)) {
+			((position.y + collisionBoxY.y) - 10.f) < ((obj->position.y - obj->collisionBox.y) + 4.f) &&
+			((position.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 10.f)) {
 			currentStates[States::CanFall] = false;
 			currentStates[States::InAir]=false;
 		}

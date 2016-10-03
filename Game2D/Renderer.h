@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "SDL.h"
+#include "Vec2.h"
 
 class Object;
 class Camera;
