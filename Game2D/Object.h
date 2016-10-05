@@ -34,7 +34,7 @@ public:
 	virtual ~Object();
 	Object(const Object &obj);
 
-	virtual void Update(const float deltaTime) = 0;
+	virtual void Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied ) = 0;
 	virtual void Draw() = 0;
 	virtual void Print();
 };

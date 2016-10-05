@@ -67,9 +67,9 @@ Character::~Character()
 	printf("Delete Character\n");
 }
 
-void Character::Update(const float deltaTime)
+void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied)
 {
-	velocity.y += 100;
+	velocity.y += 100.f;
 
 	if (!currentStates[States::CanJumpe]) {
 		velocity.y = 0;
@@ -141,7 +141,7 @@ void Character::Update(const float deltaTime)
 	if (currentStates[States::CanJumpe] && currentInput[Input::Jumpe] && !currentStates[States::CanFall] && currentStates[States::OnFloor]){
 		if (abs(velocity.y) < velocityMax.y)
 		{
-			velocity.y = -2000;
+			velocity.y = -1500.f;
 			currentStates[States::OnFloor] = false;
 			currentStates[States::InAir] = true;
 		}

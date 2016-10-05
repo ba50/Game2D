@@ -31,7 +31,7 @@ public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
 	~Character();
 
-	void Update(const float deltaTime) override;
+	void Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied) override;
 	void Draw() override;
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);

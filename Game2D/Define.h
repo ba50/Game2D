@@ -62,7 +62,7 @@ namespace Map {
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
 						backgroung = std::make_shared<Static>(SDL_Rect{ (int)x, (int)y - 150, 7680, 1020 }, "BG.png", ren);
-						ren->camera->position = Vecf2{ x,y };
+						ren->camera->position = Vecf2{ x-SCREEN_WIDTH/2.f,y-SCREEN_HEIGHT/2.f };
 					}
 					if (c == '!') {
 						swarmVect.push_back(std::make_shared<Swarm>(Vecf2{ x,y }, "Enemy.png", ren));

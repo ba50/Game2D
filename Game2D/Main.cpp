@@ -17,8 +17,6 @@ int main(int, char**) {
 
 		auto renderer = std::make_shared<Renderer>();
 
-		//SDL_SetWindowFullscreen(renderer->win, SDL_WINDOW_FULLSCREEN);
-
 		// Init player
 		std::shared_ptr<Character> player;
 		std::vector<std::shared_ptr<Swarm>> swarmVect;
@@ -31,8 +29,8 @@ int main(int, char**) {
 
 		//Set time counter
 		float lastTime = 0.f;
-		float deltaTime;
-		float nowTime;
+		float deltaTime = 0.f;
+		float nowTime = 0.f;
 
 		//Main loop
 		bool quit = false;
@@ -92,7 +90,6 @@ int main(int, char**) {
 
 			background->position.x = (player->position.x + 6000.f) * 0.3f;
 
-
 			if (!player->life) {
 				throw std::exception("Shit!");
 			}
@@ -102,7 +99,6 @@ int main(int, char**) {
 
 			//Draw the player
 			player->Draw();
-
 
 			//Draw the Enemy
 			for (auto& swarm : swarmVect) {
@@ -145,7 +141,6 @@ void cleanUp() {
 inline bool InSight(const Vecf2 & a, const Vecf2& b) {
 	Vecf2 r{ a.x - (b.x + SCREEN_WIDTH / 2), a.y - b.y };
 	return sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT + 75;
-
 }
 
 inline float rand(float start, float stop) {

@@ -9,7 +9,6 @@ Camera::Camera(Vecf2 position, float width, float height) :
 	toCenter({ width / 2.f, height / 2.f })
 {
 	Camera::position.y = (position.y - toCenter.y) + BLOCK_SIZE;
-	
 }
 
 Camera::~Camera() 
@@ -23,6 +22,7 @@ Camera::Camera(const Camera &cam)
 
 void Camera::MoveTo(std::shared_ptr<Character> cha, float deltaTime)
 {
+//	position.x = cha->position.x - (position.x - toCenter.x);
 	velocity.x = (cha->position.x - (position.x + toCenter.x))*2.f;
 	if (!cha->currentStates[Character::States::InAir]) {
 		velocity.y = cha->position.y - (position.y+toCenter.y);

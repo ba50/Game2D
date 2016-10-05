@@ -7,7 +7,7 @@ Swarm::Swarm(Vecf2 position, const std::string & file, const std::shared_ptr<Ren
 	Object(ren)
 {
 	Object::position = position;
-	for (int i = 0; i < 150; ++i) {
+	for (int i = 0; i < 20; ++i) {
 		enemyList.push_back(std::make_shared<Enemy>(position, file, Object::ren));
 	}
 }
