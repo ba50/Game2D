@@ -25,13 +25,14 @@ public:
 
 	std::list<std::shared_ptr<Bullet>> bulletList;
 
-	bool life;
+	bool life, moveX,moveY;
+	Vecf2 newPosition;
 
 public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
 	~Character();
 
-	void Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied) override;
+	void Update(const float deltaTime) override;
 	void Draw() override;
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);

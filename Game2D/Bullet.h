@@ -12,7 +12,7 @@ public:
 	Bullet(const Vecf2 position, bool Right, const std::string &file, std::shared_ptr<Renderer> ren);
 	~Bullet();
 
-	void Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied) override;
+	void Update(const float deltaTime) override;
 	void Draw() override;
 };
 

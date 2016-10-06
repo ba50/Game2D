@@ -1,5 +1,6 @@
 #pragma once
 
+#include <forward_list>
 #include <vector>
 #include <memory>
 
@@ -28,13 +29,14 @@ public:
 	Vecf2 collisionBoxX, collisionBoxY, collisionBox;
 	
 	bool collidable;
+	std::forward_list<std::shared_ptr<Object>> collisionList;
 
 public:
 	Object(const std::shared_ptr<Renderer> &ren);
 	virtual ~Object();
 	Object(const Object &obj);
 
-	virtual void Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied ) = 0;
+	virtual void Update(const float deltaTime) = 0;
 	virtual void Draw() = 0;
 	virtual void Print();
 };

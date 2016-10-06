@@ -42,7 +42,6 @@ int main(int, char**) {
 			//Rendering
 			renderer->Clear();
 
-			//Update player
 			deltaTime = (nowTime - lastTime) / 1000;
 			lastTime = nowTime;
 

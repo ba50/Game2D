@@ -67,7 +67,7 @@ Character::~Character()
 	printf("Delete Character\n");
 }
 
-void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Object>> objectToCollied)
+void Character::Update(const float deltaTime)
 {
 	velocity.y += 100.f;
 
@@ -180,27 +180,55 @@ void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Object
 	if (itAnimation == currentAnimation.end()) {
 		itAnimation = currentAnimation.begin();
 	}
-	
-	if (velocity.x > 0 && currentStates[States::CanRight]) {
-		position.x += velocity.x*deltaTime;
-	}
-	
-	if (velocity.x < 0 && currentStates[States::CanLeft]) {
-		position.x += velocity.x*deltaTime;
-	}
 
-	if (velocity.y > 0 && currentStates[States::CanFall]) {
-		position.y += velocity.y*deltaTime;
-	}
+	newPosition.x = position.x + velocity.x*deltaTime;
+	newPosition.y = position.y + velocity.y*deltaTime;
 
-	if (velocity.y < 0 && currentStates[States::CanJumpe]) {
-		position.y += velocity.y*deltaTime;
+	moveX = true;
+	moveY = true;
+
+	for (auto& obj : collisionList) {
+		if ((newPosition.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
+			(newPosition.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
+			((newPosition.y - collisionBoxY.y) - 10.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
+			((newPosition.y - collisionBoxY.y) + 4.f) > ((obj->position.y + obj->collisionBox.y) - 10.f)) {
+//			currentStates[States::CanJumpe] = false;
+			moveY = false;
+		}
+
+		if ((newPosition.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
+			(newPosition.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
+			((newPosition.y + collisionBoxY.y) - 10.f) < ((obj->position.y - obj->collisionBox.y) + 4.f) &&
+			((newPosition.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 10.f)) {
+//			currentStates[States::CanFall] = false;
+//			currentStates[States::InAir] = false;
+			moveY = false;
+		}
+
+		if (((newPosition.x - collisionBoxX.x) - 4.f) < ((obj->position.x + obj->collisionBox.x) + 6.f) &&
+			((newPosition.x - collisionBoxX.x) + 4.f) > ((obj->position.x + obj->collisionBox.x) - 4.f) &&
+			(newPosition.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
+			(newPosition.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
+//			currentStates[States::CanLeft] = false;
+			moveX = false;
+		}
+
+		if (((newPosition.x + collisionBoxX.x) - 4.f) < ((obj->position.x - obj->collisionBox.x) + 4.f) &&
+			((newPosition.x + collisionBoxX.x) + 4.f) > ((obj->position.x - obj->collisionBox.x) - 5.f) &&
+			(newPosition.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
+			(newPosition.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
+//			currentStates[States::CanRight] = false;
+			moveX = false;
+		}
 	}
+	if (moveX)
+		position.x = newPosition.x;
+	if (moveY)
+		position.y = newPosition.y;
 
 	animationTimer += deltaTime;
 	bulletTimer += deltaTime;
 	useClip = *itAnimation;
-
 
 	currentStates[States::CanFall] = true;
 	currentStates[States::CanJumpe] = true;
@@ -306,6 +334,7 @@ void Character::Collison(std::shared_ptr<Object> obj)
 {
 	if (obj->collidable)
 	{
+		collisionList.push_front(obj);
 		if ((position.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
 			(position.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
 			((position.y - collisionBoxY.y) - 10.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
