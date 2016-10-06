@@ -17,7 +17,6 @@ int main(int, char**) {
 
 		auto renderer = std::make_shared<Renderer>();
 
-		// Init player
 		std::shared_ptr<Character> player;
 		std::vector<std::shared_ptr<Swarm>> swarmVect;
 		std::vector<std::shared_ptr<Static>> floorVect;
@@ -29,8 +28,8 @@ int main(int, char**) {
 
 		//Set time counter
 		float lastTime = 0.f;
-		float deltaTime = 0.f;
-		float nowTime = 0.f;
+		float deltaTime ( 0.f);
+		float nowTime { 0.f };
 
 		//Main loop
 		bool quit = false;
@@ -42,7 +41,10 @@ int main(int, char**) {
 			//Rendering
 			renderer->Clear();
 
-			deltaTime = (nowTime - lastTime) / 1000;
+			deltaTime = (nowTime - lastTime) / 1000.f;
+			if (deltaTime > 1.f / 60.f) {
+				deltaTime = 1.f / 60.f;
+			}
 			lastTime = nowTime;
 
 			player->Inputs();
@@ -56,7 +58,9 @@ int main(int, char**) {
 			//Collisios
 			for (auto& floor : collisionFloorVector) {
 				if (InSight(floor->position, renderer->camera->position)) {
+
 					player->Collison(floor);
+
 					for (auto& swarm : swarmVect) {
 						if (InSight(swarm->position, renderer->camera->position)) {
 							for (auto& enemy : swarm->enemyList) {
@@ -64,6 +68,7 @@ int main(int, char**) {
 							}
 						}
 					}
+
 				}
 			}
 

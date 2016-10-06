@@ -184,16 +184,12 @@ void Character::Update(const float deltaTime)
 	newPosition.x = position.x + velocity.x*deltaTime;
 	newPosition.y = position.y + velocity.y*deltaTime;
 
-	moveX = true;
-	moveY = true;
-
 	for (auto& obj : collisionList) {
 		if ((newPosition.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
 			(newPosition.x + collisionBoxY.x) > (obj->position.x - obj->collisionBox.x) &&
 			((newPosition.y - collisionBoxY.y) - 10.f) < ((obj->position.y + obj->collisionBox.y) + 4.f) &&
 			((newPosition.y - collisionBoxY.y) + 4.f) > ((obj->position.y + obj->collisionBox.y) - 10.f)) {
 //			currentStates[States::CanJumpe] = false;
-			moveY = false;
 		}
 
 		if ((newPosition.x - collisionBoxY.x) < (obj->position.x + obj->collisionBox.x) &&
@@ -202,7 +198,6 @@ void Character::Update(const float deltaTime)
 			((newPosition.y + collisionBoxY.y) + 4.f) > ((obj->position.y - obj->collisionBox.y) - 10.f)) {
 //			currentStates[States::CanFall] = false;
 //			currentStates[States::InAir] = false;
-			moveY = false;
 		}
 
 		if (((newPosition.x - collisionBoxX.x) - 4.f) < ((obj->position.x + obj->collisionBox.x) + 6.f) &&
@@ -210,7 +205,6 @@ void Character::Update(const float deltaTime)
 			(newPosition.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
 			(newPosition.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
 //			currentStates[States::CanLeft] = false;
-			moveX = false;
 		}
 
 		if (((newPosition.x + collisionBoxX.x) - 4.f) < ((obj->position.x - obj->collisionBox.x) + 4.f) &&
@@ -218,12 +212,9 @@ void Character::Update(const float deltaTime)
 			(newPosition.y - collisionBoxX.y) < (obj->position.y + obj->collisionBox.y) &&
 			(newPosition.y + collisionBoxX.y) > (obj->position.y - obj->collisionBox.y)) {
 //			currentStates[States::CanRight] = false;
-			moveX = false;
 		}
 	}
-	if (moveX)
 		position.x = newPosition.x;
-	if (moveY)
 		position.y = newPosition.y;
 
 	animationTimer += deltaTime;

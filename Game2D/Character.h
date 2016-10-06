@@ -25,7 +25,7 @@ public:
 
 	std::list<std::shared_ptr<Bullet>> bulletList;
 
-	bool life, moveX,moveY;
+	bool life;
 	Vecf2 newPosition;
 
 public:
