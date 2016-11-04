@@ -19,8 +19,8 @@
 #define g 9.81f 
 
 //Screen attributes
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
 #define BLOCK_SIZE 32
 
 namespace Error
@@ -38,7 +38,8 @@ namespace Error
 }
 
 namespace Map {
-	static void Load(const std::string &file, std::shared_ptr<Character> &player, std::shared_ptr<Renderer> ren) {
+	static void Load(const std::string &file, std::shared_ptr<Character> &player,
+		std::vector<std::shared_ptr<Static>> &background_vector, std::shared_ptr<Renderer> ren) {
 
 		std::ifstream in;
 		in.open(file);
@@ -50,12 +51,18 @@ namespace Map {
 				if (c != ';') {
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
-						ren->camera->position = Vecf2{ x-SCREEN_WIDTH/2.f,y-SCREEN_HEIGHT/2.f };
+						ren->camera->position = Vecf2{ x - SCREEN_WIDTH / 2.f,y - SCREEN_HEIGHT / 2.f };
+						background_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, 0, SCREEN_WIDTH,170 }, "BG.png", ren));
+						background_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ 0 ,0,  SCREEN_WIDTH, 170 }, "BG.png", ren));
+						background_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH,0,  SCREEN_WIDTH, 170 }, "BG.png", ren));
 					}
 					x += BLOCK_SIZE;
 				}
 			}
-			y += BLOCK_SIZE;
+			y -= BLOCK_SIZE;
 			x = 0;
 		}
 	}

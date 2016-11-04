@@ -19,7 +19,7 @@ public:
 	Swarm(Vecf2 position, const std::string & file, const std::shared_ptr<Renderer> ren);
 	~Swarm();
 
-	void Update(const float deltaTime) override;
+	void Update(const float deltaTime);
 	void Draw() override;
 
 	void Detect(std::shared_ptr<Character> cha);

@@ -2,25 +2,24 @@
 #include "Define.h"
 #include "Texture.h"
 
-Bullet::Bullet(const Vecf2 position, bool Right, const std::string &file, std::shared_ptr<Renderer> ren):
+Bullet::Bullet(const Vecf2 position, float angle, const Vecf2 start_velocity, const std::string &file, std::shared_ptr<Renderer> ren):
 	Object(ren),
 	life(true)
 {
-	width = 16;
-	height = 16;
+	width = 32;
+	height = 32;
 	Object::position = position;
 	sprite = std::make_shared<Texture>(file, ren);
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 
-	timer = 45;
-	if (Right) {
-		velocity = Vecf2{ 600.f,0.f };
-	}
-	else
-	{
-		velocity = Vecf2{ -600.f,0.f };
-	}
+	velocity.x = sinf(PI*angle / 180.f);
+	velocity.y = -cosf(PI*angle/180.f);
+
+	velocity.x = velocity.x*600.f + start_velocity.x;
+	velocity.y = velocity.y*600.f + start_velocity.y;
+
+	timer = 50;
 }
 
 Bullet::~Bullet()

@@ -11,7 +11,7 @@ public:
 	Static(SDL_Rect rect, const std::string &file, std::shared_ptr<Renderer> ren);
 	~Static();
 
-	void Update(const float deltaTime) override;
+	void Update(const float deltaTime);
 	void Draw() override;
 };
 

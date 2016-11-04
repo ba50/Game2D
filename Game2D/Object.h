@@ -27,6 +27,7 @@ public:
 	Vecf2 position;
 	Vecf2 velocity;
 	Vecf2 momentum;
+	float mass;
 	Vecf2 scale;
 	float angle;
 	
@@ -37,6 +38,5 @@ public:
 	virtual ~Object();
 	Object(const Object &obj);
 
-	virtual void Update(const float deltaTime) = 0;
 	virtual void Draw() = 0;
 };
