@@ -18,13 +18,9 @@ int main(int, char**) {
 		auto renderer = std::make_shared<Renderer>();
 
 		std::shared_ptr<Character> player;
-		std::vector<std::shared_ptr<Swarm>> swarmVect;
-		std::vector<std::shared_ptr<Static>> floorVect;
-		std::vector < std::shared_ptr<Static>> collisionFloorVector;
-		std::shared_ptr<Static> background;
 
 		//Load Map
-		Map::Load("level1.csv", player, swarmVect, floorVect, collisionFloorVector, background, renderer);
+		Map::Load("dev.csv", player, renderer);
 
 		//Set time counter
 		float lastTime = 0.f;
@@ -42,83 +38,20 @@ int main(int, char**) {
 			renderer->Clear();
 
 			deltaTime = (nowTime - lastTime) / 1000.f;
-			if (deltaTime > 1.f / 60.f) {
-				deltaTime = 1.f / 60.f;
-			}
 			lastTime = nowTime;
 
 			player->Inputs();
-
-			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, renderer->camera->position)) {
-					swarm->Detect(player);
-				}
-			}
-
-			//Collisios
-			for (auto& floor : collisionFloorVector) {
-				if (InSight(floor->position, renderer->camera->position)) {
-
-					player->Collison(floor);
-
-					for (auto& swarm : swarmVect) {
-						if (InSight(swarm->position, renderer->camera->position)) {
-							for (auto& enemy : swarm->enemyList) {
-								enemy->Collision(floor);
-							}
-						}
-					}
-
-				}
-			}
-
-			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, renderer->camera->position)) {
-					for (auto& enemy : swarm->enemyList) {
-						for (auto& bullet : player->bulletList) {
-							enemy->Collision(bullet);
-						}
-					}
-				}
-			}
 
 			renderer->camera->MoveTo(player, deltaTime);
 
 			player->Update(deltaTime);
 
-			for (auto& swarm : swarmVect) {
-				if (InSight(swarm->position, renderer->camera->position)) {
-					swarm->Update(deltaTime);
-				}
-			}
-
-			background->position.x = (player->position.x + 6000.f) * 0.3f;
-
 			if (!player->life) {
 				throw std::exception("Shit!");
 			}
 
-			//Draw backgrounde
-			background->Draw();
-
 			//Draw the player
 			player->Draw();
-
-			//Draw the Enemy
-			for (auto& swarm : swarmVect) {
-				for (auto& enemy : swarm->enemyList) {
-					if (InSight(enemy->position, renderer->camera->position)) {
-						enemy->Draw();
-					}
-				}
-			}
-
-			//Draw floor
-			for (auto& floor : floorVect) {
-				if (InSight(floor->position, renderer->camera->position)) {
-					floor->Draw();
-				}
-			}
 
 			//Update the screen
 			renderer->RenderPresent();

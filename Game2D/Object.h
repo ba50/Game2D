@@ -26,10 +26,11 @@ public:
 
 	Vecf2 position;
 	Vecf2 velocity;
-	Vecf2 collisionBoxX, collisionBoxY, collisionBox;
+	Vecf2 momentum;
+	Vecf2 scale;
+	float angle;
 	
 	bool collidable;
-	std::forward_list<std::shared_ptr<Object>> collisionList;
 
 public:
 	Object(const std::shared_ptr<Renderer> &ren);
@@ -38,5 +39,4 @@ public:
 
 	virtual void Update(const float deltaTime) = 0;
 	virtual void Draw() = 0;
-	virtual void Print();
 };

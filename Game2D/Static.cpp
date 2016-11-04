@@ -13,8 +13,6 @@ Static::Static(const Vecf2 position, const std::string & file, std::shared_ptr<R
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 
-	collisionBox.x = width / 2;
-	collisionBox.y = height / 2;
 }
 
 Static::Static(SDL_Rect rect, const std::string & file, std::shared_ptr<Renderer> ren) :
@@ -27,10 +25,6 @@ Static::Static(SDL_Rect rect, const std::string & file, std::shared_ptr<Renderer
 	sprite = std::make_shared<Texture>(file, ren);
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
-
-	collisionBox.x = width / 2;
-	collisionBox.y = height / 2;
-
 }
 
 Static::~Static()

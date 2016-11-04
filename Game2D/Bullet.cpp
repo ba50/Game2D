@@ -13,9 +13,6 @@ Bullet::Bullet(const Vecf2 position, bool Right, const std::string &file, std::s
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 
-	collisionBox.x = width / 2;
-	collisionBox.y = height / 2;
-
 	timer = 45;
 	if (Right) {
 		velocity = Vecf2{ 600.f,0.f };

@@ -9,6 +9,9 @@ std::map<Key, Action> Inputs::key;
 Object::Object(const std::shared_ptr<Renderer> &ren) :
 	useClip(0),
 	velocity({0.f,0.f}),
+	momentum({0.f,0.f}),
+	scale({1.f,1.f}),
+	angle(0.f),
 	ren(ren)
 {}
 
@@ -24,9 +27,4 @@ Object::Object(const Object & obj) :
 	sprite = obj.sprite;
 
 	clips = obj.clips;
-}
-
-void Object::Print()
-{
-	printf("%.1f, %.1f\n", position.x, position.y);
 }

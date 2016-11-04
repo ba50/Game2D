@@ -19,9 +19,9 @@
 #define g 9.81f 
 
 //Screen attributes
-#define SCREEN_WIDTH 1068
-#define SCREEN_HEIGHT 600
-#define BLOCK_SIZE 64;
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+#define BLOCK_SIZE 32
 
 namespace Error
 {
@@ -38,8 +38,7 @@ namespace Error
 }
 
 namespace Map {
-	static void Load(const std::string &file, std::shared_ptr<Character> &player, std::vector<std::shared_ptr<Swarm>> &swarmVect, std::vector<std::shared_ptr<Static>> &floorVect,
-		std::vector<std::shared_ptr<Static>> &collisionFloorVector,	std::shared_ptr<Static> &backgroung, std::shared_ptr<Renderer> ren) {
+	static void Load(const std::string &file, std::shared_ptr<Character> &player, std::shared_ptr<Renderer> ren) {
 
 		std::ifstream in;
 		in.open(file);
@@ -49,23 +48,9 @@ namespace Map {
 			in >> buffer;
 			for (auto& c : buffer) {
 				if (c != ';') {
-					if (c == '_' || c == '|') {
-						collisionFloorVector.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren, true));
-						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren));
-					}
-					if (c == '#') {
-						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkBlue.png", ren));
-					}
-					if (c == 'W') {
-						floorVect.push_back(std::make_shared<Static>(Vecf2{ x,y }, "bkWater.png", ren));
-					}
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
-						backgroung = std::make_shared<Static>(SDL_Rect{ (int)x, (int)y - 150, 7680, 1020 }, "BG.png", ren);
 						ren->camera->position = Vecf2{ x-SCREEN_WIDTH/2.f,y-SCREEN_HEIGHT/2.f };
-					}
-					if (c == '!') {
-						swarmVect.push_back(std::make_shared<Swarm>(Vecf2{ x,y }, "Enemy.png", ren));
 					}
 					x += BLOCK_SIZE;
 				}

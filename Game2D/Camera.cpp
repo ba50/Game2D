@@ -22,11 +22,6 @@ Camera::Camera(const Camera &cam)
 
 void Camera::MoveTo(std::shared_ptr<Character> cha, float deltaTime)
 {
-//	position.x = cha->position.x - (position.x - toCenter.x);
-	velocity.x = (cha->position.x - (position.x + toCenter.x))*2.f;
-	if (!cha->currentStates[Character::States::InAir]) {
-		velocity.y = cha->position.y - (position.y+toCenter.y);
-	}
-	position.x += velocity.x*deltaTime;
-	position.y += velocity.y*deltaTime;
+	position.x = cha->position.x - toCenter.x;
+	position.y = cha->position.y - toCenter.y;
 }

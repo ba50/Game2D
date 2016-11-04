@@ -20,9 +20,6 @@ Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Ren
 
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 
-	collisionBox.x = width / 2;
-	collisionBox.y = height / 2;
-
 	velocity = Vecf2{ 0.f, 0.f };
 	scaleMax = Vecf2{ Math::Rand(1.f,7.f), Math::Rand(1.f,7.f) };
 }
@@ -92,18 +89,10 @@ void Enemy::Detect(std::shared_ptr<Character> cha)
 
 void Enemy::Collision(std::shared_ptr<Static> stat)
 {
-	Vecf2 r{ stat->position.x - position.x, stat->position.y - position.y };
-	if (sqrt(r.x*r.x + r.y*r.y) < (stat->collisionBox.x + collisionBox.x)) {
-		velocity.x = -r.x;
-		velocity.y = -r.y;
-	}
+	
 }
 
 void Enemy::Collision(std::shared_ptr<Bullet> bull)
 {
-	Vecf2 r{ bull->position.x - position.x, bull->position.y - position.y };
-	if (sqrt(r.x*r.x + r.y*r.y) < (bull->collisionBox.x + collisionBox.x)) {
-		life = false;
-	}
 }
 
