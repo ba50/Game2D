@@ -19,6 +19,8 @@ public:
 	int useClip;
 	float height;
 	float width;
+	float collision_r;
+	float health;
 
 	std::shared_ptr<Renderer> ren;
 	std::shared_ptr<Texture> sprite;

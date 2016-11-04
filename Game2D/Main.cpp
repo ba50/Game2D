@@ -7,6 +7,8 @@
 #include "Bullet.h"
 #include "Static.h"
 #include "Swarm.h"
+#include "Gameplay.h"
+
 
 void cleanUp();
 inline bool InSight(const Vecf2 & a, const Vecf2& b);
@@ -21,63 +23,98 @@ int main(int, char**) {
 		std::shared_ptr<Character> character;
 		std::vector<std::shared_ptr<Bullet>> bullet_vector;
 		std::vector<std::shared_ptr<Static>> background_vector;
+		std::vector<std::shared_ptr<Enemy>> enemy_vector;
 
 		std::vector<std::vector<std::shared_ptr<Bullet>>::iterator> bullets_to_kill;
+		std::vector<std::vector<std::shared_ptr<Enemy>>::iterator> enemys_to_kill;
 
 		//Load Map
 		Map::Load("dev.csv", character, background_vector, renderer);
 
-		//Set time counter
-		float lastTime = 0.f;
-		float deltaTime ( 0.f);
-		float nowTime { 0.f };
-
 		//Main loop
 		bool quit = false;
 		while (!quit) {
-			nowTime = static_cast<float>(SDL_GetTicks());
 
 			quit = Inputs::Update();
 
 			//Rendering
 			renderer->Clear();
 
-			deltaTime = (nowTime - lastTime) / 1000.f;
-			lastTime = nowTime;
-
+			//Get inputs
 			character->Inputs();
 
-			renderer->camera->MoveTo(character, deltaTime);
+			//Update Gameplay
+			Gameplay::Update();
 
-			//Update character
-			character->Update(deltaTime, bullet_vector);
+			if (!Gameplay::pausa) {
+				//Update camera
+				renderer->camera->MoveTo(character, Gameplay::deltaTime);
 
-			//Update bullets
-			for (auto& bullet : bullet_vector) {
-				bullet->Update(deltaTime);
-			}
+				//Update character
+				character->Update(Gameplay::deltaTime, bullet_vector);
 
-			//Update background
-			for (auto& background : background_vector) {
-				if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
-					if (background->position.x - character->position.x > 0) {
-						background->position.x -= 2 * SCREEN_WIDTH;
+				//Update bullets
+				for (auto& bullet : bullet_vector) {
+					bullet->Update(Gameplay::deltaTime);
+				}
+				//Update enemy
+				if (enemy_vector.size() < 50) {
+					if (rand(0.f, 1.f) < 0.25f) {
+						float angle = rand(0, 2 * PI);
+						float x = character->position.x + SCREEN_WIDTH*sinf(angle);
+						float y = character->position.y + SCREEN_WIDTH*cosf(angle);
+						if (y < 0 &&
+							y > -3000 ||
+							x < 3 * (character->position.x + SCREEN_WIDTH) &&
+							x > -3 * (character->position.x + SCREEN_WIDTH)) {
+							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
+						}
 					}
-					else{
-						background->position.x += 2 * SCREEN_WIDTH;
+				}
+
+				for (auto& enemy : enemy_vector) {
+					enemy->Detect(character);
+					enemy->Update(Gameplay::deltaTime);
+					if (enemy->position.y > 0.f ||
+						enemy->position.y < -3000.f ||
+						enemy->position.x > 3.f * abs(character->position.x + SCREEN_WIDTH) ||
+						enemy->position.x < -3.f * abs(character->position.x - SCREEN_WIDTH)) enemy->life = false;
+				}
+
+				//Update background
+				for (auto& background : background_vector) {
+					if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
+						if (background->position.x - character->position.x > 0) {
+							background->position.x -= 2 * SCREEN_WIDTH;
+						}
+						else {
+							background->position.x += 2 * SCREEN_WIDTH;
+						}
 					}
 				}
 			}
 
+			//Collision
+			//bullets & enemy & character
+			for (auto& enemy : enemy_vector) {
+				if (InSight(renderer->camera->position, enemy->position)) {
 
-			//End of game?
-			if (!character->life) {
-				throw std::exception("Shit!");
+					character->Collison(enemy);
+
+					for (auto& bullet : bullet_vector) {
+						if (enemy->life) enemy->Collision(bullet);
+					}
+				}
 			}
 
 			//Draw the background
 			for (auto& background : background_vector) {
 				background->Draw();
+			}
+
+			//Draw the enemy
+			for (auto& enemy : enemy_vector) {
+				if(enemy->life) enemy->Draw();
 			}
 
 			//Draw the bullets
@@ -93,6 +130,7 @@ int main(int, char**) {
 			renderer->RenderPresent();
 
 			//Killer zone
+			//bullets
 			for (std::vector<std::shared_ptr<Bullet>>::iterator it = bullet_vector.begin(); it != bullet_vector.end(); it++) {
 
 				if (!it->get()->life) {
@@ -102,9 +140,26 @@ int main(int, char**) {
 
 			for (auto& obj : bullets_to_kill) {
 				bullet_vector.erase(obj);
+				break;
 			}
-			if(bullets_to_kill.size() != 0) bullets_to_kill.clear();
-			
+			if(bullets_to_kill.size() > 0) bullets_to_kill.clear();
+
+			//enemys
+			for (std::vector<std::shared_ptr<Enemy>>::iterator it = enemy_vector.begin(); it != enemy_vector.end(); it++) {
+
+				if (!it->get()->life) {
+					enemys_to_kill.push_back(it);
+				}
+
+			}
+
+			for (auto& obj : enemys_to_kill) {
+				enemy_vector.erase(obj);
+				break;
+			}
+			if (enemys_to_kill.size() > 0) enemys_to_kill.clear();
+
+
 		}
 	}
 	catch (...) {
@@ -125,8 +180,8 @@ void cleanUp() {
 	SDL_Quit();
 }
 
-inline bool InSight(const Vecf2 & a, const Vecf2& b) {
-	Vecf2 r{ a.x - (b.x + SCREEN_WIDTH / 2), a.y - b.y };
+inline bool InSight(const Vecf2 & camera, const Vecf2& obj) {
+	Vecf2 r{ obj.x - (camera.x + SCREEN_WIDTH / 2), camera.y - camera.y };
 	return sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT + 75;
 }
 

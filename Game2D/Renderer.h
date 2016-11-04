@@ -23,6 +23,6 @@ public:
 	void Clear();
 	void RenderPresent();
 
-	void render(Object * obj, Vecf2 scale = Vecf2{ 1.f,1.f }, float angle = 0);
+	void render(Object * obj, Vecf2 scale = Vecf2{ 1.f,1.f }, float angle = 0, SDL_Point *center = NULL);
 
 };

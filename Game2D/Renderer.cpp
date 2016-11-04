@@ -56,7 +56,7 @@ void Renderer::RenderPresent()
 *		default of nullptr draws the entire texture
 */
 
-void Renderer::render(Object * obj, Vecf2 scale, float angle)
+void Renderer::render(Object * obj, Vecf2 scale, float angle, SDL_Point *center)
 {
 	if (obj != nullptr) {
 		SDL_Rect dst;
@@ -73,6 +73,6 @@ void Renderer::render(Object * obj, Vecf2 scale, float angle)
 
 		SDL_RenderSetScale(ren, scale.x, scale.y);
 		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
-		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, NULL, SDL_FLIP_NONE);
+		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, center, SDL_FLIP_NONE);
 	}
 }

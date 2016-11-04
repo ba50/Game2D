@@ -53,11 +53,11 @@ namespace Map {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
 						ren->camera->position = Vecf2{ x - SCREEN_WIDTH / 2.f,y - SCREEN_HEIGHT / 2.f };
 						background_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, 0, SCREEN_WIDTH,170 }, "BG.png", ren));
+							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, -1500, SCREEN_WIDTH, 3000 }, "BG.png", ren));
 						background_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 0 ,0,  SCREEN_WIDTH, 170 }, "BG.png", ren));
+							std::make_shared<Static>(SDL_Rect{ 0 ,-1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
 						background_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH,0,  SCREEN_WIDTH, 170 }, "BG.png", ren));
+							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, -1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
 					}
 					x += BLOCK_SIZE;
 				}

@@ -11,10 +11,10 @@ class Enemy :
 	public Object
 {
 public:
-	unsigned int counter;
+	unsigned pain;
 	bool life;
 	Vecf2 scale, scaleMax;
-	bool max;
+	bool max_size;
 
 public:
 	Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);
@@ -26,7 +26,7 @@ public:
 	void Detect(std::shared_ptr<Character> cha);
 
 	void Enemy::Collision(std::shared_ptr<Static> stat);
-	void Enemy::Collision(std::shared_ptr<Bullet> bull);
+	void Enemy::Collision(std::shared_ptr<Bullet> &bull);
 
 };
 

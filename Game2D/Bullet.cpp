@@ -19,7 +19,8 @@ Bullet::Bullet(const Vecf2 position, float angle, const Vecf2 start_velocity, co
 	velocity.x = velocity.x*600.f + start_velocity.x;
 	velocity.y = velocity.y*600.f + start_velocity.y;
 
-	timer = 50;
+	timer = 100;
+	collision_r = width;
 }
 
 Bullet::~Bullet()

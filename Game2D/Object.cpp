@@ -12,6 +12,8 @@ Object::Object(const std::shared_ptr<Renderer> &ren) :
 	momentum({0.f,0.f}),
 	scale({1.f,1.f}),
 	angle(0.f),
+	collision_r(1.f),
+	health(1.f),
 	ren(ren)
 {}
 

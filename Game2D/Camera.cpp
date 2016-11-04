@@ -22,6 +22,24 @@ Camera::Camera(const Camera &cam)
 
 void Camera::MoveTo(std::shared_ptr<Character> cha, float deltaTime)
 {
-	position.x = cha->position.x - toCenter.x;
-	position.y = cha->position.y - toCenter.y;
+	if (shake_vector.size() == 0) {
+		position.x = cha->position.x - toCenter.x;
+		position.y = cha->position.y - toCenter.y;
+	}
+	else {
+		position.x = (cha->position.x - toCenter.x) + shake_vector.back().x;
+		position.y = (cha->position.y - toCenter.y) + shake_vector.back().y;
+		shake_vector.pop_back();
+	}
+}
+
+void Camera::Shake(){
+	if (shake_vector.size() == 0) {
+		for (int i = 0; i < 5; i++) {
+			shake_vector.push_back(Vecf2{
+				.005f*SCREEN_WIDTH*sinf(Math::Rand(0,2 * PI)),
+				.005f*SCREEN_HEIGHT*cosf(Math::Rand(0,2 * PI)),
+			});
+		}
+	}
 }

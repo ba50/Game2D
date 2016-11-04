@@ -11,7 +11,7 @@ class Character :
 	public Object
 {
 public:
-	Vecf2 newPosition, delta_velocity;
+	Vecf2 newPosition, delta_force, force, max_momentum;
 	float delta_angle;
 	unsigned bullet_trigger, bullet_trigger_base;
 
@@ -28,5 +28,5 @@ public:
 	void Update(const float deltaTime, std::vector<std::shared_ptr<Bullet>> &bullet_vector);
 	void Draw() override;
 	void Inputs();
-	void Collison();
+	void Collison(std::shared_ptr<Object> obj);
 };

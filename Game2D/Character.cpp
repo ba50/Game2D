@@ -5,31 +5,36 @@
 #include "Texture.h"
 
 #include "Bullet.h"
+#include "Gameplay.h"
 
 std::vector<bool> Inputs::slope;
 
 Character::Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren) :
 	Object(ren),
 	life(true),
-	delta_angle(10),
-	bullet_trigger_base(2),
-	bullet_trigger(2)
+	delta_angle(0.f),
+	bullet_trigger_base(5),
+	bullet_trigger(5)
 {
-	width = BLOCK_SIZE;
-	height = BLOCK_SIZE;
+	width = 2*BLOCK_SIZE;
+	height = 2*BLOCK_SIZE;
 	position.x = x;
 	position.y = y;
 	sprite = std::make_shared<Texture>(file, Object::ren);
 
 	clips.push_back(SDL_Rect{ 0, 0, static_cast<int>(width), static_cast<int>(height) });
+	clips.push_back(SDL_Rect{ 0, static_cast<int>(height), static_cast<int>(width), static_cast<int>(height) });
 
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
+	mass = 1e3f;
+	delta_force = { 4e5f, 4e5f };
+	force = { 0.f,0.f };
+	max_momentum = { 4e5f, 4e5f };
+	newPosition = position;
 
-	mass = 1000.f;
-	delta_velocity = { 50.f, 50.f };
-
+	collision_r = width;
 }
 
 Character::~Character()
@@ -41,13 +46,19 @@ void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Bullet
 {
 	//Inputs
 	if (currentInput[Input::Up]) {
-		velocity.x += delta_velocity.x*sinf(PI*angle / 180.f);
-		velocity.y -= delta_velocity.y*cosf(PI*angle / 180.f);
+		useClip = 1;
+		force.x = delta_force.x*sinf(PI*angle / 180.f);
+		force.y = -delta_force.y*cosf(PI*angle / 180.f);
+		if(position.y >0) force.y -= 1e3f*mass*g;
+		if(position.y < -3000) force.y += 1e3f*mass*g;
+		delta_angle = 1.7f;
 	}
-
-	if (currentInput[Input::Down]) {
-		velocity.x -= delta_velocity.x*sinf(PI*angle / 180.f);
-		velocity.y += delta_velocity.y*cosf(PI*angle / 180.f);
+	else {
+		useClip = 0;
+		force.x = 0.f;
+		if (position.y < 0) force.y += .2e1f*mass*g;
+		if(position.y >0) force.y -= 1e1f*mass*g;
+		delta_angle = 5.f;
 	}
 
 	if (currentInput[Input::Right]) {
@@ -74,20 +85,31 @@ void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Bullet
 
 	//Physic
 
-	if (position.y < 0) {
-		velocity.y += .2f*sqrtf(abs(2.f*g*position.y));
-	}
-	else {
-		velocity.y -= sqrtf(abs(2.f*g*position.y));
-	}
+	momentum.x += force.x*deltaTime / 2.f;
+	newPosition.x += momentum.x*deltaTime / mass;
+	momentum.x += force.x*deltaTime / 2.f;
 
-	position.x += velocity.x*deltaTime;
-	position.y += velocity.y*deltaTime;
+	momentum.y += force.y*deltaTime / 2.f;
+	newPosition.y += momentum.y*deltaTime / mass;
+	momentum.y += force.y*deltaTime / 2.f;
+
+	velocity.x = momentum.x / mass;
+	velocity.y = momentum.y / mass;
+
+	if (momentum.x > max_momentum.x) momentum.x = max_momentum.x;
+	if (momentum.x < -max_momentum.x) momentum.x = -max_momentum.x;
+
+	if (momentum.y > max_momentum.y) momentum.y = max_momentum.y;
+	if (momentum.y < -max_momentum.y) momentum.y = -max_momentum.y;
+
+	
+
+	position = newPosition;
 }
 
 void Character::Draw()
 {
-	ren->render(this, scale , angle);
+	ren->render(this, scale, angle);
 }
 
 void Character::Inputs()
@@ -174,6 +196,17 @@ void Character::Inputs()
 	}
 }
 
-void Character::Collison()
+void Character::Collison(std::shared_ptr<Object> obj)
 {
+	if (sqrtf(
+		(obj->position.x - position.x)*(obj->position.x - position.x) +
+		(obj->position.y - position.y)*(obj->position.y - position.y)) <
+		(obj->collision_r / 4.f + collision_r / 4.f)) {
+		health -= 1.5;
+		if (health <= 0.f) {
+			life = false;
+		}
+		ren->camera->Shake();
+		Gameplay::slow_motion = true;
+	}
 }
