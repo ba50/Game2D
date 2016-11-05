@@ -11,8 +11,9 @@ class Enemy :
 	public Object
 {
 public:
-	unsigned pain;
-	bool life;
+	unsigned bullet_trigger, bullet_trigger_base;
+	unsigned pain, death_timer, death_delay;
+	bool life, time_to_die;
 	Vecf2 scale, scaleMax;
 	bool max_size;
 
@@ -23,7 +24,7 @@ public:
 	void Update(const float deltaTime);
 	void Draw() override;
 
-	void Detect(std::shared_ptr<Character> cha);
+	void Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<Bullet>> &bullet_vector);
 
 	void Enemy::Collision(std::shared_ptr<Static> stat);
 	void Enemy::Collision(std::shared_ptr<Bullet> &bull);

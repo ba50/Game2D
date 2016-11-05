@@ -60,7 +60,4 @@ void Swarm::Draw()
 
 void Swarm::Detect(std::shared_ptr<Character> cha)
 {
-	for (auto& enemy : enemyList) {
-		enemy->Detect(cha);
-	}
 }

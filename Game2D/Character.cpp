@@ -6,6 +6,7 @@
 
 #include "Bullet.h"
 #include "Gameplay.h"
+#include "Audio.h"
 
 std::vector<bool> Inputs::slope;
 
@@ -28,10 +29,10 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
-	mass = 1e3f;
-	delta_force = { 4e5f, 4e5f };
+	mass = 1e2f;
+	delta_force = { 4.5e5f, 4.5e5f };
 	force = { 0.f,0.f };
-	max_momentum = { 4e5f, 4e5f };
+	max_momentum = { 5e4f, 5e4f };
 	newPosition = position;
 
 	collision_r = width;
@@ -42,22 +43,34 @@ Character::~Character()
 	printf("Delete Character\n");
 }
 
-void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Bullet>> &bullet_vector)
+void Character::Update(const float deltaTime,
+		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
+		std::shared_ptr<Audio> audio)
 {
 	//Inputs
 	if (currentInput[Input::Up]) {
 		useClip = 1;
+
 		force.x = delta_force.x*sinf(PI*angle / 180.f);
 		force.y = -delta_force.y*cosf(PI*angle / 180.f);
+
+		if (abs(momentum.x) > .1f*max_momentum.x) {
+			if (position.y < 0) force.y += 1e1f*mass*g;
+		}
+
 		if(position.y >0) force.y -= 1e3f*mass*g;
+
 		if(position.y < -3000) force.y += 1e3f*mass*g;
-		delta_angle = 1.7f;
+
+		delta_angle = 1.5f;
 	}
 	else {
+
 		useClip = 0;
-		force.x = 0.f;
-		if (position.y < 0) force.y += .2e1f*mass*g;
-		if(position.y >0) force.y -= 1e1f*mass*g;
+
+		if (position.y < 0) force.y += 2e1f*mass*g;
+		if (position.y-10.f >= 0) momentum.y *= -1;
+
 		delta_angle = 5.f;
 	}
 
@@ -78,6 +91,7 @@ void Character::Update(const float deltaTime, std::vector<std::shared_ptr<Bullet
 	if (currentInput[Input::Shot]) {
 		if (bullet_trigger == 0) {
 			bullet_vector.push_back(std::make_shared<Bullet>(position, angle, velocity, "Bullet.png", ren));
+			audio->PlayExplosion();
 			bullet_trigger = bullet_trigger_base;
 		}
 		bullet_trigger--;

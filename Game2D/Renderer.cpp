@@ -10,7 +10,7 @@ Renderer::Renderer()
 {
 //	Start up SDL and make sure it went ok
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		Error::LogSDL(std::cout, "SDL_Init");
+		Error::LogSDL(std::cout, "SDL_Init_Video");
 	}
 
 //	Setup our window and renderer

@@ -12,7 +12,11 @@
 
 Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
 	Object(ren),
+	bullet_trigger_base(50),
+	pain(0),
+	death_delay(2),
 	life(true),
+	time_to_die(false),
 	scale(Vecf2{ 1.f,1.f }),
 	max_size(false)
 {
@@ -24,22 +28,23 @@ Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Ren
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 	clips.push_back(SDL_Rect{ 32,0,static_cast<int>(width), static_cast<int>(height) });
 	clips.push_back(SDL_Rect{ 0,32,static_cast<int>(width), static_cast<int>(height) });
+	clips.push_back(SDL_Rect{ 32,32,static_cast<int>(width), static_cast<int>(height) });
 
 	velocity = Vecf2{ 0.f, 0.f };
-	scaleMax = Vecf2{ Math::Rand(1.f,7.f), Math::Rand(1.f,7.f) };
+	scaleMax = Vecf2{ Math::Rand(1.f,2.f), Math::Rand(1.f,2.f) };
 	collision_r = width;
 	health = 10.f;
-	pain = 0;
+	death_timer = death_delay;
+	bullet_trigger = bullet_trigger_base;
 }
 
 Enemy::~Enemy()
 {
 }
 
-void Enemy::Update(float deltaTime)
+void Enemy::Update(const float deltaTime)
 {
-	position.x += velocity.x*deltaTime;
-	position.y += velocity.y*deltaTime;
+	
 	if (scale.x < scaleMax.x && !max_size)
 	{
 		scale.x += 0.05f;
@@ -60,6 +65,8 @@ void Enemy::Update(float deltaTime)
 
 	collision_r = scale.x*width;
 
+	
+
 	if (health > 3.f) {
 		useClip = 0;
 	}
@@ -71,6 +78,15 @@ void Enemy::Update(float deltaTime)
 		useClip = 2;
 		pain--;
 	}
+
+	if (time_to_die) {
+		death_timer--;
+		useClip = 3;
+		if (death_timer == 0) life = false;
+	}
+
+	position.x += velocity.x*deltaTime;
+	position.y += velocity.y*deltaTime;
 }
 
 void Enemy::Draw()
@@ -78,12 +94,26 @@ void Enemy::Draw()
 	ren->render(this, scale);
 }
 
-void Enemy::Detect(std::shared_ptr<Character> cha)
+void Enemy::Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<Bullet>> &bullet_vector)
 {
 	Vecf2 r{ cha->position - position };
 	if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_WIDTH/4.f) {
 		velocity.x = (cha->position.x - position.x)*1.2f;
 		velocity.y = (cha->position.y - position.y)*1.2f;
+
+		if (bullet_trigger == 0) {
+			if (velocity.y < 0) {
+				angle = 180.f*atan(velocity.x / abs(velocity.y)) / PI;
+			}
+			else {
+				angle = 180.f-180.f*atan(velocity.x / abs(velocity.y)) / PI;
+			}
+
+
+			bullet_vector.push_back(std::make_shared<Bullet>(position, angle, velocity, "Bullet.png", ren));
+			bullet_trigger = bullet_trigger_base;
+		}
+		bullet_trigger--;
 
 	}
 	else
@@ -117,9 +147,9 @@ void Enemy::Collision(std::shared_ptr<Bullet> &bull)
 		(bull->collision_r/2.f + collision_r/2.f)) {
 		health -= 1.5;
 		if (health <= 0.f) {
-			life = false;
+			time_to_die = true;
 		}
-		bull->life = false;
+		bull->time_to_die = true;
 		Gameplay::score = true;
 		pain = 3;
 	}

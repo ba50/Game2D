@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Define.h"
 #include "Inputs.h"
+#include "Audio.h"
 
 #include "Character.h"
 #include "Bullet.h"
@@ -19,17 +20,23 @@ int main(int, char**) {
 	try {
 
 		auto renderer = std::make_shared<Renderer>();
+		auto audio = std::make_shared<Audio>();
 
 		std::shared_ptr<Character> character;
-		std::vector<std::shared_ptr<Bullet>> bullet_vector;
+		std::vector<std::shared_ptr<Bullet>> bullet_character_vector;
+		std::vector<std::shared_ptr<Bullet>> bullet_enemy_vector;
 		std::vector<std::shared_ptr<Static>> background_vector;
+		std::vector<std::shared_ptr<Static>> first_plan_vector;
 		std::vector<std::shared_ptr<Enemy>> enemy_vector;
 
-		std::vector<std::vector<std::shared_ptr<Bullet>>::iterator> bullets_to_kill;
+		std::vector<std::vector<std::shared_ptr<Bullet>>::iterator> bullets_character_to_kill;
+		std::vector<std::vector<std::shared_ptr<Bullet>>::iterator> bullets_enemy_to_kill;
 		std::vector<std::vector<std::shared_ptr<Enemy>>::iterator> enemys_to_kill;
 
 		//Load Map
-		Map::Load("dev.csv", character, background_vector, renderer);
+		Map::Load("dev.csv", character, first_plan_vector, background_vector, renderer);
+
+		audio->PlayMusic();
 
 		//Main loop
 		bool quit = false;
@@ -51,12 +58,17 @@ int main(int, char**) {
 				renderer->camera->MoveTo(character, Gameplay::deltaTime);
 
 				//Update character
-				character->Update(Gameplay::deltaTime, bullet_vector);
+				character->Update(Gameplay::deltaTime, bullet_character_vector, audio);
 
 				//Update bullets
-				for (auto& bullet : bullet_vector) {
+				for (auto& bullet : bullet_character_vector) {
 					bullet->Update(Gameplay::deltaTime);
 				}
+
+				for (auto& bullet : bullet_enemy_vector) {
+					bullet->Update(Gameplay::deltaTime);
+				}
+
 				//Update enemy
 				if (enemy_vector.size() < 50) {
 					if (rand(0.f, 1.f) < 0.25f) {
@@ -73,7 +85,7 @@ int main(int, char**) {
 				}
 
 				for (auto& enemy : enemy_vector) {
-					enemy->Detect(character);
+					enemy->Detect(character, bullet_enemy_vector);
 					enemy->Update(Gameplay::deltaTime);
 					if (enemy->position.y > 0.f ||
 						enemy->position.y < -3000.f ||
@@ -83,6 +95,7 @@ int main(int, char**) {
 
 				//Update background
 				for (auto& background : background_vector) {
+
 					if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
 							background->position.x -= 2 * SCREEN_WIDTH;
@@ -92,6 +105,22 @@ int main(int, char**) {
 						}
 					}
 				}
+
+				for (auto& background : first_plan_vector) {
+
+					background->position.x += 10.f*Gameplay::deltaTime;
+					background->position.x += .25f*character->velocity.x*Gameplay::deltaTime;
+
+					if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
+						if (background->position.x - character->position.x > 0) {
+							background->position.x -= 2 * SCREEN_WIDTH;
+						}
+						else {
+							background->position.x += 2 * SCREEN_WIDTH;
+						}
+					}
+				}
+
 			}
 
 			//Collision
@@ -101,14 +130,26 @@ int main(int, char**) {
 
 					character->Collison(enemy);
 
-					for (auto& bullet : bullet_vector) {
+					for (auto& bullet : bullet_character_vector) {
 						if (enemy->life) enemy->Collision(bullet);
 					}
 				}
 			}
 
+			//enemy bullets & character
+			for (auto& bulltet : bullet_enemy_vector) {
+				if (InSight(renderer->camera->position, bulltet->position)) {
+					character->Collison(bulltet);
+				}
+			}
+
 			//Draw the background
 			for (auto& background : background_vector) {
+				background->Draw();
+			}
+
+
+			for (auto& background : first_plan_vector) {
 				background->Draw();
 			}
 
@@ -118,10 +159,13 @@ int main(int, char**) {
 			}
 
 			//Draw the bullets
-			for (auto& bullet : bullet_vector){
+			for (auto& bullet : bullet_character_vector){
 				if (bullet->life) bullet->Draw();
 			}
 
+			for (auto& bullet : bullet_enemy_vector) {
+				if (bullet->life) bullet->Draw();
+			}
 			//Draw the player
 			character->Draw();
 
@@ -131,18 +175,31 @@ int main(int, char**) {
 
 			//Killer zone
 			//bullets
-			for (std::vector<std::shared_ptr<Bullet>>::iterator it = bullet_vector.begin(); it != bullet_vector.end(); it++) {
+			for (std::vector<std::shared_ptr<Bullet>>::iterator it = bullet_character_vector.begin(); it != bullet_character_vector.end(); it++) {
 
 				if (!it->get()->life) {
-					bullets_to_kill.push_back(it);
+					bullets_character_to_kill.push_back(it);
 				}
 			}
 
-			for (auto& obj : bullets_to_kill) {
-				bullet_vector.erase(obj);
+			for (auto& obj : bullets_character_to_kill) {
+				bullet_character_vector.erase(obj);
 				break;
 			}
-			if(bullets_to_kill.size() > 0) bullets_to_kill.clear();
+			if(bullets_character_to_kill.size() > 0) bullets_character_to_kill.clear();
+
+			for (std::vector<std::shared_ptr<Bullet>>::iterator it = bullet_enemy_vector.begin(); it != bullet_enemy_vector.end(); it++) {
+
+				if (!it->get()->life) {
+					bullets_enemy_to_kill.push_back(it);
+				}
+			}
+
+			for (auto& obj : bullets_enemy_to_kill) {
+				bullet_enemy_vector.erase(obj);
+				break;
+			}
+			if (bullets_enemy_to_kill.size() > 0) bullets_enemy_to_kill.clear();
 
 			//enemys
 			for (std::vector<std::shared_ptr<Enemy>>::iterator it = enemy_vector.begin(); it != enemy_vector.end(); it++) {

@@ -39,7 +39,9 @@ namespace Error
 
 namespace Map {
 	static void Load(const std::string &file, std::shared_ptr<Character> &player,
-		std::vector<std::shared_ptr<Static>> &background_vector, std::shared_ptr<Renderer> ren) {
+		std::vector<std::shared_ptr<Static>> &first_plan_vector,
+		std::vector<std::shared_ptr<Static>> &background_vector,
+		std::shared_ptr<Renderer> ren) {
 
 		std::ifstream in;
 		in.open(file);
@@ -52,17 +54,29 @@ namespace Map {
 					if (c == '@') {
 						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
 						ren->camera->position = Vecf2{ x - SCREEN_WIDTH / 2.f,y - SCREEN_HEIGHT / 2.f };
+
 						background_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, -1500, SCREEN_WIDTH, 3000 }, "BG.png", ren));
 						background_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ 0 ,-1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
 						background_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, -1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
+
+						first_plan_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, 300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						first_plan_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ 0, 300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						first_plan_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, 300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
 					}
-					x += BLOCK_SIZE;
+					x += 10*BLOCK_SIZE;
+				}
+				if (c == 'c') {
+					first_plan_vector.push_back(
+						std::make_shared<Static>(SDL_Rect{ static_cast<int>(x), static_cast<int>(y),  331,  183 }, "Clouds.png", ren));
 				}
 			}
-			y -= BLOCK_SIZE;
+			y -= 10*BLOCK_SIZE;
 			x = 0;
 		}
 	}

@@ -6,6 +6,7 @@
 #include "Object.h"
 
 class Bullet;
+class Audio;
 
 class Character :
 	public Object
@@ -25,7 +26,9 @@ public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
 	~Character();
 
-	void Update(const float deltaTime, std::vector<std::shared_ptr<Bullet>> &bullet_vector);
+	void Update(const float deltaTime,
+		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
+		std::shared_ptr<Audio> audio = nullptr);
 	void Draw() override;
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);
