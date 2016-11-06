@@ -6,3 +6,4 @@ unsigned Gameplay::timer = 0;
 bool Gameplay::pausa = false;
 bool Gameplay::slow_motion = false;
 bool Gameplay::score = false;
+bool Gameplay::start = false;

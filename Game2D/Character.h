@@ -12,8 +12,8 @@ class Character :
 	public Object
 {
 public:
-	Vecf2 newPosition, delta_force, force, max_momentum;
-	float delta_angle;
+	Vecf2 newPosition, delta_velocity; 
+	float delta_angle, max_velocity;
 	unsigned bullet_trigger, bullet_trigger_base;
 
 	enum class Input { Shot, Jumpe, Left, Right, Down, Up };

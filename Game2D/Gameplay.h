@@ -11,6 +11,7 @@ struct Gameplay {
 	static bool pausa;
 	static bool slow_motion;
 	static bool score;
+	static bool start;
 
 
 	static void Update() {
