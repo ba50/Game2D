@@ -29,8 +29,9 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
-	delta_velocity = { 0.f, 0.f };
-	max_velocity = 5e2f;
+	delta_velocity = { 1e1f, 1e1f };
+	max_velocity = 3e2f;
+	mass = 1e2;
 
 	collision_r = width;
 }
@@ -44,21 +45,24 @@ void Character::Update(const float deltaTime,
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio)
 {
+	Vecf2 newVelocity = velocity;
 
 	//Inputs
 	if (currentInput[Input::Up]) {
 		if (!Gameplay::start) Gameplay::start = true;
 		useClip = 1;
 
-	
+		newVelocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
+		newVelocity.y += -delta_velocity.y*cosf(angle*PI / 180.f);
 
-		if (velocity.Len() < max_velocity) {
-			delta_velocity.x += 1e1f*Math::Sgn(angle);
-			delta_velocity.y += 1e1f*Math::Sgn(angle);
-		}
+		delta_angle = -1e3f*PI*asinf((newVelocity.y - velocity.y) /
+			sqrtf((newVelocity.x - velocity.x)*(newVelocity.x - velocity.x) +
+				(newVelocity.y - velocity.y)*(newVelocity.y - velocity.y)))/180.f;
+
+		printf("%f\n", delta_angle);
 
 
-		delta_angle = 2.f;
+
 	}
 	else {
 		useClip = 0;
@@ -68,14 +72,14 @@ void Character::Update(const float deltaTime,
 
 	if (currentInput[Input::Right]) {
 		angle += delta_angle;
-		if (angle > 360) {
+		if (angle > 180) {
 			angle -= 360;
 		}
 	}
 
 	if (currentInput[Input::Left]) {
 		angle -= delta_angle;
-		if (angle < -360) {
+		if (angle < -180) {
 			angle += 360;
 		}
 	}
@@ -89,18 +93,57 @@ void Character::Update(const float deltaTime,
 		bullet_trigger--;
 	}
 
-	if (delta_velocity.Len() > 5.f) {
-		delta_velocity.x -= 1e0f*Math::Sgn(angle);
-		delta_velocity.y -= 1e0f*Math::Sgn(angle);
-	}
-	
-	printf("%f, %f\n", delta_velocity.x, delta_velocity.y);
-
-	velocity.x = delta_velocity.x*sinf(angle*PI / 180.f)*Math::Sgn(angle);
-	velocity.y = -delta_velocity.y*cosf(angle*PI / 180.f)*Math::Sgn(angle);
-
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
+
+
+	////Inputs
+	//if (currentInput[Input::Up]) {
+	//	if (!Gameplay::start) Gameplay::start = true;
+	//	useClip = 1;
+
+	//	delta_velocity.x = 1e4f*sinf(angle*PI / 180.f);
+	//	delta_velocity.y = -1e4f*cosf(angle*PI / 180.f);
+
+	//	delta_angle = 2.f;
+	//}
+	//else {
+	//	useClip = 0;
+
+	//	delta_angle = 4.f;
+	//}
+
+	//if (currentInput[Input::Right]) {
+	//	angle += delta_angle;
+	//	if (angle > 180) {
+	//		angle -= 360;
+	//	}
+	//}
+
+	//if (currentInput[Input::Left]) {
+	//	angle -= delta_angle;
+	//	if (angle < -180) {
+	//		angle += 360;
+	//	}
+	//}
+
+	//if (currentInput[Input::Shot]) {
+	//	if (bullet_trigger == 0) {
+	//		bullet_vector.push_back(std::make_shared<Bullet>(position, angle, velocity, "Bullet.png", ren));
+	//		audio->PlayExplosion();
+	//		bullet_trigger = bullet_trigger_base;
+	//	}
+	//	bullet_trigger--;
+	//}
+
+	//momentum.x = delta_velocity.x*deltaTime / 2.f;
+	//position.x += momentum.x*deltaTime / mass;
+	//momentum.x = delta_velocity.x*deltaTime / 2.f;
+
+	//momentum.y = delta_velocity.y*deltaTime / 2.f;
+	//position.y += momentum.y*deltaTime / mass;
+	//momentum.y = delta_velocity.y*deltaTime / 2.f;
+
 
 }
 

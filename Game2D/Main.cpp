@@ -79,7 +79,7 @@ int main(int, char**) {
 							y > -3000 ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
 							x > -3 * (character->position.x + SCREEN_WIDTH)) {
-							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
+							//enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
 						}
 					}
 				}
@@ -108,8 +108,7 @@ int main(int, char**) {
 
 				for (auto& background : first_plan_vector) {
 
-					background->position.x += 10.f*Gameplay::deltaTime;
-					background->position.x += .25f*character->velocity.x*Gameplay::deltaTime;
+					background->position.x += 1.f*Gameplay::deltaTime;
 
 					if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
