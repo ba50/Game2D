@@ -36,6 +36,7 @@ int main(int, char**) {
 		//Load Map
 		Map::Load("dev.csv", character, first_plan_vector, background_vector, renderer);
 
+		//Statt music
 		audio->PlayMusic();
 
 		//Main loop
@@ -79,7 +80,7 @@ int main(int, char**) {
 							y > -3000 ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
 							x > -3 * (character->position.x + SCREEN_WIDTH)) {
-			//				enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
+							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
 						}
 					}
 				}
@@ -96,12 +97,12 @@ int main(int, char**) {
 				//Update background
 				for (auto& background : background_vector) {
 
-					if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
+					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
-							background->position.x -= 2 * SCREEN_WIDTH;
+							background->position.x -= 3 * SCREEN_WIDTH;
 						}
 						else {
-							background->position.x += 2 * SCREEN_WIDTH;
+							background->position.x += 3 * SCREEN_WIDTH;
 						}
 					}
 				}
@@ -147,11 +148,6 @@ int main(int, char**) {
 				background->Draw();
 			}
 
-
-			for (auto& background : first_plan_vector) {
-				background->Draw();
-			}
-
 			//Draw the enemy
 			for (auto& enemy : enemy_vector) {
 				if(enemy->life) enemy->Draw();
@@ -165,9 +161,14 @@ int main(int, char**) {
 			for (auto& bullet : bullet_enemy_vector) {
 				if (bullet->life) bullet->Draw();
 			}
+
 			//Draw the player
 			character->Draw();
 
+			//Draw first plan
+			for (auto& first_plan : first_plan_vector) {
+				first_plan->Draw();
+			}
 
 			//Update the screen
 			renderer->RenderPresent();

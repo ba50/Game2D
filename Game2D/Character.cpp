@@ -48,6 +48,9 @@ void Character::Update(const float deltaTime,
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio)
 {
+	if (position.y <= -3000.f || position.y >= 500) velocity.y = 0;
+
+
 	//Inputs
 	if (currentInput[Input::Up]) {
 		if (!Gameplay::start) velocity.y = -max_velocity;
@@ -74,7 +77,6 @@ void Character::Update(const float deltaTime,
 		else{
 			delta_angle = 1.f;
 		}
-		printf("%f, %f: %f\n", velocity.x, velocity.y, velocity.Len());
 	}
 	else {
 		max_speed_x = true;
@@ -82,10 +84,14 @@ void Character::Update(const float deltaTime,
 		useClip = 0;
 
 		if (Gameplay::start) {
-			velocity.y += 4.f;
+			//gravity
+			if(position.y <=0) velocity.y += 4.f;
 			delta_angle = 6.f;
 		}
 	}
+
+
+	printf("%f, %f: %f\n", velocity.x, velocity.y, sqrtf(max_velocity)*cosf(2 * PI*(-position.y)/5000.f + PI/2.f));
 
 	if (currentInput[Input::Right]) {
 		angle += delta_angle;
@@ -115,9 +121,7 @@ void Character::Update(const float deltaTime,
 		if (angle > 0) angle -= 10.f;
 	}
 
-	if (position.y < -1000.f) {
-		velocity.y = -max_velocity*cosf(2 * PI*(100.f+position.y));
-	}
+	if(position.y < -2900.f) velocity.y += .5f*max_velocity*cosf(2 * PI*(-position.y)/5000.f + PI/2.f);
 
 	if (Gameplay::start) {
 
