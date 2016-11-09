@@ -36,7 +36,7 @@ int main(int, char**) {
 		//Load Map
 		Map::Load("dev.csv", character, first_plan_vector, background_vector, renderer);
 
-	//	audio->PlayMusic();
+		audio->PlayMusic();
 
 		//Main loop
 		bool quit = false;
@@ -79,7 +79,7 @@ int main(int, char**) {
 							y > -3000 ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
 							x > -3 * (character->position.x + SCREEN_WIDTH)) {
-							//enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
+			//				enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
 						}
 					}
 				}

@@ -35,7 +35,8 @@ Character::Character(const float x, const float y, const std::string &file, std:
 
 	collision_r = width;
 
-	max_speed = false;
+	max_speed_x = false;
+	max_speed_y = false;
 }
 
 Character::~Character()
@@ -47,32 +48,42 @@ void Character::Update(const float deltaTime,
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio)
 {
-
 	//Inputs
 	if (currentInput[Input::Up]) {
+		if (!Gameplay::start) velocity.y = -max_velocity;
 		Gameplay::start = true;
 		useClip = 1;
-		if (!max_speed) {
-			velocity.x = max_velocity*sinf(angle*PI / 180.f);
+		if (!max_speed_x) velocity.x = max_velocity*sinf(angle*PI / 180.f);
+	
+		else {
+			velocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
+			if (abs(velocity.x) > max_velocity) max_speed_x = false;
+		}
+
+		if (!max_speed_y) {
 			velocity.y = -max_velocity*cosf(angle*PI / 180.f);
 		}
 		else {
-			velocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
 			velocity.y -= delta_velocity.y*cosf(angle*PI / 180.f);
-			if (velocity.Len() > max_velocity) max_speed = false;
+			if (abs(velocity.y) > max_velocity) max_speed_y = false;
 		}
 		
-		delta_angle = 2.f;
+		if (!max_speed_x && !max_speed_y) {
+			delta_angle = 2.f;
+		}
+		else{
+			delta_angle = 1.f;
+		}
 		printf("%f, %f: %f\n", velocity.x, velocity.y, velocity.Len());
 	}
 	else {
-		max_speed = true;
+		max_speed_x = true;
+		max_speed_y = true;
 		useClip = 0;
 
 		if (Gameplay::start) {
 			velocity.y += 4.f;
 			delta_angle = 6.f;
-
 		}
 	}
 
@@ -99,58 +110,26 @@ void Character::Update(const float deltaTime,
 		bullet_trigger--;
 	}
 
+	if (position.y > 0) {
+		if (angle < 0) angle += 10.f;
+		if (angle > 0) angle -= 10.f;
+	}
+
+	if (position.y < -1000.f) {
+		velocity.y = -max_velocity*cosf(2 * PI*(100.f+position.y));
+	}
+
+	if (Gameplay::start) {
+
+		if (velocity.x > 0) velocity.x -= 1.f;
+		if (velocity.x < 0) velocity.x += 1.f;
+
+		if (velocity.y > 0) velocity.y -= 1.f;
+		if (velocity.y < 0) velocity.y += 1.f;
+	}
+
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
-
-
-	////Inputs
-	//if (currentInput[Input::Up]) {
-	//	if (!Gameplay::start) Gameplay::start = true;
-	//	useClip = 1;
-
-	//	delta_velocity.x = 1e4f*sinf(angle*PI / 180.f);
-	//	delta_velocity.y = -1e4f*cosf(angle*PI / 180.f);
-
-	//	delta_angle = 2.f;
-	//}
-	//else {
-	//	useClip = 0;
-
-	//	delta_angle = 4.f;
-	//}
-
-	//if (currentInput[Input::Right]) {
-	//	angle += delta_angle;
-	//	if (angle > 180) {
-	//		angle -= 360;
-	//	}
-	//}
-
-	//if (currentInput[Input::Left]) {
-	//	angle -= delta_angle;
-	//	if (angle < -180) {
-	//		angle += 360;
-	//	}
-	//}
-
-	//if (currentInput[Input::Shot]) {
-	//	if (bullet_trigger == 0) {
-	//		bullet_vector.push_back(std::make_shared<Bullet>(position, angle, velocity, "Bullet.png", ren));
-	//		audio->PlayExplosion();
-	//		bullet_trigger = bullet_trigger_base;
-	//	}
-	//	bullet_trigger--;
-	//}
-
-	//momentum.x = delta_velocity.x*deltaTime / 2.f;
-	//position.x += momentum.x*deltaTime / mass;
-	//momentum.x = delta_velocity.x*deltaTime / 2.f;
-
-	//momentum.y = delta_velocity.y*deltaTime / 2.f;
-	//position.y += momentum.y*deltaTime / mass;
-	//momentum.y = delta_velocity.y*deltaTime / 2.f;
-
-
 }
 
 void Character::Draw()
