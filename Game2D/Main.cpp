@@ -36,7 +36,7 @@ int main(int, char**) {
 		//Load Map
 		Map::Load("dev.csv", character, first_plan_vector, background_vector, renderer);
 
-		audio->PlayMusic();
+	//	audio->PlayMusic();
 
 		//Main loop
 		bool quit = false;

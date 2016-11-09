@@ -30,10 +30,12 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	Inputs::slope.push_back(false);
 
 	delta_velocity = { 1e1f, 1e1f };
-	max_velocity = 3e2f;
+	max_velocity = 5e2f;
 	mass = 1e2;
 
 	collision_r = width;
+
+	max_speed = false;
 }
 
 Character::~Character()
@@ -45,29 +47,33 @@ void Character::Update(const float deltaTime,
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio)
 {
-	Vecf2 newVelocity = velocity;
 
 	//Inputs
 	if (currentInput[Input::Up]) {
-		if (!Gameplay::start) Gameplay::start = true;
+		Gameplay::start = true;
 		useClip = 1;
-
-		newVelocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
-		newVelocity.y += -delta_velocity.y*cosf(angle*PI / 180.f);
-
-		delta_angle = -1e3f*PI*asinf((newVelocity.y - velocity.y) /
-			sqrtf((newVelocity.x - velocity.x)*(newVelocity.x - velocity.x) +
-				(newVelocity.y - velocity.y)*(newVelocity.y - velocity.y)))/180.f;
-
-		printf("%f\n", delta_angle);
-
-
-
+		if (!max_speed) {
+			velocity.x = max_velocity*sinf(angle*PI / 180.f);
+			velocity.y = -max_velocity*cosf(angle*PI / 180.f);
+		}
+		else {
+			velocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
+			velocity.y -= delta_velocity.y*cosf(angle*PI / 180.f);
+			if (velocity.Len() > max_velocity) max_speed = false;
+		}
+		
+		delta_angle = 2.f;
+		printf("%f, %f: %f\n", velocity.x, velocity.y, velocity.Len());
 	}
 	else {
+		max_speed = true;
 		useClip = 0;
 
-		delta_angle = 4.f;
+		if (Gameplay::start) {
+			velocity.y += 4.f;
+			delta_angle = 6.f;
+
+		}
 	}
 
 	if (currentInput[Input::Right]) {
