@@ -29,14 +29,13 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
-	delta_velocity = { 1e1f, 1e1f };
+	delta_velocity = { 0e1f, 0e1f };
 	max_velocity = 5e2f;
 	mass = 1e2;
 
 	collision_r = width;
 
-	max_speed_x = false;
-	max_speed_y = false;
+	max_speed = false;
 }
 
 Character::~Character()
@@ -48,50 +47,48 @@ void Character::Update(const float deltaTime,
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio)
 {
+	if(angle != 0) delta_velocity.x = 1e5f / (Math::Sgn(angle)*velocity.x + max_velocity) - 100.f;
+
+	//Box
 	if (position.y <= -3000.f || position.y >= 500) velocity.y = 0;
 
+	//if (velocity.Len() >= max_velocity) {
+	//	max_speed = true;
+	//}
+	//else
+	//{
+	//	max_speed = false;
+	//}
 
 	//Inputs
 	if (currentInput[Input::Up]) {
 		if (!Gameplay::start) velocity.y = -max_velocity;
 		Gameplay::start = true;
 		useClip = 1;
-		if (!max_speed_x) velocity.x = max_velocity*sinf(angle*PI / 180.f);
-	
-		else {
-			velocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
-			if (abs(velocity.x) > max_velocity) max_speed_x = false;
-		}
+	//	if (max_speed) {
+	////		velocity.x *= sinf(angle*PI / 180.f);
+	//		//		velocity.y *= cosf(angle*PI / 180.f);
+	//	}
+	//	else {
 
-		if (!max_speed_y) {
-			velocity.y = -max_velocity*cosf(angle*PI / 180.f);
-		}
-		else {
-			velocity.y -= delta_velocity.y*cosf(angle*PI / 180.f);
-			if (abs(velocity.y) > max_velocity) max_speed_y = false;
-		}
-		
-		if (!max_speed_x && !max_speed_y) {
-			delta_angle = 2.f;
-		}
-		else{
-			delta_angle = 1.f;
-		}
+		velocity.x += delta_velocity.x*sinf(angle*PI / 180.f);
+
+			//			velocity.y -= delta_velocity.y*cosf(angle*PI / 180.f);
+	//	}
+	
+		delta_angle = 3.f;
 	}
 	else {
-		max_speed_x = true;
-		max_speed_y = true;
 		useClip = 0;
 
 		if (Gameplay::start) {
 			//gravity
-			if(position.y <=0) velocity.y += 4.f;
+	//		if(position.y <=0) velocity.y += 4.f;
+			velocity.x = 0;
+			velocity.y = 0;
 			delta_angle = 6.f;
 		}
 	}
-
-
-	printf("%f, %f: %f\n", velocity.x, velocity.y, sqrtf(max_velocity)*cosf(2 * PI*(-position.y)/5000.f + PI/2.f));
 
 	if (currentInput[Input::Right]) {
 		angle += delta_angle;
@@ -116,21 +113,18 @@ void Character::Update(const float deltaTime,
 		bullet_trigger--;
 	}
 
+	//Sky
+	if (position.y < -3000.f)
+		velocity.y -= 2.f*(position.y + 3000.f);
+
+	//Water
 	if (position.y > 0) {
 		if (angle < 0) angle += 10.f;
 		if (angle > 0) angle -= 10.f;
 	}
 
-	if(position.y < -2900.f) velocity.y += .5f*max_velocity*cosf(2 * PI*(-position.y)/5000.f + PI/2.f);
-
-	if (Gameplay::start) {
-
-		if (velocity.x > 0) velocity.x -= 1.f;
-		if (velocity.x < 0) velocity.x += 1.f;
-
-		if (velocity.y > 0) velocity.y -= 1.f;
-		if (velocity.y < 0) velocity.y += 1.f;
-	}
+//	printf("%f, %f\n", velocity.x, velocity.y);
+	printf("%f\n", delta_velocity.x);
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;

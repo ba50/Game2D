@@ -20,7 +20,7 @@ public:
 
 	std::map<Input, bool> currentInput;
 
-	bool life, max_speed_x, max_speed_y;
+	bool life, max_speed;
 
 public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
