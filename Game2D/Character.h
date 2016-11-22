@@ -12,7 +12,7 @@ class Character :
 	public Object
 {
 public:
-	Vecf2 newPosition, delta_velocity; 
+	Vecf2 delta_velocity; 
 	float delta_angle, max_velocity;
 	unsigned bullet_trigger, bullet_trigger_base;
 
@@ -20,7 +20,7 @@ public:
 
 	std::map<Input, bool> currentInput;
 
-	bool life, max_speed;
+	bool life;
 
 public:
 	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);

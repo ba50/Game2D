@@ -98,24 +98,25 @@ int main(int, char**) {
 
 					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
-							background->position.x -= 3 * SCREEN_WIDTH;
+							background->position.x -= 4 * SCREEN_WIDTH;
 						}
 						else {
-							background->position.x += 3 * SCREEN_WIDTH;
+							background->position.x += 4 * SCREEN_WIDTH;
 						}
 					}
+
 				}
 
 				for (auto& background : first_plan_vector) {
 
 					background->position.x += 1.f*Gameplay::deltaTime;
 
-					if (abs(background->position.x - character->position.x) > SCREEN_WIDTH) {
+					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
-							background->position.x -= 2 * SCREEN_WIDTH;
+							background->position.x -= 4 * SCREEN_WIDTH;
 						}
 						else {
-							background->position.x += 2 * SCREEN_WIDTH;
+							background->position.x += 4 * SCREEN_WIDTH;
 						}
 					}
 				}

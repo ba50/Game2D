@@ -34,8 +34,6 @@ Character::Character(const float x, const float y, const std::string &file, std:
 	mass = 1e2;
 
 	collision_r = width;
-
-	max_speed = true;
 }
 
 Character::~Character()
@@ -49,7 +47,7 @@ void Character::Update(const float deltaTime,
 {
 
 	//Box
-	if (position.y <= -3000.f || position.y >= 500) velocity.y = 0;
+	if (position.y >= 500.f) velocity.y = 0;
 
 	//Inputs
 	if (currentInput[Input::Up]) {
@@ -57,14 +55,15 @@ void Character::Update(const float deltaTime,
 		Gameplay::start = true;
 		useClip = 1;
 
-		if (max_speed) {
-			velocity.x = delta_velocity.x*sinf(angle*PI / 180.f);
-			velocity.y = -delta_velocity.y*cosf(angle*PI / 180.f);
-		}
-		else {
-			velocity.x += .1f*delta_velocity.x*sinf(angle*PI / 180.f);
-			velocity.y += -.1f*delta_velocity.y*cosf(angle*PI / 180.f);
-			if (velocity.Len() > max_velocity) max_speed = true;
+		float len = velocity.Len();
+		velocity = velocity.Norm()*std::min(max_velocity, len);
+
+		velocity.x += .1f*delta_velocity.x*sinf(angle*PI / 180.f);
+		velocity.y += -.1f*delta_velocity.y*cosf(angle*PI / 180.f);
+
+		if (velocity.Len() > max_velocity){
+			velocity.Norm();
+			velocity *= max_velocity;
 		}
 
 		//gravity
@@ -72,12 +71,11 @@ void Character::Update(const float deltaTime,
 		delta_angle = 3.f;
 	}
 	else {
-		max_speed = false;
 		useClip = 0;
 
 		if (Gameplay::start) {
 			//gravity
-			if(position.y <=0) velocity.y += 4.f;
+			if(position.y <=0) velocity.y += 6.f;
 			delta_angle = 6.f;
 		}
 	}
@@ -114,9 +112,6 @@ void Character::Update(const float deltaTime,
 		if (angle < 0) angle += 10.f;
 		if (angle > 0) angle -= 10.f;
 	}
-
-	printf("%f, %f\n", velocity.x, velocity.y);
-//	printf("%f\n", delta_velocity.x);
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;

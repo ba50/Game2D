@@ -30,6 +30,13 @@ public:
 	{
 		return sqrt(LenSq());
 	}
+	inline _Vec2&		Norm() 
+	{
+		T len = this->Len();
+		this->x /= len;
+		this->y /= len;
+		return *this;
+	}
 	inline _Vec2&	Swap(_Vec2& vect)
 	{
 		const _Vec2 temp = vect;
@@ -53,6 +60,12 @@ public:
 		this->y -= rhs.y;
 		return *this;
 	}
+	inline _Vec2&	operator*=(const T &rhs)
+	{
+		this->x *= rhs;
+		this->y *= rhs;
+		return *this;
+	}
 	inline _Vec2	operator+(const _Vec2 &rhs) const
 	{
 		return _Vec2(*this) += rhs;
@@ -65,7 +78,12 @@ public:
 	{
 		return this->x * rhs.x + this->y * rhs.y;
 	}
-
+	inline _Vec2	operator*(const T &rhs)
+	{
+		this->x *= rhs;
+		this->y *= rhs;
+		return *this;
+	}
 public:
 	T x;
 	T y;
