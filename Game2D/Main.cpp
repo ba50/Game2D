@@ -10,7 +10,6 @@
 #include "Swarm.h"
 #include "Gameplay.h"
 
-
 void cleanUp();
 inline bool InSight(const Vecf2 & a, const Vecf2& b);
 inline float rand(float start, float stop);
@@ -42,9 +41,7 @@ int main(int, char**) {
 		//Main loop
 		bool quit = false;
 		while (!quit) {
-
 			quit = Inputs::Update();
-
 			//Rendering
 			renderer->Clear();
 
@@ -84,6 +81,8 @@ int main(int, char**) {
 						}
 					}
 				}
+
+				
 
 				for (auto& enemy : enemy_vector) {
 					enemy->Detect(character, bullet_enemy_vector);
