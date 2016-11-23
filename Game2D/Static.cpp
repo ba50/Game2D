@@ -2,38 +2,22 @@
 #include "Define.h"
 #include "Texture.h"
 
-Static::Static(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren, bool collidable) :
-	Object(ren)
+Static::Static(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
+	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f })
 {
-	width = BLOCK_SIZE;
-	height = BLOCK_SIZE;
-	Object::position = position;
-	sprite = std::make_shared<Texture>(file, ren);
-	Object::collidable = collidable;
-
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
-
 }
 
 Static::Static(SDL_Rect rect, const std::string & file, std::shared_ptr<Renderer> ren) :
-	Object(ren)
+	Object(0, static_cast<float>(rect.h), static_cast<float>(rect.w), width, 0, ren, file, Vecf2{ static_cast<float>(rect.x),static_cast<float>(rect.y) }, Vecf2{ 0.f, 0.f })
 {
-	position.x = static_cast<float>(rect.x);
-	position.y = static_cast<float>(rect.y);
-	width = static_cast<float>(rect.w);
-	height = static_cast<float>(rect.h);
-	sprite = std::make_shared<Texture>(file, ren);
-
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 }
 
-Static::~Static()
+Static::Static(const std::vector<SDL_Rect> clips_, const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
+	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f })
 {
-
-}
-
-void Static::Update(const float deltaTime)
-{
+		clips = clips_;
 }
 
 void Static::Draw()

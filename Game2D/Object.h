@@ -14,13 +14,14 @@ class Camera;
 
 class Object
 {
-public:
 
+public:
 	int useClip;
+
 	float height;
 	float width;
 	float collision_r;
-	float health;
+	float angle;
 
 	std::shared_ptr<Renderer> ren;
 	std::shared_ptr<Texture> sprite;
@@ -28,17 +29,23 @@ public:
 
 	Vecf2 position;
 	Vecf2 velocity;
-	Vecf2 momentum;
-	float mass;
 	Vecf2 scale;
-	float angle;
 	
-	bool collidable;
-
 public:
-	Object(const std::shared_ptr<Renderer> &ren);
-	virtual ~Object();
-	Object(const Object &obj);
+	Object(
+		int useClip,
+		float height,
+		float width,
+		float collision_r,
+		float angle,
 
+		std::shared_ptr<Renderer> ren,
+		std::string file,
+
+		Vecf2 position,
+		Vecf2 velocity,
+		Vecf2 scale = Vecf2{1.f,1.f}
+	);
 	virtual void Draw() = 0;
+
 };

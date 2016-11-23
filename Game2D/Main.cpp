@@ -1,14 +1,15 @@
 #include "Vec2.h"
-#include "Renderer.h"
 #include "Define.h"
+
 #include "Inputs.h"
+#include "Renderer.h"
 #include "Audio.h"
+#include "Gameplay.h"
 
 #include "Character.h"
 #include "Bullet.h"
 #include "Static.h"
-#include "Swarm.h"
-#include "Gameplay.h"
+#include "Enemy.h"
 
 void cleanUp();
 inline bool InSight(const Vecf2 & a, const Vecf2& b);

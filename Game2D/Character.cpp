@@ -1,53 +1,53 @@
-#include "Character.h"
+#include "Define.h"
 
 #include "Inputs.h"
-#include "Define.h"
 #include "Texture.h"
-
-#include "Bullet.h"
 #include "Gameplay.h"
 #include "Audio.h"
 
+#include "Character.h"
+#include "Bullet.h"
+#include "Static.h"
+
 std::vector<bool> Inputs::slope;
 
-Character::Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(ren),
+Character::Character(const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
+	Object(0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
 	life(true),
 	delta_angle(0.f),
+	delta_velocity(5e1),
+	max_velocity(5e2f),
+	health(10.f),
 	bullet_trigger_base(5),
 	bullet_trigger(5)
 {
-	width = 2 * BLOCK_SIZE;
-	height = 2 * BLOCK_SIZE;
-	position.x = x;
-	position.y = y;
-	sprite = std::make_shared<Texture>(file, Object::ren);
-
-	clips.push_back(SDL_Rect{ 0, 0, static_cast<int>(width), static_cast<int>(height) });
-	clips.push_back(SDL_Rect{ 0, static_cast<int>(height), static_cast<int>(width), static_cast<int>(height) });
+	clips.push_back(SDL_Rect{ 0, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
+	clips.push_back(SDL_Rect{ 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
 
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
-	delta_velocity = { 5e2f, 5e2f };
-	max_velocity = 5e2f;
-	mass = 1e2;
+	//init engine
+	std::vector<SDL_Rect> engine_clips;
 
-	collision_r = width;
-}
+	engine_clips.push_back(SDL_Rect{ 0,0,BLOCK_SIZE, BLOCK_SIZE });
+	engine_clips.push_back(SDL_Rect{ BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 
-Character::~Character()
-{
-	printf("Delete Character\n");
+	engine = std::make_unique<Static>(engine_clips, position, "Bullet.png", ren);
 }
 
 void Character::Update(const float deltaTime,
 	std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 	std::shared_ptr<Audio> audio)
 {
+	engine->position = position;
+
+	engine->position.x -= BLOCK_SIZE*sinf(angle*PI / 180.f);
+	engine->position.y += BLOCK_SIZE*cosf(angle*PI / 180.f);
 
 	//Box
-	if (position.y >= 500.f) velocity.y = 0;
+	if (position.y >= WATER_LEVEL + 500 ||
+		position.y <= SKY_LEVEL - 500) velocity.y = 0;
 
 	//Inputs
 	if (currentInput[Input::Up]) {
@@ -55,16 +55,13 @@ void Character::Update(const float deltaTime,
 		Gameplay::start = true;
 		useClip = 1;
 
+		//acceleration
+		velocity.x += delta_velocity*sinf(angle*PI / 180.f);
+		velocity.y -= delta_velocity*cosf(angle*PI / 180.f);
+
+		//clumping velocity
 		float len = velocity.Len();
 		velocity = velocity.Norm()*std::min(max_velocity, len);
-
-		velocity.x += .1f*delta_velocity.x*sinf(angle*PI / 180.f);
-		velocity.y += -.1f*delta_velocity.y*cosf(angle*PI / 180.f);
-
-		if (velocity.Len() > max_velocity){
-			velocity.Norm();
-			velocity *= max_velocity;
-		}
 
 		//gravity
 		if (position.y <= 0) velocity.y += 2.f;
@@ -75,7 +72,7 @@ void Character::Update(const float deltaTime,
 
 		if (Gameplay::start) {
 			//gravity
-			if(position.y <=0) velocity.y += 6.f;
+			if (position.y <= 0) velocity.y += 6.f;
 			delta_angle = 6.f;
 		}
 	}
@@ -96,7 +93,7 @@ void Character::Update(const float deltaTime,
 
 	if (currentInput[Input::Shot]) {
 		if (bullet_trigger == 0) {
-			bullet_vector.push_back(std::make_shared<Bullet>(position, angle, velocity, "Bullet.png", ren));
+			bullet_vector.push_back(std::make_shared<Bullet>(angle, velocity, position, "Bullet.png", ren));
 			audio->PlayExplosion();
 			bullet_trigger = bullet_trigger_base;
 		}
@@ -104,11 +101,11 @@ void Character::Update(const float deltaTime,
 	}
 
 	//Sky
-	if (position.y < -3000.f)
+	if (position.y < SKY_LEVEL)
 		velocity.y -= 2.f*(position.y + 3000.f);
 
 	//Water
-	if (position.y > 0) {
+	if (position.y > WATER_LEVEL) {
 		if (angle < 0) angle += 10.f;
 		if (angle > 0) angle -= 10.f;
 	}
@@ -120,6 +117,7 @@ void Character::Update(const float deltaTime,
 void Character::Draw()
 {
 	ren->render(this, scale, angle);
+	engine->Draw();
 }
 
 void Character::Inputs()

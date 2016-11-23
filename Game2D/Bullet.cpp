@@ -2,33 +2,16 @@
 #include "Define.h"
 #include "Texture.h"
 
-Bullet::Bullet(const Vecf2 position, float angle, const Vecf2 start_velocity, const std::string &file, std::shared_ptr<Renderer> ren):
-	Object(ren),
-	life(true)
+Bullet::Bullet(float angle, const Vecf2 start_velocit, const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
+	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ sinf(PI*angle / 180.f)*600.f + start_velocit.x, -cosf(PI*angle / 180.f)*600.f + start_velocit.y }),
+	life(true),
+	time_to_die(false),
+	timer(100),
+	death_delay(3),
+	death_timer(3)
 {
-	width = 32;
-	height = 32;
-	Object::position = position;
-	sprite = std::make_shared<Texture>(file, ren);
-
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 	clips.push_back(SDL_Rect{ 32,0,static_cast<int>(width), static_cast<int>(height) });
-
-	velocity.x = sinf(PI*angle / 180.f);
-	velocity.y = -cosf(PI*angle/180.f);
-
-	velocity.x = velocity.x*600.f + start_velocity.x;
-	velocity.y = velocity.y*600.f + start_velocity.y;
-
-	timer = 100;
-	death_delay = 3;
-	death_timer = death_delay;
-	collision_r = width;
-	time_to_die = false;
-}
-
-Bullet::~Bullet()
-{
 }
 
 void Bullet::Update(const float deltaTime) {

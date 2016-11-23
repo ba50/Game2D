@@ -14,7 +14,6 @@
 
 #include "Character.h"
 #include "Static.h"
-#include "Swarm.h"
 
 #define PI 3.1416f
 #define g 9.81f 
@@ -23,6 +22,8 @@
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
 #define BLOCK_SIZE 32
+#define SKY_LEVEL -3000
+#define WATER_LEVEL 0
 
 namespace Error
 {
@@ -53,7 +54,7 @@ namespace Map {
 			for (auto& c : buffer) {
 				if (c != ';') {
 					if (c == '@') {
-						player = std::make_shared<Character>(x, y, "MyChar.png", ren);
+						player = std::make_shared<Character>(Vecf2{ x, y }, "MyChar.png", ren);
 						ren->camera->position = Vecf2{ x - SCREEN_WIDTH / 2.f,y - SCREEN_HEIGHT / 2.f };
 
 					background_vector.push_back(

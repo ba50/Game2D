@@ -131,7 +131,6 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Static.cpp" />
-    <ClCompile Include="Swarm.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,7 +146,6 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Static.h" />
-    <ClInclude Include="Swarm.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Vec2.h" />
   </ItemGroup>

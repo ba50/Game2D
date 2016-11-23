@@ -7,28 +7,34 @@
 
 class Bullet;
 class Audio;
+class Static;
 
 class Character :
 	public Object
 {
 public:
-	Vecf2 delta_velocity; 
-	float delta_angle, max_velocity;
+	bool life;
+
+	float delta_angle;
+	float delta_velocity; 
+	float max_velocity;
+	float health;
+
 	unsigned bullet_trigger, bullet_trigger_base;
 
 	enum class Input { Shot, Jumpe, Left, Right, Down, Up };
 
 	std::map<Input, bool> currentInput;
 
-	bool life;
+	std::unique_ptr<Static> engine;
 
 public:
-	Character(const float x, const float y, const std::string &file, std::shared_ptr<Renderer> & ren);
-	~Character();
+	Character(const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren);
 
 	void Update(const float deltaTime,
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio = nullptr);
+
 	void Draw() override;
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);

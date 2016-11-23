@@ -3,30 +3,33 @@
 #include "Inputs.h"
 #include "Character.h"
 #include "Texture.h"
+#include "Define.h"
 
 std::map<Key, Action> Inputs::key;
 
-Object::Object(const std::shared_ptr<Renderer> &ren) :
-	useClip(0),
-	velocity({0.f,0.f}),
-	momentum({0.f,0.f}),
-	scale({1.f,1.f}),
-	angle(0.f),
-	collision_r(1.f),
-	health(1.f),
-	ren(ren)
+Object::Object(
+
+	int useClip,
+	float height,
+	float width,
+	float collision_r,
+	float angle,
+
+	std::shared_ptr<Renderer> ren,
+	std::string file,
+
+	Vecf2 position,
+	Vecf2 velocity,
+	Vecf2 scale
+	) :
+	useClip(useClip),
+	height(height),
+	width(width),
+	collision_r(collision_r),
+	angle(angle),
+	ren(ren),
+	sprite{std::make_shared<Texture>(file, ren)},
+	position(position),
+	velocity(velocity),
+	scale(scale)
 {}
-
-Object::~Object()
-{}
-
-Object::Object(const Object & obj) :
-	useClip(obj.useClip),
-	height(obj.height),
-	width(obj.width)
-{
-	position = obj.position;
-	sprite = obj.sprite;
-
-	clips = obj.clips;
-}

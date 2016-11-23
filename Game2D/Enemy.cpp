@@ -8,45 +8,29 @@
 #include "Static.h"
 #include "Gameplay.h"
 
-
-
-Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
-	Object(ren),
-	bullet_trigger_base(50),
-	pain(0),
-	death_delay(2),
+Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> & ren) :
+	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
 	life(true),
 	time_to_die(false),
-	scale(Vecf2{ 1.f,1.f }),
-	max_size(false)
+	max_size(false),
+	bullet_trigger_base(50),
+	bullet_trigger(50),
+	pain(0),
+	death_delay(2),
+	death_timer(2),
+	health(10.f),
+	scaleMax( Vecf2{ Math::Rand(1.f,2.f), Math::Rand(1.f,2.f) })
 {
-	width = BLOCK_SIZE;
-	height = BLOCK_SIZE;
-	Object::position = position;
-	sprite = std::make_shared<Texture>(file, ren);
-
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
 	clips.push_back(SDL_Rect{ 32,0,static_cast<int>(width), static_cast<int>(height) });
 	clips.push_back(SDL_Rect{ 0,32,static_cast<int>(width), static_cast<int>(height) });
 	clips.push_back(SDL_Rect{ 32,32,static_cast<int>(width), static_cast<int>(height) });
-
-	velocity = Vecf2{ 0.f, 0.f };
-	scaleMax = Vecf2{ Math::Rand(1.f,2.f), Math::Rand(1.f,2.f) };
-	collision_r = width;
-	health = 10.f;
-	death_timer = death_delay;
-	bullet_trigger = bullet_trigger_base;
-}
-
-Enemy::~Enemy()
-{
 }
 
 void Enemy::Update(const float deltaTime)
 {
 	
-	if (scale.x < scaleMax.x && !max_size)
-	{
+	if (scale.x < scaleMax.x && !max_size){
 		scale.x += 0.05f;
 		scale.y += 0.05f;
 	}
@@ -54,8 +38,7 @@ void Enemy::Update(const float deltaTime)
 		max_size = true;
 	}
 
-	if (scale.x >= 1.f && max_size)
-	{
+	if (scale.x >= 1.f && max_size){
 		scale.x -= 0.05f;
 		scale.y -= 0.05f;
 	}
@@ -110,14 +93,13 @@ void Enemy::Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<B
 			}
 
 
-			bullet_vector.push_back(std::make_shared<Bullet>(position, angle, velocity, "Bullet.png", ren));
+			bullet_vector.push_back(std::make_shared<Bullet>(angle, velocity, position, "Bullet.png", ren));
 			bullet_trigger = bullet_trigger_base;
 		}
 		bullet_trigger--;
 
 	}
-	else
-	{
+	else{
 		if (((float)rand() / RAND_MAX) <= 0.5f) {
 			velocity.x += ((float)rand() / RAND_MAX)*5.f;
 		}
@@ -133,10 +115,6 @@ void Enemy::Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<B
 		}
 
 	}
-}
-
-void Enemy::Collision(std::shared_ptr<Static> stat)
-{
 }
 
 void Enemy::Collision(std::shared_ptr<Bullet> &bull)
