@@ -19,8 +19,8 @@
 #define g 9.81f 
 
 //Screen attributes
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
 #define BLOCK_SIZE 32
 #define SKY_LEVEL -3000
 #define WATER_LEVEL 0
@@ -42,6 +42,7 @@ namespace Error
 namespace Map {
 	static void Load(const std::string &file, std::shared_ptr<Character> &player,
 		std::vector<std::shared_ptr<Static>> &first_plan_vector,
+		std::vector<std::shared_ptr<Static>> &secodn_plan_vector,
 		std::vector<std::shared_ptr<Static>> &background_vector,
 		std::shared_ptr<Renderer> ren) {
 
@@ -82,7 +83,7 @@ namespace Map {
 					x += 10*BLOCK_SIZE;
 				}
 				if (c == 'c') {
-					background_vector.push_back(std::make_shared<Static>(SDL_Rect{ static_cast<int>(x), static_cast<int>(y),  331,  183 }, "Clouds.png", ren));
+					secodn_plan_vector.push_back(std::make_shared<Static>(SDL_Rect{ static_cast<int>(x), static_cast<int>(y),  331,  183 }, "Clouds.png", ren));
 				}
 			}
 			y -= 10*BLOCK_SIZE;

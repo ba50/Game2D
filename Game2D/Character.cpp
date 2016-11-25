@@ -21,7 +21,7 @@ Character::Character(const Vecf2 position, const std::string &file, std::shared_
 	bullet_trigger_base(5),
 	bullet_trigger(5)
 {
-	for (int i = 0; i < 35; i++) {
+	for (int i = 0; i < 36; i++) {
 		clips.push_back(SDL_Rect{ i*2*BLOCK_SIZE, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
 	}
 
@@ -47,7 +47,7 @@ void Character::Update(const float deltaTime,
 
 	//Box
 	if (position.y >= WATER_LEVEL + 500 ||
-		position.y <= SKY_LEVEL - 500) velocity.y = 0;
+		position.y <= SKY_LEVEL - 1000) velocity.y = 0;
 
 	//Inputs
 	if (currentInput[Input::Up]) {
@@ -70,6 +70,9 @@ void Character::Update(const float deltaTime,
 	else {
 		engine->useClip = 0;
 		if (Gameplay::start) {
+
+//			velocity = Vecf2{ 0.f,0.f };
+
 			//gravity
 			if (position.y <= 0) velocity.y += 6.f;
 			delta_angle = 6.f;
@@ -101,21 +104,21 @@ void Character::Update(const float deltaTime,
 
 	//Sky
 	if (position.y < SKY_LEVEL)
-		velocity.y -= 2.f*(position.y + SKY_LEVEL);
+		velocity.y -= 1.f*(position.y - SKY_LEVEL);
 
 	//Water
 	if (position.y > WATER_LEVEL) {
-		if (angle < 0) angle += 10.f;
-		if (angle > 0) angle -= 10.f;
+		if (angle > 45.f && angle <= 180.f) angle -= 10.f;
+		if (angle < 315.f && angle > 180.f) angle += 10.f;
+		velocity.y -= 20.f;
 	}
 
-	drawing_angle = angle - std::floorf(angle / 10.9f) * 10.9f;
+	drawing_angle = angle - std::floorf(angle / 10.f) * 10.f;
 
-	useClip = static_cast<int>(std::floorf(angle / 10.9f));
-	if (useClip < 0) useClip = 0;
+	useClip = static_cast<int>(std::floorf(angle / 10.f));
+	if (useClip < 0 || useClip > 35) useClip = 0;
 	
-	printf("%d\n", useClip);
-
+	printf("%f\n", angle);
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
@@ -130,7 +133,7 @@ void Character::Update(const float deltaTime,
 
 void Character::Draw()
 {
-	ren->render(this, scale, drawing_angle);
+	ren->render(this, scale, 0);
 	engine->Draw();
 }
 

@@ -25,8 +25,11 @@ int main(int, char**) {
 		std::shared_ptr<Character> character;
 		std::vector<std::shared_ptr<Bullet>> bullet_character_vector;
 		std::vector<std::shared_ptr<Bullet>> bullet_enemy_vector;
+
 		std::vector<std::shared_ptr<Static>> background_vector;
+		std::vector<std::shared_ptr<Static>> second_plan_vector;
 		std::vector<std::shared_ptr<Static>> first_plan_vector;
+
 		std::vector<std::shared_ptr<Enemy>> enemy_vector;
 
 		std::vector<std::vector<std::shared_ptr<Bullet>>::iterator> bullets_character_to_kill;
@@ -34,7 +37,7 @@ int main(int, char**) {
 		std::vector<std::vector<std::shared_ptr<Enemy>>::iterator> enemys_to_kill;
 
 		//Load Map
-		Map::Load("dev.csv", character, first_plan_vector, background_vector, renderer);
+		Map::Load("dev.csv", character, first_plan_vector, second_plan_vector, background_vector, renderer);
 
 		//Statt music
 //		audio->PlayMusic();
@@ -97,6 +100,7 @@ int main(int, char**) {
 				//Update background
 				for (auto& background : background_vector) {
 
+
 					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
 							background->position.x -= 4 * SCREEN_WIDTH;
@@ -108,16 +112,30 @@ int main(int, char**) {
 
 				}
 
-				for (auto& background : first_plan_vector) {
+				for (auto& second_plan : second_plan_vector) {
 
-					background->position.x += 1.f*Gameplay::deltaTime;
+					second_plan->position.x += 40.f*Gameplay::deltaTime;
 
-					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
-						if (background->position.x - character->position.x > 0) {
-							background->position.x -= 4 * SCREEN_WIDTH;
+					if (abs(second_plan->position.x - character->position.x) > 2*SCREEN_WIDTH) {
+						if (second_plan->position.x - character->position.x > 0) {
+							second_plan->position.x -= 4 * SCREEN_WIDTH;
 						}
 						else {
-							background->position.x += 4 * SCREEN_WIDTH;
+							second_plan->position.x += 4 * SCREEN_WIDTH;
+						}
+					}
+				}
+
+				for (auto& first_plan : first_plan_vector) {
+
+					first_plan->position.x += 20.f*Gameplay::deltaTime;
+
+					if (abs(first_plan->position.x - character->position.x) > 2*SCREEN_WIDTH) {
+						if (first_plan->position.x - character->position.x > 0) {
+							first_plan->position.x -= 4 * SCREEN_WIDTH;
+						}
+						else {
+							first_plan->position.x += 4 * SCREEN_WIDTH;
 						}
 					}
 				}
@@ -161,6 +179,12 @@ int main(int, char**) {
 
 			for (auto& bullet : bullet_enemy_vector) {
 				if (bullet->life) bullet->Draw();
+			}
+
+	
+			//Draw second plan
+			for (auto& second_plan : second_plan_vector) {
+				second_plan->Draw();
 			}
 
 			//Draw the player
