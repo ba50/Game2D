@@ -15,12 +15,28 @@ Static::Static(SDL_Rect rect, const std::string & file, std::shared_ptr<Renderer
 }
 
 Static::Static(const std::vector<SDL_Rect> clips_, const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren) :
-	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f })
+	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
+	animation_delay(5),
+	current_animation_delay(5)
 {
 		clips = clips_;
 }
 
+void Static::Animation(unsigned start, unsigned end)
+{
+	current_animation_delay--;
+	if (current_animation_delay == 0) {
+		current_animation_delay = animation_delay;
+
+		useClip++;
+		if (useClip == end) {
+			useClip = start;
+		}
+		
+	}
+}
+
 void Static::Draw()
 {
-	ren->render(this);
+	ren->render(this, scale, angle);
 }

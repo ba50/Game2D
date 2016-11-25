@@ -21,8 +21,9 @@ Character::Character(const Vecf2 position, const std::string &file, std::shared_
 	bullet_trigger_base(5),
 	bullet_trigger(5)
 {
-	clips.push_back(SDL_Rect{ 0, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
-	clips.push_back(SDL_Rect{ 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
+	for (int i = 0; i < 35; i++) {
+		clips.push_back(SDL_Rect{ i*2*BLOCK_SIZE, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
+	}
 
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
@@ -32,18 +33,17 @@ Character::Character(const Vecf2 position, const std::string &file, std::shared_
 
 	engine_clips.push_back(SDL_Rect{ 0,0,BLOCK_SIZE, BLOCK_SIZE });
 	engine_clips.push_back(SDL_Rect{ BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
+	engine_clips.push_back(SDL_Rect{ 2*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
+	engine_clips.push_back(SDL_Rect{ 3*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 
-	engine = std::make_unique<Static>(engine_clips, position, "Bullet.png", ren);
+	engine = std::make_unique<Static>(engine_clips, position, "Engine.png", ren);
 }
 
 void Character::Update(const float deltaTime,
 	std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 	std::shared_ptr<Audio> audio)
 {
-	engine->position = position;
 
-	engine->position.x -= BLOCK_SIZE*sinf(angle*PI / 180.f);
-	engine->position.y += BLOCK_SIZE*cosf(angle*PI / 180.f);
 
 	//Box
 	if (position.y >= WATER_LEVEL + 500 ||
@@ -51,9 +51,9 @@ void Character::Update(const float deltaTime,
 
 	//Inputs
 	if (currentInput[Input::Up]) {
+		engine->Animation(1, 3);
 		if (!Gameplay::start) velocity.y = -max_velocity;
 		Gameplay::start = true;
-		useClip = 1;
 
 		//acceleration
 		velocity.x += delta_velocity*sinf(angle*PI / 180.f);
@@ -68,8 +68,7 @@ void Character::Update(const float deltaTime,
 		delta_angle = 3.f;
 	}
 	else {
-		useClip = 0;
-
+		engine->useClip = 0;
 		if (Gameplay::start) {
 			//gravity
 			if (position.y <= 0) velocity.y += 6.f;
@@ -79,14 +78,14 @@ void Character::Update(const float deltaTime,
 
 	if (currentInput[Input::Right]) {
 		angle += delta_angle;
-		if (angle > 180) {
+		if (angle > 360) {
 			angle -= 360;
 		}
 	}
 
 	if (currentInput[Input::Left]) {
 		angle -= delta_angle;
-		if (angle < -180) {
+		if (angle < 0) {
 			angle += 360;
 		}
 	}
@@ -102,7 +101,7 @@ void Character::Update(const float deltaTime,
 
 	//Sky
 	if (position.y < SKY_LEVEL)
-		velocity.y -= 2.f*(position.y + 3000.f);
+		velocity.y -= 2.f*(position.y + SKY_LEVEL);
 
 	//Water
 	if (position.y > WATER_LEVEL) {
@@ -110,13 +109,28 @@ void Character::Update(const float deltaTime,
 		if (angle > 0) angle -= 10.f;
 	}
 
+	drawing_angle = angle - std::floorf(angle / 10.9f) * 10.9f;
+
+	useClip = static_cast<int>(std::floorf(angle / 10.9f));
+	if (useClip < 0) useClip = 0;
+	
+	printf("%d\n", useClip);
+
+
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
+
+	engine->position = position;
+
+	engine->position.x -= 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
+	engine->position.y += 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
+
+	engine->angle = angle;
 }
 
 void Character::Draw()
 {
-	ren->render(this, scale, angle);
+	ren->render(this, scale, drawing_angle);
 	engine->Draw();
 }
 

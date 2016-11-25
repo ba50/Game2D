@@ -16,6 +16,7 @@ public:
 	bool life;
 
 	float delta_angle;
+	float drawing_angle;
 	float delta_velocity; 
 	float max_velocity;
 	float health;
