@@ -192,7 +192,7 @@ int main(int, char**) {
 
 			//Draw first plan
 			for (auto& first_plan : first_plan_vector) {
-				first_plan->Draw();
+//				first_plan->Draw();
 			}
 
 			//Update the screen

@@ -12,14 +12,14 @@
 std::vector<bool> Inputs::slope;
 
 Character::Character(const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
+	Object(0, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
 	life(true),
 	delta_angle(0.f),
 	delta_velocity(5e1),
 	max_velocity(5e2f),
 	health(10.f),
-	bullet_trigger_base(5),
-	bullet_trigger(5)
+	bullet_trigger_base(10),
+	bullet_trigger(10)
 {
 	for (int i = 0; i < 36; i++) {
 		clips.push_back(SDL_Rect{ i*2*BLOCK_SIZE, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
@@ -36,7 +36,7 @@ Character::Character(const Vecf2 position, const std::string &file, std::shared_
 	engine_clips.push_back(SDL_Rect{ 2*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 	engine_clips.push_back(SDL_Rect{ 3*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 
-	engine = std::make_unique<Static>(engine_clips, position, "Engine.png", ren);
+	engine = std::make_unique<Static>(5, engine_clips, position, "Engine.png", ren);
 }
 
 void Character::Update(const float deltaTime,
@@ -95,7 +95,8 @@ void Character::Update(const float deltaTime,
 
 	if (currentInput[Input::Shot]) {
 		if (bullet_trigger == 0) {
-			bullet_vector.push_back(std::make_shared<Bullet>(angle, velocity, position, "Bullet.png", ren));
+			Vecf2 position_temp{ position.x + 1.1f*BLOCK_SIZE*sinf(angle*PI / 180.f), position.y - 1.1f*BLOCK_SIZE*cosf(angle*PI / 180.f) };
+			bullet_vector.push_back(std::make_shared<Bullet>(angle+Math::Rand(-5.f,5.f), velocity, position_temp, "Bullet.png", ren));
 			audio->PlayExplosion();
 			bullet_trigger = bullet_trigger_base;
 		}
@@ -118,17 +119,19 @@ void Character::Update(const float deltaTime,
 	useClip = static_cast<int>(std::floorf(angle / 10.f));
 	if (useClip < 0 || useClip > 35) useClip = 0;
 	
-	printf("%f\n", angle);
+//	printf("%f\n", angle);
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
+
+	engine->root_position = position;
 
 	engine->position = position;
 
 	engine->position.x -= 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
 	engine->position.y += 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
 
-	engine->angle = angle;
+//	child_vector[0]->angle = angle;
 }
 
 void Character::Draw()

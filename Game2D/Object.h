@@ -16,6 +16,8 @@ class Object
 {
 
 public:
+	unsigned animation_delay, current_animation_delay;
+
 	int useClip;
 
 	float height;
@@ -33,6 +35,8 @@ public:
 	
 public:
 	Object(
+		unsigned animation_delay,
+
 		int useClip,
 		float height,
 		float width,
@@ -46,6 +50,8 @@ public:
 		Vecf2 velocity,
 		Vecf2 scale = Vecf2{1.f,1.f}
 	);
-	virtual void Draw() = 0;
 
+	void Animation(unsigned start_clip, unsigned end_clip);
+
+	virtual void Draw() = 0;
 };

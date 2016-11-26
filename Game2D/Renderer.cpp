@@ -73,6 +73,13 @@ void Renderer::render(Object * obj, Vecf2 scale, float angle, SDL_Point *center)
 
 		SDL_RenderSetScale(ren, scale.x, scale.y);
 		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
+
+		//Normal
 		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, center, SDL_FLIP_NONE);
+
+		//Mirror
+		dst.y = -static_cast<int>(((obj->position.y - obj->height / 2.f) + camera->position.y)/scale.y);
+		if (dst.y > WATER_LEVEL - 300)
+			SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, center, SDL_FLIP_VERTICAL);
 	}
 }

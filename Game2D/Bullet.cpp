@@ -2,8 +2,10 @@
 #include "Define.h"
 #include "Texture.h"
 
+#define START_VELOCITY 400.f
+
 Bullet::Bullet(float angle, const Vecf2 start_velocit, const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ sinf(PI*angle / 180.f)*600.f + start_velocit.x, -cosf(PI*angle / 180.f)*600.f + start_velocit.y }),
+	Object(0, 0, BLOCK_SIZE/2, BLOCK_SIZE/2, width, 0, ren, file, position, Vecf2{ START_VELOCITY*sinf(PI*angle / 180.f)+ start_velocit.x, -START_VELOCITY*cosf(PI*angle / 180.f) + start_velocit.y }),
 	life(true),
 	time_to_die(false),
 	timer(100),
@@ -11,7 +13,7 @@ Bullet::Bullet(float angle, const Vecf2 start_velocit, const Vecf2 position, con
 	death_timer(3)
 {
 	clips.push_back(SDL_Rect{ 0,0,static_cast<int>(width), static_cast<int>(height) });
-	clips.push_back(SDL_Rect{ 32,0,static_cast<int>(width), static_cast<int>(height) });
+	clips.push_back(SDL_Rect{ BLOCK_SIZE/2,0,static_cast<int>(width), static_cast<int>(height) });
 }
 
 void Bullet::Update(const float deltaTime) {

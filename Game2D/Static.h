@@ -6,14 +6,13 @@ class Static :
 	public Object
 {
 public:
-	unsigned animation_delay, current_animation_delay;
+	Vecf2 root_position;
 
 public:
 	Static(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);
 	Static(SDL_Rect rect, const std::string &file, std::shared_ptr<Renderer> ren);
-	Static(const std::vector<SDL_Rect> clips_, const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);
+	Static(const unsigned animation_delay, const std::vector<SDL_Rect> clips_, const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);
 
-	void Animation(unsigned start, unsigned end);
 	void Draw() override;
 };
 

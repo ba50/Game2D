@@ -13,7 +13,7 @@ public:
 	Bullet(float angle, const Vecf2 start_velocit, const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren);
 
 	void Update(const float deltaTime);
-	void Draw() override;
 
+	void Draw() override;
 };
 

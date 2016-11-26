@@ -37,6 +37,7 @@ public:
 		std::shared_ptr<Audio> audio = nullptr);
 
 	void Draw() override;
+
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);
 };
