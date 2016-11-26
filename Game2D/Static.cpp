@@ -25,3 +25,8 @@ void Static::Draw()
 	SDL_Point center{ static_cast<int>(root_position.x),static_cast<int>(root_position.y) };
 	ren->render(this, scale, angle, &center);
 }
+
+void Static::Update()
+{
+	position = root_position;
+}

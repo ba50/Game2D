@@ -49,9 +49,9 @@ void Character::Update(const float deltaTime,
 	if (position.y >= WATER_LEVEL + 500 ||
 		position.y <= SKY_LEVEL - 1000) velocity.y = 0;
 
+		engine->Animation(1, 3);
 	//Inputs
 	if (currentInput[Input::Up]) {
-		engine->Animation(1, 3);
 		if (!Gameplay::start) velocity.y = -max_velocity;
 		Gameplay::start = true;
 
@@ -64,17 +64,17 @@ void Character::Update(const float deltaTime,
 		velocity = velocity.Norm()*std::min(max_velocity, len);
 
 		//gravity
-		if (position.y <= 0) velocity.y += 2.f;
+//		if (position.y <= 0) velocity.y += 2.f;
 		delta_angle = 3.f;
 	}
 	else {
-		engine->useClip = 0;
+//		engine->useClip = 0;
 		if (Gameplay::start) {
 
-//			velocity = Vecf2{ 0.f,0.f };
+			velocity = Vecf2{ 0.f,0.f };
 
 			//gravity
-			if (position.y <= 0) velocity.y += 6.f;
+//			if (position.y <= 0) velocity.y += 6.f;
 			delta_angle = 6.f;
 		}
 	}
@@ -108,11 +108,11 @@ void Character::Update(const float deltaTime,
 		velocity.y -= 1.f*(position.y - SKY_LEVEL);
 
 	//Water
-	if (position.y > WATER_LEVEL) {
-		if (angle > 45.f && angle <= 180.f) angle -= 10.f;
-		if (angle < 315.f && angle > 180.f) angle += 10.f;
-		velocity.y -= 20.f;
-	}
+	//if (position.y > WATER_LEVEL) {
+	//	if (angle > 45.f && angle <= 180.f) angle -= 10.f;
+	//	if (angle < 315.f && angle > 180.f) angle += 10.f;
+	//	velocity.y -= 20.f;
+	//}
 
 	drawing_angle = angle - std::floorf(angle / 10.f) * 10.f;
 
@@ -124,20 +124,19 @@ void Character::Update(const float deltaTime,
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
 
-	engine->root_position = position;
+	//engine->root_position = Vecf2{ 0.f, 0.f };
+	//engine->position = position;
 
-	engine->position = position;
+//	engine->position.x = position.x - 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
+//	engine->position.y = position.y + 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
 
-	engine->position.x -= 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
-	engine->position.y += 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
-
-//	child_vector[0]->angle = angle;
+//	engine->angle = angle;
 }
 
 void Character::Draw()
 {
-	ren->render(this, scale, 0);
-	engine->Draw();
+	ren->render(this);
+//	engine->Draw();
 }
 
 void Character::Inputs()

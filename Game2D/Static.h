@@ -14,5 +14,7 @@ public:
 	Static(const unsigned animation_delay, const std::vector<SDL_Rect> clips_, const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> ren);
 
 	void Draw() override;
+
+	void Update();
 };
 
