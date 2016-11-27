@@ -69,16 +69,16 @@ namespace Map {
 						background_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, -1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
 
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 0, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						//first_plan_vector.push_back(
+						//	std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						//first_plan_vector.push_back(
+						//	std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						//first_plan_vector.push_back(
+						//	std::make_shared<Static>(SDL_Rect{ 0, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						//first_plan_vector.push_back(
+						//	std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
+						//first_plan_vector.push_back(
+						//	std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, WATER_LEVEL+300,  SCREEN_WIDTH,  640 }, "Water.png", ren));
 
 						first_plan_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, SKY_LEVEL,  SCREEN_WIDTH,  250 }, "Sky.png", ren));

@@ -9,7 +9,7 @@
 #include "Gameplay.h"
 
 Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 0, BLOCK_SIZE, BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
+	Object(0, 0, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
 	life(true),
 	time_to_die(false),
 	max_size(false),

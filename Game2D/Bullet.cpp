@@ -5,7 +5,7 @@
 #define START_VELOCITY 400.f
 
 Bullet::Bullet(float angle, const Vecf2 start_velocit, const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 0, BLOCK_SIZE/2, BLOCK_SIZE/2, width, 0, ren, file, position, Vecf2{ START_VELOCITY*sinf(PI*angle / 180.f)+ start_velocit.x, -START_VELOCITY*cosf(PI*angle / 180.f) + start_velocit.y }),
+	Object(0, 0, BLOCK_SIZE/2, BLOCK_SIZE/2, BLOCK_SIZE/2, 0, ren, file, position, Vecf2{ START_VELOCITY*sinf(PI*angle / 180.f)+ start_velocit.x, -START_VELOCITY*cosf(PI*angle / 180.f) + start_velocit.y }),
 	life(true),
 	time_to_die(false),
 	timer(100),

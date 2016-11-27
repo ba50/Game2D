@@ -60,8 +60,8 @@ void Renderer::render(Object * obj, Vecf2 scale, float angle, SDL_Point *center)
 {
 	if (obj != nullptr) {
 		SDL_Rect dst;
-		dst.x = static_cast<int>(((obj->position.x - obj->width / 2.f) - camera->position.x)/scale.x);
-		dst.y = static_cast<int>(((obj->position.y - obj->height / 2.f) - camera->position.y)/scale.y);
+		dst.x = static_cast<int>(((obj->position.x - obj->width / 2.f) - camera->position.x) / scale.x);
+		dst.y = static_cast<int>(((obj->position.y - obj->height / 2.f) - camera->position.y) / scale.y);
 
 		if (&obj->clips[obj->useClip] != nullptr) {
 			dst.w = static_cast<int>(obj->width);
@@ -75,17 +75,16 @@ void Renderer::render(Object * obj, Vecf2 scale, float angle, SDL_Point *center)
 		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
 
 		//Normal
-		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, NULL, SDL_FLIP_NONE);
-		SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
-		SDL_RenderDrawPoint(ren, (int)dst.x+BLOCK_SIZE, (int)dst.y+BLOCK_SIZE);
+		if (obj->position.y < WATER_LEVEL) {
+			SDL_SetTextureColorMod(obj->sprite->texture, 255, 255, 255);
+			SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, NULL, SDL_FLIP_NONE);
+		}
 
 		//Mirror
-	//	dst.y = -static_cast<int>(((obj->position.y - obj->height / 2.f) + camera->position.y)/scale.y);
-	////	if (dst.y > WATER_LEVEL - 300)
-	//		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, -angle, center, SDL_FLIP_VERTICAL);
-
-	//		SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
-	//		if(center!=NULL)
-	//			SDL_RenderDrawPoint(ren, (int)dst.x, (int)dst.y);
+		dst.y = -static_cast<int>(((obj->position.y + obj->height / 2.f) + camera->position.y) / scale.y);
+		if (obj->position.y < WATER_LEVEL) {
+			SDL_SetTextureColorMod(obj->sprite->texture, 0, 255, 0);
+			SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, -angle, NULL, SDL_FLIP_VERTICAL);
+		}
 	}
 }

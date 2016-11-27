@@ -22,8 +22,7 @@ Static::Static(const unsigned animation_delay, const std::vector<SDL_Rect> clips
 
 void Static::Draw()
 {
-	SDL_Point center{ static_cast<int>(root_position.x),static_cast<int>(root_position.y) };
-	ren->render(this, scale, angle, &center);
+	ren->render(this, scale, angle);
 }
 
 void Static::Update()

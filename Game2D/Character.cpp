@@ -12,14 +12,14 @@
 std::vector<bool> Inputs::slope;
 
 Character::Character(const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, width, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
+	Object(0, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, 2*BLOCK_SIZE, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
 	life(true),
 	delta_angle(0.f),
 	delta_velocity(5e1),
 	max_velocity(5e2f),
 	health(10.f),
-	bullet_trigger_base(10),
-	bullet_trigger(10)
+	bullet_trigger_base(9),
+	bullet_trigger(9)
 {
 	for (int i = 0; i < 36; i++) {
 		clips.push_back(SDL_Rect{ i*2*BLOCK_SIZE, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
@@ -64,17 +64,17 @@ void Character::Update(const float deltaTime,
 		velocity = velocity.Norm()*std::min(max_velocity, len);
 
 		//gravity
-//		if (position.y <= 0) velocity.y += 2.f;
+		if (position.y <= 0) velocity.y += 2.f;
 		delta_angle = 3.f;
 	}
 	else {
-//		engine->useClip = 0;
+		engine->useClip = 0;
 		if (Gameplay::start) {
 
-			velocity = Vecf2{ 0.f,0.f };
+//			velocity = Vecf2{ 0.f,0.f };
 
 			//gravity
-//			if (position.y <= 0) velocity.y += 6.f;
+			if (position.y <= 0) velocity.y += 6.f;
 			delta_angle = 6.f;
 		}
 	}
@@ -108,35 +108,33 @@ void Character::Update(const float deltaTime,
 		velocity.y -= 1.f*(position.y - SKY_LEVEL);
 
 	//Water
-	//if (position.y > WATER_LEVEL) {
-	//	if (angle > 45.f && angle <= 180.f) angle -= 10.f;
-	//	if (angle < 315.f && angle > 180.f) angle += 10.f;
-	//	velocity.y -= 20.f;
-	//}
+	if (position.y > WATER_LEVEL) {
+		if (angle > 45.f && angle <= 180.f) angle -= 10.f;
+		if (angle < 315.f && angle > 180.f) angle += 10.f;
+		velocity.y -= 20.f;
+	}
 
 	drawing_angle = angle - std::floorf(angle / 10.f) * 10.f;
 
 	useClip = static_cast<int>(std::floorf(angle / 10.f));
 	if (useClip < 0 || useClip > 35) useClip = 0;
 	
-//	printf("%f\n", angle);
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
 
-	//engine->root_position = Vecf2{ 0.f, 0.f };
-	//engine->position = position;
+	engine->position = position;
 
-//	engine->position.x = position.x - 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
-//	engine->position.y = position.y + 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
+	engine->position.x -= 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
+	engine->position.y += 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
 
-//	engine->angle = angle;
+	engine->angle = angle;
 }
 
 void Character::Draw()
 {
-	ren->render(this);
-//	engine->Draw();
+	ren->render(this, scale, drawing_angle);
+	engine->Draw();
 }
 
 void Character::Inputs()
