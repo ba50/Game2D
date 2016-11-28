@@ -19,9 +19,9 @@ public:
 	unsigned animation_delay, current_animation_delay;
 
 	int useClip;
+	int height;
+	int width;
 
-	float height;
-	float width;
 	float collision_r;
 	float angle;
 

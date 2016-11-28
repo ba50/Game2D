@@ -74,7 +74,7 @@ void Renderer::RenderPresent()
 		SDL_RenderSetScale(ren, scale.x, scale.y);
 		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
 
-		if (obj->position.y < WATER_LEVEL || !mirror) {
+		if (obj->position.y > SKY_LEVEL && obj->position.y < WATER_LEVEL || !mirror) {
 			SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, NULL, SDL_FLIP_NONE);
 		}
 

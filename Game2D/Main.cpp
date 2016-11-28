@@ -81,12 +81,10 @@ int main(int, char**) {
 							y > -3000 ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
 							x > -3 * (character->position.x + SCREEN_WIDTH)) {
-//							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
+							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
 						}
 					}
 				}
-
-				
 
 				for (auto& enemy : enemy_vector) {
 					enemy->Detect(character, bullet_enemy_vector);
@@ -99,7 +97,6 @@ int main(int, char**) {
 
 				//Update background
 				for (auto& background : background_vector) {
-
 
 					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
 						if (background->position.x - character->position.x > 0) {
@@ -125,6 +122,10 @@ int main(int, char**) {
 						}
 					}
 				}
+
+				first_plan_vector[0]->position.x = character->position.x - SCREEN_WIDTH-1;
+				first_plan_vector[1]->position.x = character->position.x;
+				first_plan_vector[2]->position.x = character->position.x + SCREEN_WIDTH+1;
 
 				for (auto& first_plan : first_plan_vector) {
 
@@ -166,6 +167,11 @@ int main(int, char**) {
 			for (auto& background : background_vector) {
 				background->Draw();
 			}
+	
+			//Draw second plan
+			for (auto& second_plan : second_plan_vector) {
+				second_plan->Draw();
+			}
 
 			//Draw the enemy
 			for (auto& enemy : enemy_vector) {
@@ -179,12 +185,6 @@ int main(int, char**) {
 
 			for (auto& bullet : bullet_enemy_vector) {
 				if (bullet->life) bullet->Draw();
-			}
-
-	
-			//Draw second plan
-			for (auto& second_plan : second_plan_vector) {
-				second_plan->Draw();
 			}
 
 			//Draw the player
@@ -240,13 +240,11 @@ int main(int, char**) {
 				break;
 			}
 			if (enemys_to_kill.size() > 0) enemys_to_kill.clear();
-
-
 		}
 	}
 	catch (...) {
 		cleanUp();
-		printf("Shit!\n");
+		printf("Ooo nooo!\n");
 		system("pause");
 		return 1;
 	}

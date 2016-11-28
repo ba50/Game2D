@@ -12,7 +12,7 @@
 std::vector<bool> Inputs::slope;
 
 Character::Character(const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE, 2*BLOCK_SIZE, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
+	Object(0, 0, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
 	life(true),
 	delta_angle(0.f),
 	delta_velocity(5e1),
@@ -22,7 +22,7 @@ Character::Character(const Vecf2 position, const std::string &file, std::shared_
 	bullet_trigger(9)
 {
 	for (int i = 0; i < 36; i++) {
-		clips.push_back(SDL_Rect{ i*2*BLOCK_SIZE, 0, 2 * BLOCK_SIZE, 2 * BLOCK_SIZE });
+		clips.push_back(SDL_Rect{ i*width, 0, width, height });
 	}
 
 	Inputs::slope.push_back(false);

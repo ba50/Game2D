@@ -21,7 +21,9 @@
 //Screen attributes
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
+
 #define BLOCK_SIZE 32
+
 #define SKY_LEVEL -3000
 #define WATER_LEVEL 0
 
@@ -58,8 +60,8 @@ namespace Map {
 						player = std::make_shared<Character>(Vecf2{ x, y }, "MyChar.png", ren);
 						ren->camera->position = Vecf2{ x - SCREEN_WIDTH / 2.f,y - SCREEN_HEIGHT / 2.f };
 
-					background_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, -1500, SCREEN_WIDTH, 3000 }, "BG.png", ren));
+						background_vector.push_back(
+							std::make_shared<Static>(SDL_Rect{ -2 * SCREEN_WIDTH, -1500, SCREEN_WIDTH, 3000 }, "BG.png", ren));
 						background_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, -1500, SCREEN_WIDTH, 3000 }, "BG.png", ren));
 						background_vector.push_back(
@@ -67,31 +69,27 @@ namespace Map {
 						background_vector.push_back(
 							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, -1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
 						background_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, -1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
+							std::make_shared<Static>(SDL_Rect{ 2 * SCREEN_WIDTH, -1500,  SCREEN_WIDTH,  3000 }, "BG.png", ren));
 
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, WATER_LEVEL+320,  1280,  640 }, "Water.png", ren));
+							std::make_shared<Static>(SDL_Rect{ (int)x-SCREEN_WIDTH, WATER_LEVEL+320,  SCREEN_WIDTH,  640 }, "Water.png", ren));
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, WATER_LEVEL+320,  1280,  640 }, "Water.png", ren));
+							std::make_shared<Static>(SDL_Rect{ (int)x, WATER_LEVEL+320,  SCREEN_WIDTH,  640 }, "Water.png", ren));
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 0, WATER_LEVEL+320,  1280,  640 }, "Water.png", ren));
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, WATER_LEVEL+320,  1280,  640 }, "Water.png", ren));
-						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, WATER_LEVEL+320,  1280,  640 }, "Water.png", ren));
+							std::make_shared<Static>(SDL_Rect{ (int)x+SCREEN_WIDTH, WATER_LEVEL+320,  SCREEN_WIDTH,  640 }, "Water.png", ren));
 
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, SKY_LEVEL,  SCREEN_WIDTH,  250 }, "Sky.png", ren));
+							std::make_shared<Static>(SDL_Rect{ -2*SCREEN_WIDTH, SKY_LEVEL,  1280,  250 }, "Sky.png", ren));
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, SKY_LEVEL,  SCREEN_WIDTH,  250 }, "Sky.png", ren));
+							std::make_shared<Static>(SDL_Rect{ -SCREEN_WIDTH, SKY_LEVEL,  1280,  250 }, "Sky.png", ren));
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 0, SKY_LEVEL,  SCREEN_WIDTH,  250 }, "Sky.png", ren));
+							std::make_shared<Static>(SDL_Rect{ 0, SKY_LEVEL,  1280,  250 }, "Sky.png", ren));
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, SKY_LEVEL,  SCREEN_WIDTH,  250 }, "Sky.png", ren));
+							std::make_shared<Static>(SDL_Rect{ SCREEN_WIDTH, SKY_LEVEL,  1280,  250 }, "Sky.png", ren));
 						first_plan_vector.push_back(
-							std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, SKY_LEVEL,  SCREEN_WIDTH,  250 }, "Sky.png", ren));
+							std::make_shared<Static>(SDL_Rect{ 2*SCREEN_WIDTH, SKY_LEVEL,  1280,  250 }, "Sky.png", ren));
 					}
-					x += 10*BLOCK_SIZE;
+					x += 5*BLOCK_SIZE;
 				}
 				if (c == 'c') {
 					secodn_plan_vector.push_back(std::make_shared<Static>(SDL_Rect{ static_cast<int>(x), static_cast<int>(y),  331,  183 }, "Clouds.png", ren));
