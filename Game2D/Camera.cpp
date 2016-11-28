@@ -30,6 +30,7 @@ void Camera::MoveTo(std::shared_ptr<Character> cha, float deltaTime)
 	}
 	else {
 		position.x = (cha->position.x - (toCenter.x - 100.f*cha->velocity.x / cha->max_velocity)) + shake_vector.back().x;
+		position.x += .1f*SCREEN_WIDTH*sinf(cha->angle*PI / 180.f);
 		position.y = (cha->position.y - (toCenter.y - 100.f*cha->velocity.y / cha->max_velocity)) + shake_vector.back().y;
 		shake_vector.pop_back();
 	}

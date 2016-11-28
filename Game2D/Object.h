@@ -38,8 +38,8 @@ public:
 		unsigned animation_delay,
 
 		int useClip,
-		float height,
-		float width,
+		int width,
+		int height,
 		float collision_r,
 		float angle,
 

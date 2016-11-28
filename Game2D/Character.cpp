@@ -36,7 +36,7 @@ Character::Character(const Vecf2 position, const std::string &file, std::shared_
 	engine_clips.push_back(SDL_Rect{ 2*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 	engine_clips.push_back(SDL_Rect{ 3*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 
-	engine = std::make_unique<Static>(5, engine_clips, position, "Engine.png", ren);
+	engine = std::make_unique<Static>(5, engine_clips, position, "Source/Engine.png", ren);
 }
 
 void Character::Update(const float deltaTime,
@@ -65,7 +65,7 @@ void Character::Update(const float deltaTime,
 
 		//gravity
 		if (position.y <= 0) velocity.y += 2.f;
-		delta_angle = 3.f;
+		delta_angle = 2.f;
 	}
 	else {
 		engine->useClip = 0;
@@ -96,8 +96,8 @@ void Character::Update(const float deltaTime,
 	if (currentInput[Input::Shot]) {
 		if (bullet_trigger == 0) {
 			Vecf2 position_temp{ position.x + 1.1f*BLOCK_SIZE*sinf(angle*PI / 180.f), position.y - 1.1f*BLOCK_SIZE*cosf(angle*PI / 180.f) };
-			bullet_vector.push_back(std::make_shared<Bullet>(angle+Math::Rand(-5.f,5.f), velocity, position_temp, "Bullet.png", ren));
-			audio->PlayExplosion();
+			bullet_vector.push_back(std::make_shared<Bullet>(angle+Math::Rand(-5.f,5.f), velocity, position_temp, "Source/Bullet.png", ren));
+//			audio->PlayExplosion();
 			bullet_trigger = bullet_trigger_base;
 		}
 		bullet_trigger--;
@@ -125,8 +125,8 @@ void Character::Update(const float deltaTime,
 
 	engine->position = position;
 
-	engine->position.x -= 1.4f*BLOCK_SIZE*sinf(angle*PI / 180.f);
-	engine->position.y += 1.4f*BLOCK_SIZE*cosf(angle*PI / 180.f);
+	engine->position.x -= 1.f*BLOCK_SIZE*sinf(angle*PI / 180.f);
+	engine->position.y += 1.f*BLOCK_SIZE*cosf(angle*PI / 180.f);
 
 	engine->angle = angle;
 }

@@ -37,7 +37,9 @@ int main(int, char**) {
 		std::vector<std::vector<std::shared_ptr<Enemy>>::iterator> enemys_to_kill;
 
 		//Load Map
-		Map::Load("dev.csv", character, first_plan_vector, second_plan_vector, background_vector, renderer);
+		Map::Load("Source/dev.csv", character, first_plan_vector, second_plan_vector, background_vector, renderer);
+
+
 
 		//Statt music
 //		audio->PlayMusic();
@@ -81,7 +83,7 @@ int main(int, char**) {
 							y > -3000 ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
 							x > -3 * (character->position.x + SCREEN_WIDTH)) {
-							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Enemy.png", renderer));
+							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Source/Enemy.png", renderer));
 						}
 					}
 				}
@@ -98,12 +100,12 @@ int main(int, char**) {
 				//Update background
 				for (auto& background : background_vector) {
 
-					if (abs(background->position.x - character->position.x) > 2*SCREEN_WIDTH) {
+					if (abs(background->position.x - character->position.x) > 2*background->width) {
 						if (background->position.x - character->position.x > 0) {
-							background->position.x -= 4 * SCREEN_WIDTH;
+							background->position.x -= 4 * background->width;
 						}
 						else {
-							background->position.x += 4 * SCREEN_WIDTH;
+							background->position.x += 4 * background->width;
 						}
 					}
 
@@ -111,7 +113,9 @@ int main(int, char**) {
 
 				for (auto& second_plan : second_plan_vector) {
 
-					second_plan->position.x += 40.f*Gameplay::deltaTime;
+					second_plan->Update(Gameplay::deltaTime);
+
+					second_plan->position.x -= .001f*character->velocity.x;
 
 					if (abs(second_plan->position.x - character->position.x) > 2*SCREEN_WIDTH) {
 						if (second_plan->position.x - character->position.x > 0) {

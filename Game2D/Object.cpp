@@ -11,8 +11,8 @@ Object::Object(
 		unsigned animation_delay,
 
 		int useClip,
-		float height,
-		float width,
+		int width,
+		int height,
 		float collision_r,
 		float angle,
 
@@ -26,8 +26,8 @@ Object::Object(
 	animation_delay(animation_delay),
 	current_animation_delay(1),
 	useClip(useClip),
-	height(height),
 	width(width),
+	height(height),
 	collision_r(collision_r),
 	angle(angle),
 	ren(ren),

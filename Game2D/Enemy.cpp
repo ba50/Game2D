@@ -93,7 +93,7 @@ void Enemy::Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<B
 			}
 
 
-			bullet_vector.push_back(std::make_shared<Bullet>(angle, velocity, position, "Bullet.png", ren));
+			bullet_vector.push_back(std::make_shared<Bullet>(angle, velocity, position, "Source/Bullet.png", ren));
 			bullet_trigger = bullet_trigger_base;
 		}
 		bullet_trigger--;

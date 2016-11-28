@@ -28,12 +28,12 @@ public:
 		}
 
 		//Load music
-		gMusic = Mix_LoadMUS("Luftrausers_Soundtrack_-_The_Original.wav");
+		gMusic = Mix_LoadMUS("Source/Luftrausers_Soundtrack_-_The_Original.wav");
 		if (gMusic == NULL) Error::LogSDL(std::cout, "SDL_mixer could not initialize! SDL_mixer Error");
 
 
 		//Load sound effects
-		 chunk_vector.push_back(*Mix_LoadWAV("Explosion+1.wav"));
+		 chunk_vector.push_back(*Mix_LoadWAV("Source/Explosion+1.wav"));
 
 
 	}
