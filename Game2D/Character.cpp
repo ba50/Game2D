@@ -131,9 +131,9 @@ void Character::Update(const float deltaTime,
 	engine->angle = angle;
 }
 
-void Character::Draw()
+void Character::Draw(bool mirror)
 {
-	ren->render(this, scale, drawing_angle);
+	ren->Render(this, drawing_angle);
 	engine->Draw();
 }
 

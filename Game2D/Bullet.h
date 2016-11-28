@@ -14,6 +14,6 @@ public:
 
 	void Update(const float deltaTime);
 
-	void Draw() override;
+	void Draw(bool mirror = true) override;
 };
 

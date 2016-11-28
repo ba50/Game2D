@@ -34,7 +34,7 @@ void Bullet::Update(const float deltaTime) {
 	}
 }
 
-void Bullet::Draw()
+void Bullet::Draw(bool mirror)
 {
-	ren->render(this);
+	ren->Render(this);
 }

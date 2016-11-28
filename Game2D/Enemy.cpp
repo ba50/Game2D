@@ -72,9 +72,9 @@ void Enemy::Update(const float deltaTime)
 	position.y += velocity.y*deltaTime;
 }
 
-void Enemy::Draw()
+void Enemy::Draw(bool mirror)
 {
-	ren->render(this, scale);
+	ren->Render(this, 0.f, true, scale);
 }
 
 void Enemy::Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<Bullet>> &bullet_vector)

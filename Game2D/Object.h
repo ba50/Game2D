@@ -53,5 +53,5 @@ public:
 
 	void Animation(unsigned start_clip, unsigned end_clip);
 
-	virtual void Draw() = 0;
+	virtual void Draw(bool mirror) = 0;
 };

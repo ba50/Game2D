@@ -29,6 +29,6 @@ public:
 	void Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<Bullet>> &bullet_vector);
 	void Enemy::Collision(std::shared_ptr<Bullet> &bull);
 
-	void Draw() override;
+	void Draw(bool mirror = true) override;
 };
 

@@ -36,7 +36,7 @@ public:
 		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
 		std::shared_ptr<Audio> audio = nullptr);
 
-	void Draw() override;
+	void Draw(bool mirror = true) override;
 
 	void Inputs();
 	void Collison(std::shared_ptr<Object> obj);

@@ -20,9 +20,9 @@ Static::Static(const unsigned animation_delay, const std::vector<SDL_Rect> clips
 		clips = clips_;
 }
 
-void Static::Draw()
+void Static::Draw(bool mirror)
 {
-	ren->render(this, scale, angle);
+	ren->Render(this, angle, mirror);
 }
 
 void Static::Update()
