@@ -56,31 +56,31 @@ void Renderer::RenderPresent()
 *		default of nullptr draws the entire texture
 */
 
- void Renderer::Render(Object * obj, float angle, bool mirror, Vecf2 scale, SDL_Point *center)
+ void Renderer::Render(Object &obj, float angle, bool mirror, Vecf2 scale, SDL_Point *center)
 {
-	if (obj != nullptr) {
-		SDL_Rect dst;
-		dst.x = static_cast<int>(((obj->position.x - obj->width / 2.f) - camera->position.x) / scale.x);
-		dst.y = static_cast<int>(((obj->position.y - obj->height / 2.f) - camera->position.y) / scale.y);
+	//if (obj != nullptr) {
+	//	SDL_Rect dst;
+	//	dst.x = static_cast<int>(((obj->position.x - obj->width / 2.f) - camera->position.x) / scale.x);
+	//	dst.y = static_cast<int>(((obj->position.y - obj->height / 2.f) - camera->position.y) / scale.y);
 
-		if (&obj->clips[obj->useClip] != nullptr) {
-			dst.w = static_cast<int>(obj->width);
-			dst.h = static_cast<int>(obj->height);
-		}
-		else {
-			SDL_QueryTexture(obj->sprite->texture, NULL, NULL, &dst.w, &dst.h);
-		}
+	//	if (&obj->clips[obj->useClip] != nullptr) {
+	//		dst.w = static_cast<int>(obj->width);
+	//		dst.h = static_cast<int>(obj->height);
+	//	}
+	//	else {
+	//		SDL_QueryTexture(obj->sprite->texture, NULL, NULL, &dst.w, &dst.h);
+	//	}
 
-		SDL_RenderSetScale(ren, scale.x, scale.y);
-		SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
+	//	SDL_RenderSetScale(ren, scale.x, scale.y);
+	//	SDL_SetTextureBlendMode(obj->sprite->texture, SDL_BLENDMODE_BLEND);
 
-		if (obj->position.y > SKY_LEVEL && obj->position.y < WATER_LEVEL || !mirror) {
-			SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, NULL, SDL_FLIP_NONE);
-		}
+	//	if (obj->position.y > SKY_LEVEL && obj->position.y < WATER_LEVEL || !mirror) {
+	//		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, angle, NULL, SDL_FLIP_NONE);
+	//	}
 
-		if (obj->position.y < WATER_LEVEL) {
-			dst.y = -static_cast<int>(((obj->position.y + obj->height / 2.f) + camera->position.y) / scale.y);
-			SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, -angle, NULL, SDL_FLIP_VERTICAL);
-		}
-	}
+	//	if (obj->position.y < WATER_LEVEL) {
+	//		dst.y = -static_cast<int>(((obj->position.y + obj->height / 2.f) + camera->position.y) / scale.y);
+	//		SDL_RenderCopyEx(ren, obj->sprite->texture, &obj->clips[obj->useClip], &dst, -angle, NULL, SDL_FLIP_VERTICAL);
+	//	}
+	//}
 }

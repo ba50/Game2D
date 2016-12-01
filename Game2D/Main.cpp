@@ -169,7 +169,7 @@ int main(int, char**) {
 
 			//Draw the background
 			for (auto& background : background_vector) {
-				renderer->Render(background.get());
+				renderer->Render(*background);
 			}
 	
 			//Draw second plan

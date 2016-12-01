@@ -8,8 +8,22 @@
 #include "Static.h"
 #include "Gameplay.h"
 
-Enemy::Enemy(const Vecf2 position, const std::string & file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 0, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
+Enemy::Enemy(	
+
+	const unsigned bullet_trigger_base,
+	const unsigned pain,
+	const unsigned death_delay,
+	const float health,
+
+	const unsigned animation_delay, 
+	const Vecf2 position,
+	const std::string & file,
+	const std::vector<SDL_Rect> clips,
+	Renderer &ren
+) :
+
+	Moving(50, 0, 2, 10.f, 0, position, file, clips, ren), 
+
 	life(true),
 	time_to_die(false),
 	max_size(false),
@@ -48,8 +62,6 @@ void Enemy::Update(const float deltaTime)
 
 	collision_r = scale.x*width;
 
-	
-
 	if (health > 3.f) {
 		useClip = 0;
 	}
@@ -72,9 +84,9 @@ void Enemy::Update(const float deltaTime)
 	position.y += velocity.y*deltaTime;
 }
 
-void Enemy::Draw(bool mirror)
+void Enemy::Draw(Renderer &ren, bool mirror = true)
 {
-	ren->Render(this, 0.f, true, scale);
+	ren.Render(*this, 0.f, true, scale);
 }
 
 void Enemy::Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<Bullet>> &bullet_vector)

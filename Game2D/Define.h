@@ -52,11 +52,16 @@ namespace Math {
 }
 
 namespace Map {
-	static void Load(const std::string &file, std::shared_ptr<Character> &player,
+	static void Load(
+
+		const std::string &file,
+		std::shared_ptr<Character> &player,
 		std::vector<std::shared_ptr<Static>> &first_plan_vector,
 		std::vector<std::shared_ptr<Static>> &secodn_plan_vector,
 		std::vector<std::shared_ptr<Static>> &background_vector,
-		std::shared_ptr<Renderer> ren) {
+		std::shared_ptr<Renderer> &ren
+
+	){
 		
 		std::vector<SDL_Rect> cloud_clips;
 

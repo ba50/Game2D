@@ -133,7 +133,7 @@ void Character::Update(const float deltaTime,
 
 void Character::Draw(bool mirror)
 {
-	ren->Render(this, drawing_angle);
+//	ren->Render(this, drawing_angle);
 	engine->Draw();
 }
 

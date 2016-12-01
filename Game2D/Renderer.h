@@ -23,5 +23,5 @@ public:
 	void Clear();
 	void RenderPresent();
 
-	void Render(Object * obj, float angle = 0, bool mirror = true, Vecf2 scale = Vecf2{ 1.f,1.f }, SDL_Point *center = NULL);
+	void Render(Object &obj, float angle = 0, bool reflection = true, Vecf2 scale = Vecf2{ 1.f,1.f }, SDL_Point *center = NULL);
 };

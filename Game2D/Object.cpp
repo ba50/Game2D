@@ -8,34 +8,35 @@
 std::map<Key, Action> Inputs::key;
 
 Object::Object(
-		unsigned animation_delay,
+	unsigned animation_delay,
 
-		int useClip,
-		int width,
-		int height,
-		float collision_r,
-		float angle,
+	int useClip,
+	int width,
+	int height,
 
-		std::shared_ptr<Renderer> ren,
-		std::string file,
+	float angle,
 
-		Vecf2 position,
-		Vecf2 velocity,
-		Vecf2 scale
-	) :
+	std::string file,
+	std::vector<SDL_Rect> clips,
+	Renderer &ren,
+
+	Vecf2 position,
+	Vecf2 velocity,
+	Vecf2 scale
+) :
 	animation_delay(animation_delay),
-	current_animation_delay(1),
 	useClip(useClip),
 	width(width),
 	height(height),
-	collision_r(collision_r),
 	angle(angle),
-	ren(ren),
 	sprite{ std::make_shared<Texture>(file, ren) },
+	clips{clips},
 	position(position),
 	velocity(velocity),
 	scale(scale)
-{}
+{
+	current_animation_delay = animation_delay;
+}
 
 void Object::Animation(unsigned start_clip, unsigned end_clip)
 {
@@ -47,6 +48,6 @@ void Object::Animation(unsigned start_clip, unsigned end_clip)
 		if (useClip == end_clip) {
 			useClip = start_clip;
 		}
-		
+
 	}
 }

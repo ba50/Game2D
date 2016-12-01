@@ -1,6 +1,5 @@
 #pragma once
 
-#include <forward_list>
 #include <vector>
 #include <memory>
 
@@ -16,18 +15,17 @@ class Object
 {
 
 public:
-	unsigned animation_delay, current_animation_delay;
+	const unsigned animation_delay;
+	unsigned current_animation_delay;
 
 	int useClip;
-	int height;
-	int width;
+	const int height;
+	const int width;
 
-	float collision_r;
 	float angle;
 
-	std::shared_ptr<Renderer> ren;
-	std::shared_ptr<Texture> sprite;
-	std::vector<SDL_Rect> clips;
+	const std::vector<SDL_Rect> clips;
+	const std::shared_ptr<Texture> sprite;
 
 	Vecf2 position;
 	Vecf2 velocity;
@@ -40,18 +38,18 @@ public:
 		int useClip,
 		int width,
 		int height,
-		float collision_r,
+
 		float angle,
 
-		std::shared_ptr<Renderer> ren,
 		std::string file,
+		std::vector<SDL_Rect> clips,
+		Renderer &ren,
 
-		Vecf2 position,
-		Vecf2 velocity,
+		Vecf2 position = Vecf2{ 0.f,0.f },
+		Vecf2 velocity = Vecf2{ 0.f, 0.f },
 		Vecf2 scale = Vecf2{1.f,1.f}
 	);
 
 	void Animation(unsigned start_clip, unsigned end_clip);
-
-	virtual void Draw(bool mirror) = 0;
+	virtual void Draw(Renderer &ren, bool reflection) = 0;
 };
