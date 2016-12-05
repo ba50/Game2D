@@ -13,6 +13,9 @@ public:
 
 	Vecf2 scaleMax;
 
+private:
+	bool shot;
+
 public:
 	Enemy(	
 
@@ -27,11 +30,11 @@ public:
 	const std::vector<SDL_Rect> clips,
 	Renderer &ren);
 
-	void Update(const float deltaTime);
+	void Update(const float deltaTime, std::vector<std::shared_ptr<Bullet>> &bullet_vector, Renderer &ren);
 
-	void Detect(std::shared_ptr<Character> cha, std::vector<std::shared_ptr<Bullet>> &bullet_vector);
-	void Enemy::Collision(std::shared_ptr<Bullet> &bull);
+	void Detect(Character &cha);
+	void Collision(std::shared_ptr<Bullet> &bull);
 
-	void Draw(Renderer &ren, bool mirror = true) override;
+	void Draw(Renderer &ren, bool reflection = true) override;
 };
 

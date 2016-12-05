@@ -4,15 +4,13 @@
 
 Static::Static(
 	const unsigned animation_delay, 
-	const std::vector<SDL_Rect> clips_, 
+	const std::vector<SDL_Rect> clips, 
 	const Vecf2 position,
 	const std::string & file,
 	Renderer &ren
 ) :
-	Object(animation_delay, 0, clips_[0].w, clips_[0].h, 0, file, ren, position)
-{
-		clips = clips_;
-}
+	Object(animation_delay, 0, clips[0].w, clips[0].h, 0, file, clips, ren, position)
+{}
 
 void Static::Draw(Renderer &ren, bool reflection)
 {

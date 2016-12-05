@@ -15,6 +15,7 @@ Moving::Moving(
 	Object(animation_delay, 0, clips[0].w, clips[0].h, 0, file, clips, ren, position),
 
 	life(true),
+	time_to_die(false),
 	bullet_trigger_base(bullet_trigger_base),
 	pain(pain),
 	death_delay(death_delay),

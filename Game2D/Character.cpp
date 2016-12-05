@@ -11,39 +11,47 @@
 
 std::vector<bool> Inputs::slope;
 
-Character::Character(const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren) :
-	Object(0, 0, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, 0, ren, file, position, Vecf2{ 0.f, 0.f }),
-	life(true),
+Character::Character(	
+
+	const unsigned bullet_trigger_base,
+	const unsigned pain,
+	const unsigned death_delay,
+	const float health,
+
+	const unsigned animation_delay, 
+	const Vecf2 position,
+	const std::string & file,
+	const std::vector<SDL_Rect> clips,
+	Renderer &ren
+) :
+	Moving(50, 0, 2, 10.f, 0, position, file, clips, ren), 
+
 	delta_angle(0.f),
 	delta_velocity(5e1),
-	max_velocity(5e2f),
-	health(10.f),
-	bullet_trigger_base(9),
-	bullet_trigger(9)
+	max_velocity(5e2f)
 {
-	for (int i = 0; i < 36; i++) {
-		clips.push_back(SDL_Rect{ i*width, 0, width, height });
-	}
+	//for (int i = 0; i < 36; i++) {
+	//	clips.push_back(SDL_Rect{ i*width, 0, width, height });
+	//}
 
 	Inputs::slope.push_back(false);
 	Inputs::slope.push_back(false);
 
 	//init engine
-	std::vector<SDL_Rect> engine_clips;
+	//std::vector<SDL_Rect> engine_clips;
 
-	engine_clips.push_back(SDL_Rect{ 0,0,BLOCK_SIZE, BLOCK_SIZE });
-	engine_clips.push_back(SDL_Rect{ BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
-	engine_clips.push_back(SDL_Rect{ 2*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
-	engine_clips.push_back(SDL_Rect{ 3*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
+	//engine_clips.push_back(SDL_Rect{ 0,0,BLOCK_SIZE, BLOCK_SIZE });
+	//engine_clips.push_back(SDL_Rect{ BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
+	//engine_clips.push_back(SDL_Rect{ 2*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
+	//engine_clips.push_back(SDL_Rect{ 3*BLOCK_SIZE,0,BLOCK_SIZE, BLOCK_SIZE });
 
-	engine = std::make_unique<Static>(5, engine_clips, position, "Source/Engine.png", ren);
+	//engine = std::make_unique<Static>(5, engine_clips, position, "Source/Engine.png", ren);
 }
 
 void Character::Update(const float deltaTime,
-	std::vector<std::shared_ptr<Bullet>> &bullet_vector,
-	std::shared_ptr<Audio> audio)
+		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
+		Audio &audio)
 {
-
 
 	//Box
 	if (position.y >= WATER_LEVEL + 500 ||
@@ -131,10 +139,10 @@ void Character::Update(const float deltaTime,
 	engine->angle = angle;
 }
 
-void Character::Draw(bool mirror)
+void Character::Draw(Renderer &ren, bool reflection  = true)
 {
 //	ren->Render(this, drawing_angle);
-	engine->Draw();
+//	engine->Draw();
 }
 
 void Character::Inputs()

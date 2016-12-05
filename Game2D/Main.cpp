@@ -113,7 +113,7 @@ int main(int, char**) {
 
 				for (auto& second_plan : second_plan_vector) {
 
-					second_plan->Update(Gameplay::deltaTime);
+//					second_plan->Update(Gameplay::deltaTime);
 
 					second_plan->position.x -= .001f*character->velocity.x;
 
@@ -169,34 +169,34 @@ int main(int, char**) {
 
 			//Draw the background
 			for (auto& background : background_vector) {
-				renderer->Render(*background);
+//				renderer->Render(*background);
 			}
 	
 			//Draw second plan
 			for (auto& second_plan : second_plan_vector) {
-				second_plan->Draw();
+//				second_plan->Draw();
 			}
 
 			//Draw the enemy
 			for (auto& enemy : enemy_vector) {
-				if(enemy->life) enemy->Draw();
+//				if(enemy->life) enemy->Draw();
 			}
 
 			//Draw the bullets
 			for (auto& bullet : bullet_character_vector){
-				if (bullet->life) bullet->Draw();
+//				if (bullet->life) bullet->Draw();
 			}
 
 			for (auto& bullet : bullet_enemy_vector) {
-				if (bullet->life) bullet->Draw();
+//				if (bullet->life) bullet->Draw();
 			}
 
 			//Draw the player
-			character->Draw();
+//			character->Draw();
 
 			//Draw first plan
 			for (auto& first_plan : first_plan_vector) {
-				first_plan->Draw(false);
+//				first_plan->Draw(false);
 			}
 
 			//Update the screen
