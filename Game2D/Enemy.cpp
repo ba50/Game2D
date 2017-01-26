@@ -9,25 +9,18 @@
 #include "Gameplay.h"
 
 Enemy::Enemy(	
-
-	const unsigned bullet_trigger_base,
-	const unsigned pain,
-	const unsigned death_delay,
-	const float health,
-
-	const unsigned animation_delay, 
 	const Vecf2 position,
 	const std::string & file,
 	const std::vector<SDL_Rect> clips,
 	Renderer &ren
 ) : 
-	Moving(50, 0, 2, 10.f, 0, position, file, clips, ren), 
+	Moving(10, 0, 2, 10, 0, clips[0].w/2.f, position, file, clips, ren), 
 
 	max_size(false),
 	scaleMax( Vecf2{ Math::Rand(1.f,2.f), Math::Rand(1.f,2.f) })
 {}
 
-void Enemy::Update(const float deltaTime, std::vector<std::shared_ptr<Bullet>> &bullet_vector, Renderer &ren)
+void Enemy::Update(const float deltaTime)
 {
 	
 	if (scale.x < scaleMax.x && !max_size){
@@ -66,26 +59,19 @@ void Enemy::Update(const float deltaTime, std::vector<std::shared_ptr<Bullet>> &
 		if (death_timer == 0) life = false;
 	}
 
-	if (shot) {
-		bullet_vector.push_back(std::make_shared<Bullet>(angle, velocity, position, "Source/Bullet.png", ren));
-		shot = false;
-	}
+	float len = velocity.Len();
+	velocity = velocity.Norm()*std::min(250.f, len);
 
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
-}
-
-void Enemy::Draw(Renderer &ren, bool reflection)
-{
-	ren.Render(*this, 0.f, true, scale);
 }
 
 void Enemy::Detect(Character &cha)
 {
 	Vecf2 r{ cha.position - position };
 	if (sqrt(r.x*r.x + r.y*r.y) < SCREEN_WIDTH/4.f) {
-		velocity.x = (cha.position.x - position.x)*1.2f;
-		velocity.y = (cha.position.y - position.y)*1.2f;
+		velocity.x += (cha.position.x - position.x)*1.2f;
+		velocity.y += (cha.position.y - position.y)*1.2f;
 
 		if (bullet_trigger == 0) {
 			if (velocity.y < 0) {
@@ -95,7 +81,7 @@ void Enemy::Detect(Character &cha)
 				angle = 180.f-180.f*atan(velocity.x / abs(velocity.y)) / PI;
 			}
 
-			shot = true;
+			shoot = true;
 			bullet_trigger = bullet_trigger_base;
 		}
 		bullet_trigger--;
@@ -121,16 +107,28 @@ void Enemy::Detect(Character &cha)
 
 void Enemy::Collision(std::shared_ptr<Bullet> &bull)
 {
-	//if (sqrtf(
-	//	(bull->position.x - position.x)*(bull->position.x - position.x) +
-	//	(bull->position.y - position.y)*(bull->position.y - position.y)) <
-	//	(bull->collision_r/2.f + collision_r/2.f)) {
-	//	health -= 1.5;
-	//	if (health <= 0.f) {
-	//		time_to_die = true;
-	//	}
-	//	bull->time_to_die = true;
-	//	Gameplay::score = true;
-	//	pain = 3;
-	//}
+	if (sqrtf(
+		(bull->position.x - position.x)*(bull->position.x - position.x) +
+		(bull->position.y - position.y)*(bull->position.y - position.y)) <
+		(bull->collision_r / 2.f + collision_r / 2.f)) {
+		health -= 1;
+		if (health <= 0.f) {
+			time_to_die = true;
+		}
+		bull->time_to_die = true;
+		pain = 3;
+	}
+}
+
+void Enemy::Collision(Enemy &enemy) {
+		if (sqrtf(
+			(enemy.position.x - position.x)*(enemy.position.x - position.x) +
+			(enemy.position.y - position.y)*(enemy.position.y - position.y)) <
+			(enemy.collision_r / 2.f + collision_r / 2.f)) {
+
+			Vecf2 temp = enemy.velocity;
+			enemy.velocity = velocity;
+			velocity = temp;
+
+		}
 }

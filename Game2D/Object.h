@@ -23,6 +23,7 @@ public:
 	const int width;
 
 	float angle;
+	float collision_r;
 
 	const std::vector<SDL_Rect> clips;
 	const std::shared_ptr<Texture> sprite;
@@ -40,6 +41,7 @@ public:
 		int height,
 
 		float angle,
+		const float collision_r,
 
 		std::string file,
 		std::vector<SDL_Rect> clips,
@@ -51,5 +53,4 @@ public:
 	);
 
 	void Animation(unsigned start_clip, unsigned end_clip);
-	virtual void Draw(Renderer &ren, bool reflection) = 0;
 };

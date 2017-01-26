@@ -13,6 +13,9 @@ struct Gameplay {
 	static bool score;
 	static bool start;
 
+	static float sky_level;
+	static float water_level;
+
 
 	static void Update() {
 

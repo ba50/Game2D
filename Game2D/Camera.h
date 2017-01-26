@@ -11,7 +11,7 @@ public:
 	Vecf2 position;
 	Vecf2 toCenter;
 	Vecf2 velocity;
-	std::vector<Vecf2> shake_vector;
+	static std::vector<Vecf2> shake_vector;
 
 public:
 	Camera(Vecf2 position, float width, float height);
@@ -19,5 +19,5 @@ public:
 	Camera(const Camera &cam);
 
 	void MoveTo(std::shared_ptr<Character> cha, float deltaTime);
-	void Shake();
+	static void Shake();
 };

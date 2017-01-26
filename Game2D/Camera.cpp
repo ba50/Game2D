@@ -22,18 +22,19 @@ Camera::Camera(const Camera &cam)
 
 void Camera::MoveTo(std::shared_ptr<Character> cha, float deltaTime)
 {
-
-	if (shake_vector.size() == 0) {
-		position.x = cha->position.x - (toCenter.x - 100.f*cha->velocity.x / cha->max_velocity);
-		position.x += .1f*SCREEN_WIDTH*sinf(cha->angle*PI / 180.f);
-		position.y = cha->position.y - (toCenter.y - 100.f*cha->velocity.y / cha->max_velocity);
-	}
-	else {
-		position.x = (cha->position.x - (toCenter.x - 100.f*cha->velocity.x / cha->max_velocity)) + shake_vector.back().x;
-		position.x += .1f*SCREEN_WIDTH*sinf(cha->angle*PI / 180.f);
-		position.y = (cha->position.y - (toCenter.y - 100.f*cha->velocity.y / cha->max_velocity)) + shake_vector.back().y;
-		shake_vector.pop_back();
-	}
+		if (shake_vector.size() == 0) {
+			position.x = cha->position.x - (toCenter.x - 100.f*cha->velocity.x / cha->max_velocity);
+			position.x += .1f*SCREEN_WIDTH*sinf(cha->angle*PI / 180.f);
+			if (cha->position.y > (Gameplay::sky_level + SCREEN_HEIGHT)) {
+				position.y = cha->position.y - (toCenter.y - 100.f*cha->velocity.y / cha->max_velocity);
+			}
+		}
+		else {
+			position.x = (cha->position.x - (toCenter.x - 100.f*cha->velocity.x / cha->max_velocity)) + shake_vector.back().x;
+			position.x += .1f*SCREEN_WIDTH*sinf(cha->angle*PI / 180.f);
+			position.y = (cha->position.y - (toCenter.y - 100.f*cha->velocity.y / cha->max_velocity)) + shake_vector.back().y;
+			shake_vector.pop_back();
+		}
 }
 
 void Camera::Shake(){
@@ -46,3 +47,5 @@ void Camera::Shake(){
 		}
 	}
 }
+
+std::vector<Vecf2> Camera::shake_vector;

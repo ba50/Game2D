@@ -9,9 +9,9 @@
 
 #include "cleanup.h"
 
-Texture::Texture(const std::string & file, std::shared_ptr<Renderer> ren)
+Texture::Texture(const std::string &file, Renderer &ren)
 {
-	texture = IMG_LoadTexture(ren->ren, file.c_str());
+	texture = IMG_LoadTexture(ren.ren, file.c_str());
 	if (texture == nullptr) {
 		Error::LogSDL(std::cout, "LoadTexture");
 	}

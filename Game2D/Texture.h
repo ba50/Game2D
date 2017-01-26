@@ -12,7 +12,7 @@ public:
 	SDL_Texture *texture;
 
 public:
-	Texture(const std::string &file, std::shared_ptr<Renderer> ren);
+	Texture(const std::string &file, Renderer &ren);
 	~Texture();
 };
 

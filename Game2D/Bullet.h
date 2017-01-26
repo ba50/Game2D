@@ -10,10 +10,17 @@ public:
 	unsigned int timer, death_timer, death_delay;
 
 public:
-	Bullet(float angle, const Vecf2 start_velocit, const Vecf2 position, const std::string &file, std::shared_ptr<Renderer> & ren);
+	Bullet(
+
+		Vecf2 start_velocity,
+	
+		const float angle,
+		const Vecf2 position,
+		const std::string & file,
+		const std::vector<SDL_Rect> clips,
+		Renderer &ren,
+		const Vecf2 scale = Vecf2{ 1.f, 1.f });
 
 	void Update(const float deltaTime);
-
-	void Draw(bool mirror = true) override;
 };
 

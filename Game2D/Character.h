@@ -3,10 +3,12 @@
 #include <map>
 
 #include "Moving.h"
+#include "Engine.h"
+
+#define MAX_HEALTH 255
 
 class Bullet;
 class Audio;
-class Static;
 
 class Character :
 	public Moving
@@ -17,33 +19,24 @@ public:
 	float drawing_angle;
 	float delta_velocity; 
 	float max_velocity;
+	float recoil;
 
-	enum class Input { Shot, Jumpe, Left, Right, Down, Up };
+	enum class Input { Shot, Left, Right, Boost };
 
 	std::map<Input, bool> currentInput;
 
-//	std::unique_ptr<Static> engine;
+	std::unique_ptr<Engine> engine;
 
 public:
 	Character(	
 
-	const unsigned bullet_trigger_base,
-	const unsigned pain,
-	const unsigned death_delay,
-	const float health,
-
-	const unsigned animation_delay, 
 	const Vecf2 position,
 	const std::string & file,
 	const std::vector<SDL_Rect> clips,
 	Renderer &ren);
 
-	void Update(const float deltaTime,
-		std::vector<std::shared_ptr<Bullet>> &bullet_vector,
-		Audio &audio);
-
-	void Draw(Renderer &ren, bool reflection  = true) override;
+	void Update(const float deltaTime);
 
 	void Inputs();
-	void Collison(std::shared_ptr<Object> obj);
+	void Collison(Object &obj);
 };

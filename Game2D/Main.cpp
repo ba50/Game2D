@@ -1,5 +1,4 @@
 #include "Vec2.h"
-#include "Define.h"
 
 #include "Inputs.h"
 #include "Renderer.h"
@@ -20,7 +19,7 @@ int main(int, char**) {
 	try {
 
 		auto renderer = std::make_shared<Renderer>();
-		auto audio = std::make_shared<Audio>();
+//		auto audio = std::make_shared<Audio>();
 
 		std::shared_ptr<Character> character;
 		std::vector<std::shared_ptr<Bullet>> bullet_character_vector;
@@ -39,15 +38,25 @@ int main(int, char**) {
 		//Load Map
 		Map::Load("Source/dev.csv", character, first_plan_vector, second_plan_vector, background_vector, renderer);
 
+		std::vector<SDL_Rect> bullet_clips;
+		bullet_clips.push_back(SDL_Rect{ 0,0,BLOCK_SIZE / 2,BLOCK_SIZE / 2 });
+		bullet_clips.push_back(SDL_Rect{ BLOCK_SIZE,0,BLOCK_SIZE / 2,BLOCK_SIZE / 2 });
 
-
+		std::vector<SDL_Rect> enemy_clips;
+		enemy_clips.push_back(SDL_Rect{ 0, 0, BLOCK_SIZE, BLOCK_SIZE });
+		enemy_clips.push_back(SDL_Rect{ BLOCK_SIZE, 0, BLOCK_SIZE, BLOCK_SIZE });
+		enemy_clips.push_back(SDL_Rect{ 0, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE });
+		enemy_clips.push_back(SDL_Rect{ BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE });
 		//Statt music
 //		audio->PlayMusic();
+
+		Inputs::slope.push_back(false);
+		Inputs::slope.push_back(false);
 
 		//Main loop
 		bool quit = false;
 		while (!quit) {
-			quit = Inputs::Update();
+			Inputs::Update(quit);
 			//Rendering
 			renderer->Clear();
 
@@ -57,12 +66,31 @@ int main(int, char**) {
 			//Update Gameplay
 			Gameplay::Update();
 
+			//Update character
+			character->Update(Gameplay::deltaTime);
+
 			if (!Gameplay::pausa) {
 				//Update camera
 				renderer->camera->MoveTo(character, Gameplay::deltaTime);
 
-				//Update character
-				character->Update(Gameplay::deltaTime, bullet_character_vector, audio);
+				if (character->shoot) {
+					Vecf2 position_temp{
+						character->position.x + 1.1f*BLOCK_SIZE*sinf(character->angle*PI / 180.f),
+						character->position.y - 1.1f*BLOCK_SIZE*cosf(character->angle*PI / 180.f)
+					};
+					bullet_character_vector.push_back(
+						std::make_shared<Bullet>(
+							character->velocity,
+							character->angle + Math::Rand(-character->recoil, character->recoil),
+							position_temp,
+							"Source/Bullet.png",
+							bullet_clips,
+							*renderer,
+							Vecf2{ 0.5f, 0.5f }));
+
+					//audio->PlayExplosion();
+					character->shoot = false;
+				}
 
 				//Update bullets
 				for (auto& bullet : bullet_character_vector) {
@@ -79,125 +107,163 @@ int main(int, char**) {
 						float angle = rand(0, 2 * PI);
 						float x = character->position.x + SCREEN_WIDTH*sinf(angle);
 						float y = character->position.y + SCREEN_WIDTH*cosf(angle);
-						if (y < 0 &&
-							y > -3000 ||
+						if (y < Gameplay::water_level &&
+							y > Gameplay::sky_level ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
 							x > -3 * (character->position.x + SCREEN_WIDTH)) {
-							enemy_vector.push_back(std::make_shared<Enemy>(Vecf2{ x,y }, "Source/Enemy.png", renderer));
+							enemy_vector.push_back(
+								std::make_shared<Enemy>(
+									Vecf2{ x,y },
+									"Source/Enemy.png",
+									enemy_clips,
+									*renderer
+									));
 						}
 					}
 				}
 
 				for (auto& enemy : enemy_vector) {
-					enemy->Detect(character, bullet_enemy_vector);
+					enemy->Detect(*character);
 					enemy->Update(Gameplay::deltaTime);
+					if (enemy->shoot) {
+						Vecf2 position_temp{
+							enemy->position.x + 1.1f*BLOCK_SIZE*sinf(enemy->angle*PI / 180.f),
+							enemy->position.y - 1.1f*BLOCK_SIZE*cosf(enemy->angle*PI / 180.f)
+						};
+						bullet_enemy_vector.push_back(
+							std::make_shared<Bullet>(
+								enemy->velocity,
+								enemy->angle + Math::Rand(-5.f, 5.f),
+								position_temp,
+								"Source/Bullet.png",
+								bullet_clips,
+								*renderer));
+
+						//			audio->PlayExplosion();
+						enemy->shoot = false;
+					}
 					if (enemy->position.y > 0.f ||
 						enemy->position.y < -3000.f ||
 						enemy->position.x > 3.f * abs(character->position.x + SCREEN_WIDTH) ||
 						enemy->position.x < -3.f * abs(character->position.x - SCREEN_WIDTH)) enemy->life = false;
 				}
 
-				//Update background
-				for (auto& background : background_vector) {
+				//Collision
+				//bullets & enemy & character
+				for (auto& enemy : enemy_vector) {
+					if (InSight(renderer->camera->position, enemy->position)) {
 
-					if (abs(background->position.x - character->position.x) > 2*background->width) {
-						if (background->position.x - character->position.x > 0) {
-							background->position.x -= 4 * background->width;
+						character->Collison(*enemy);
+
+						for (auto& bullet : bullet_character_vector) {
+							if (enemy->life) enemy->Collision(bullet);
 						}
-						else {
-							background->position.x += 4 * background->width;
-						}
-					}
-
-				}
-
-				for (auto& second_plan : second_plan_vector) {
-
-//					second_plan->Update(Gameplay::deltaTime);
-
-					second_plan->position.x -= .001f*character->velocity.x;
-
-					if (abs(second_plan->position.x - character->position.x) > 2*SCREEN_WIDTH) {
-						if (second_plan->position.x - character->position.x > 0) {
-							second_plan->position.x -= 4 * SCREEN_WIDTH;
-						}
-						else {
-							second_plan->position.x += 4 * SCREEN_WIDTH;
+						for (auto& oth : enemy_vector) {
+							if (enemy != oth) {
+								enemy->Collision(*oth);
+							}
 						}
 					}
 				}
 
-				first_plan_vector[0]->position.x = character->position.x - SCREEN_WIDTH-1;
-				first_plan_vector[1]->position.x = character->position.x;
-				first_plan_vector[2]->position.x = character->position.x + SCREEN_WIDTH+1;
-
-				for (auto& first_plan : first_plan_vector) {
-
-					first_plan->position.x += 20.f*Gameplay::deltaTime;
-
-					if (abs(first_plan->position.x - character->position.x) > 2*SCREEN_WIDTH) {
-						if (first_plan->position.x - character->position.x > 0) {
-							first_plan->position.x -= 4 * SCREEN_WIDTH;
-						}
-						else {
-							first_plan->position.x += 4 * SCREEN_WIDTH;
-						}
+				//enemy bullets & character
+				for (auto& bulltet : bullet_enemy_vector) {
+					if (InSight(renderer->camera->position, bulltet->position)) {
+						character->Collison(*bulltet);
 					}
 				}
 
 			}
 
-			//Collision
-			//bullets & enemy & character
-			for (auto& enemy : enemy_vector) {
-				if (InSight(renderer->camera->position, enemy->position)) {
+			//Update background
+			for (auto& background : background_vector) {
 
-					character->Collison(enemy);
+				if (abs(background->position.x - character->position.x) > 2 * background->width*Renderer::scale.x) {
+					if (background->position.x - character->position.x > 0) {
+						background->position.x -= 4 * background->width*Renderer::scale.x;
+					}
+					else {
+						background->position.x += 4 * background->width*Renderer::scale.x;
+					}
+				}
 
-					for (auto& bullet : bullet_character_vector) {
-						if (enemy->life) enemy->Collision(bullet);
+			}
+
+			for (auto& second_plan : second_plan_vector) {
+
+				second_plan->Update(Gameplay::deltaTime);
+				second_plan->position.x -= .001f*character->velocity.x*second_plan->velocity.x;
+				second_plan->position.y -= .0001f*character->velocity.y*second_plan->velocity.y;
+
+				if (abs(second_plan->position.x - character->position.x) > 2 * SCREEN_WIDTH) {
+					if (second_plan->position.x - character->position.x > 0) {
+						second_plan->position.x -= 4 * SCREEN_WIDTH;
+					}
+					else {
+						second_plan->position.x += 4 * SCREEN_WIDTH;
 					}
 				}
 			}
 
-			//enemy bullets & character
-			for (auto& bulltet : bullet_enemy_vector) {
-				if (InSight(renderer->camera->position, bulltet->position)) {
-					character->Collison(bulltet);
+			int i = 0;
+			for (float x = -2; x < 3; x++) {
+				first_plan_vector[i]->position.x
+					= character->position.x - x *first_plan_vector[i]->width*Renderer::scale.x;
+				i++;
+			}
+
+			for (auto& first_plan : first_plan_vector) {
+
+				first_plan->position.x += 20.f*Gameplay::deltaTime;
+
+				if (abs(first_plan->position.x - character->position.x) > 2 * SCREEN_WIDTH) {
+					if (first_plan->position.x - character->position.x > 0) {
+						first_plan->position.x -= 4 * first_plan->width*Renderer::scale.x;
+					}
+					else {
+						first_plan->position.x += 4 * first_plan->width*Renderer::scale.x;
+					}
 				}
 			}
+
 
 			//Draw the background
 			for (auto& background : background_vector) {
-//				renderer->Render(*background);
+				renderer->Render(*background);
 			}
 	
 			//Draw second plan
 			for (auto& second_plan : second_plan_vector) {
-//				second_plan->Draw();
+				renderer->Render(*second_plan);
 			}
 
 			//Draw the enemy
 			for (auto& enemy : enemy_vector) {
-//				if(enemy->life) enemy->Draw();
+				if (enemy->life) renderer->Render(*enemy);
 			}
 
 			//Draw the bullets
 			for (auto& bullet : bullet_character_vector){
-//				if (bullet->life) bullet->Draw();
+				if (bullet->life) renderer->Render(*bullet);
 			}
 
 			for (auto& bullet : bullet_enemy_vector) {
-//				if (bullet->life) bullet->Draw();
+				if (bullet->life) renderer->Render(*bullet);
 			}
 
 			//Draw the player
-//			character->Draw();
+			renderer->Render(*character);
+			renderer->Render(*character->engine, character->engine->angle);
 
 			//Draw first plan
 			for (auto& first_plan : first_plan_vector) {
-//				first_plan->Draw(false);
+				renderer->Render(*first_plan, 0, false);
 			}
+
+			SDL_SetRenderDrawColor(renderer->ren, 255, 0, 0, -(character->health-255));
+			SDL_SetRenderDrawBlendMode(renderer->ren, SDL_BLENDMODE_BLEND);
+			SDL_Rect life = SDL_Rect{ 0, 0,SCREEN_WIDTH,SCREEN_HEIGHT };
+			SDL_RenderFillRect(renderer->ren, &life);
 
 			//Update the screen
 			renderer->RenderPresent();

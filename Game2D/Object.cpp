@@ -15,6 +15,7 @@ Object::Object(
 	int height,
 
 	float angle,
+	float collision_r,
 
 	std::string file,
 	std::vector<SDL_Rect> clips,
@@ -29,8 +30,9 @@ Object::Object(
 	width(width),
 	height(height),
 	angle(angle),
+	collision_r(collision_r*Renderer::scale.x),
 	sprite{ std::make_shared<Texture>(file, ren) },
-	clips{clips},
+	clips{ clips },
 	position(position),
 	velocity(velocity),
 	scale(scale)
