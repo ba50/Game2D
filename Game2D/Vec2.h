@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Math.h"
+#include <cmath>
+#include <iostream>
+#include <random>
 
 template <typename T>
 class _Vec2

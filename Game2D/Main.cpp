@@ -10,12 +10,13 @@
 #include "Static.h"
 #include "Enemy.h"
 
+#include <random>
+
 void cleanUp();
 inline bool InSight(const Vecf2 & a, const Vecf2& b);
-inline float rand(float start, float stop);
 
 int main(int, char**) {
-
+	
 	try {
 
 		auto renderer = std::make_shared<Renderer>();
@@ -50,6 +51,11 @@ int main(int, char**) {
 		//Statt music
 //		audio->PlayMusic();
 
+		//Random
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(0, 1);
+
 		Inputs::slope.push_back(false);
 		Inputs::slope.push_back(false);
 
@@ -75,8 +81,8 @@ int main(int, char**) {
 
 				if (character->shoot) {
 					Vecf2 position_temp{
-						character->position.x + 1.1f*BLOCK_SIZE*sinf(character->angle*PI / 180.f),
-						character->position.y - 1.1f*BLOCK_SIZE*cosf(character->angle*PI / 180.f)
+						character->position.x + 1.1f*BLOCK_SIZE*sin(character->angle*PI / 180.f),
+						character->position.y - 1.1f*BLOCK_SIZE*cos(character->angle*PI / 180.f)
 					};
 					bullet_character_vector.push_back(
 						std::make_shared<Bullet>(
@@ -103,10 +109,10 @@ int main(int, char**) {
 
 				//Update enemy
 				if (enemy_vector.size() < 50) {
-					if (rand(0.f, 1.f) < 0.25f) {
-						float angle = rand(0, 2 * PI);
-						float x = character->position.x + SCREEN_WIDTH*sinf(angle);
-						float y = character->position.y + SCREEN_WIDTH*cosf(angle);
+					if (dis(gen) < 0.25f) {
+						float angle = dis(gen) * 2 * PI;
+						float x = character->position.x + SCREEN_WIDTH*sin(angle);
+						float y = character->position.y + SCREEN_WIDTH*cos(angle);
 						if (y < Gameplay::water_level &&
 							y > Gameplay::sky_level ||
 							x < 3 * (character->position.x + SCREEN_WIDTH) &&
@@ -127,8 +133,8 @@ int main(int, char**) {
 					enemy->Update(Gameplay::deltaTime);
 					if (enemy->shoot) {
 						Vecf2 position_temp{
-							enemy->position.x + 1.1f*BLOCK_SIZE*sinf(enemy->angle*PI / 180.f),
-							enemy->position.y - 1.1f*BLOCK_SIZE*cosf(enemy->angle*PI / 180.f)
+							enemy->position.x + 1.1f*BLOCK_SIZE*sin(enemy->angle*PI / 180.f),
+							enemy->position.y - 1.1f*BLOCK_SIZE*cos(enemy->angle*PI / 180.f)
 						};
 						bullet_enemy_vector.push_back(
 							std::make_shared<Bullet>(
@@ -314,11 +320,11 @@ int main(int, char**) {
 	}
 	catch (...) {
 		cleanUp();
-		printf("Ooo nooo!\n");
-		system("pause");
+		std::cout << "Ooo nooo!\n";
+
 		return 1;
 	}
-
+	
 	//Clean up
 	cleanUp();
 
@@ -333,8 +339,4 @@ void cleanUp() {
 inline bool InSight(const Vecf2 & camera, const Vecf2& obj) {
 	Vecf2 r{ obj.x - (camera.x + SCREEN_WIDTH / 2), camera.y - camera.y };
 	return sqrt(r.x*r.x + r.y*r.y) < SCREEN_HEIGHT + 75;
-}
-
-inline float rand(float start, float stop) {
-	return start+static_cast<float>(((stop - start)*rand()) / (RAND_MAX + 1.0));
 }

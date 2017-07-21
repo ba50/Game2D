@@ -111,8 +111,6 @@ void Character::Update(const float deltaTime)
 		health += 1;
 	}
 
-	printf("%d\n", health);
-
 	position.x += velocity.x*deltaTime;
 	position.y += velocity.y*deltaTime;
 
